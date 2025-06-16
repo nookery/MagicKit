@@ -81,6 +81,16 @@ extension ShellGit {
         return try Shell.runSync("git remote remove \(name)", at: path)
     }
 
+    /// 修改远程仓库URL
+    /// - Parameters:
+    ///   - name: 远程仓库名称
+    ///   - url: 新的远程仓库URL
+    ///   - path: 仓库路径
+    /// - Returns: 执行结果
+    public static func setRemoteURL(_ name: String, url: String, at path: String? = nil) throws -> String {
+        return try Shell.runSync("git remote set-url \(name) \(url)", at: path)
+    }
+
     /// 获取远程结构体列表
     /// - Parameters:
     ///   - path: 仓库路径
