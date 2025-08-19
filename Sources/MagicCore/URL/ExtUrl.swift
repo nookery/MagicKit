@@ -2,6 +2,12 @@ import Foundation
 import CryptoKit
 import OSLog
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
+#if os(macOS)
+import AppKit
+#endif
 
 /// URL 类型的扩展，提供常用的工具方法
 extension URL: SuperLog {
@@ -272,19 +278,23 @@ public extension URL {
     /// - Throws: 如果用户取消选择，抛出 URLError.userCancelledAuthentication
     static var selectDirectory: URL {
         get throws {
+            #if os(macOS)
             let panel = NSOpenPanel()
             panel.canChooseFiles = false
             panel.canChooseDirectories = true
             panel.allowsMultipleSelection = false
             panel.canCreateDirectories = true
             panel.prompt = "选择保存目录"
-            
+
             guard panel.runModal() == .OK,
                   let directoryUrl = panel.url else {
                 throw URLError(.userCancelledAuthentication)
             }
-            
+
             return directoryUrl
+            #else
+            throw URLError(.unsupportedURL)
+            #endif
         }
     }
 }

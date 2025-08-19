@@ -1,4 +1,10 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
+#if os(macOS)
+import AppKit
+#endif
 
 /// 复制状态枚举
 enum CopyState {
@@ -33,7 +39,15 @@ struct MagicDiffCopyToast: View {
                     .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(Color(NSColor.controlBackgroundColor))
+                            .fill(
+                                {
+                                    #if os(macOS)
+                                    return Color(NSColor.controlBackgroundColor)
+                                    #else
+                                    return Color(UIColor.secondarySystemBackground)
+                                    #endif
+                                }()
+                            )
                             .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     )
                     .scaleEffect(message.isEmpty ? 0.8 : 1.0)

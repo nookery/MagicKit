@@ -1,6 +1,12 @@
 import Foundation
 import OSLog
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
+#if os(macOS)
+import AppKit
+#endif
 
 extension String {
     /// 将字符串转换为UTF-8编码的Data对象

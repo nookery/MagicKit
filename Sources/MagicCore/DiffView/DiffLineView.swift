@@ -1,5 +1,11 @@
 import OSLog
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
+#if os(macOS)
+import AppKit
+#endif
 
 /// 差异视图中的单行视图
 struct DiffLineView: View, SuperLog {
@@ -23,9 +29,11 @@ struct DiffLineView: View, SuperLog {
             contentView
         }
         .background(backgroundColor)
+        #if os(macOS)
         .onHover { hovering in
             isHovered = hovering
         }
+        #endif
         .contextMenu {
             Button(action: {
                 copyLine()
@@ -139,7 +147,11 @@ struct DiffLineView: View, SuperLog {
     /// 背景颜色
     private var backgroundColor: Color {
         if isHovered {
+            #if os(macOS)
             return Color(NSColor.controlBackgroundColor).opacity(0.5)
+            #else
+            return Color(UIColor.secondarySystemBackground).opacity(0.5)
+            #endif
         }
 
         switch line.type {
@@ -157,8 +169,12 @@ struct DiffLineView: View, SuperLog {
     /// 复制整行
     private func copyLine() {
         if !line.content.isEmpty {
+            #if os(macOS)
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(line.content, forType: .string)
+            #else
+            UIPasteboard.general.string = line.content
+            #endif
 
             if verbose {
                 os_log("\(Self.t)复制行: \(line.content)")
@@ -168,8 +184,12 @@ struct DiffLineView: View, SuperLog {
 
     /// 复制内容
     private func copyContent(_ content: String) {
+        #if os(macOS)
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(content, forType: .string)
+        #else
+        UIPasteboard.general.string = content
+        #endif
 
         if verbose {
             os_log("\(Self.t)复制内容: \(content)")
