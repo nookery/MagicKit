@@ -52,7 +52,14 @@
 
         func updateNSView(_ nsView: WKWebView, context: Context) {
             if isVerboseMode {
-                logger.debug("WebView 更新")
+                logger.debug("WebView 更新: target=\(url.absoluteString), current=\(nsView.url?.absoluteString ?? "nil")")
+            }
+            // 当 SwiftUI 更新时如果 URL 发生变化，则在现有 WKWebView 上加载新地址
+            if nsView.url != url {
+                if isVerboseMode {
+                    logger.info("WebView 跳转: \(url.absoluteString)")
+                }
+                nsView.load(URLRequest(url: url))
             }
         }
     }
