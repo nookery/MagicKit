@@ -9,6 +9,11 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.13.2"
+    "@astrojs/mdx": "^4.3.4",
+    "@coffic/cosy-content": "^0.2.25",
+    "@coffic/cosy-ui": "^0.9.39",
+    "astro": "^5.13.2",
+    "astro-pagefind": "^1.8.3",
+    "sharp": "^0.34.3"
   }
 }
