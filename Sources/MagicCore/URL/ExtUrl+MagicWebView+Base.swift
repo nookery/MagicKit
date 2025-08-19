@@ -319,11 +319,19 @@ internal func configureWebView(coordinator: WebViewCoordinator, logger: MagicLog
     configuration.userContentController = userContentController
     configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
     configuration.preferences.javaScriptEnabled = true
+    
+    // 允许本地文件访问其他本地资源
     configuration.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-
+    configuration.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
+    
+    // 设置安全策略，允许本地文件访问
     if #available(iOS 14.0, macOS 11.0, *) {
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
     }
+    
+    // 设置允许本地文件访问的安全策略
+    configuration.setValue(true, forKey: "allowFileAccessFromFileURLs")
+    configuration.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
 
     return configuration
 }
