@@ -2,6 +2,7 @@ import SwiftUI
 
 public extension URL {
     /// 创建用于展示该URL的WebView
+    /// 默认已启用本地文件访问权限，可以正常加载本地HTML文件及其引用的CSS、JS、图片等资源
     /// - Parameters:
     ///   - onLoadComplete: 网页加载完成时的回调
     ///   - onJavaScriptError: JS错误时的回调
