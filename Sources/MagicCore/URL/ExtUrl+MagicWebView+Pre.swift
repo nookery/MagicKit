@@ -98,12 +98,16 @@ public struct MagicWebViewDemo: View {
             }
 
             // URL跳转演示
-            VStack {
-                let webView = URL(string: "https://www.apple.com")!.makeWebView()
-                let newWebView = webView.goto(URL(string: "https://www.example.com")!)
+            TabView {
+                OnlineJumpDemoView()
+                    .tabItem {
+                        Label("在线跳转", systemImage: "globe")
+                    }
 
-                newWebView
-                    .showLogView(true)
+                LocalJumpDemoView()
+                    .tabItem {
+                        Label("本地跳转", systemImage: "externaldrive")
+                    }
             }
             .tabItem {
                 Label("URL跳转", systemImage: "arrow.right.circle")
@@ -332,4 +336,50 @@ public struct MagicWebViewDemo: View {
     MagicWebViewDemo()
         .frame(height: 800)
         .frame(width: 1000)
+}
+
+// MARK: - Subviews for URL Jump Demo
+
+private struct OnlineJumpDemoView: View {
+    @State private var webView: MagicWebView = URL(string: "https://www.apple.com")!.makeWebView().showLogView(true)
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text("选择要跳转的链接（goto）")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("链接1") {
+                    webView = webView.goto(URL(string: "https://www.apple.com")!)
+                }
+                Button("链接2") {
+                    webView = webView.goto(URL(string: "https://www.example.com")!)
+                }
+            }
+            .padding(.horizontal)
+
+            webView
+        }
+    }
+}
+
+private struct LocalJumpDemoView: View {
+    @State private var webView: MagicWebView = URL.sample_temp_html.makeWebView().showLogView(true)
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text("选择要跳转的本地页面（goto）")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Button("页面1") { webView = webView.goto(URL.sample_temp_html) }
+                Button("页面2") { webView = webView.goto(URL.sample_temp_html_form) }
+            }
+            .padding(.horizontal)
+
+            webView
+        }
+    }
 }
