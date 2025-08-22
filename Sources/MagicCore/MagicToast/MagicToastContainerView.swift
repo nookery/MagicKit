@@ -9,7 +9,6 @@ struct MagicToastContainerView: View {
             ZStack {
                 ForEach(toastManager.toasts) { toast in
                     MagicToastView(toast: toast, onDismiss: toastManager.dismiss)
-                        .frame(maxWidth: 400)
                         .padding(.horizontal, 16)
                         .positioned(for: toast.displayMode, in: geometry)
                 }
@@ -48,7 +47,6 @@ extension View {
                 HStack {
                     Spacer()
                     self
-                        .frame(maxWidth: 300)
                 }
                 Spacer()
             }

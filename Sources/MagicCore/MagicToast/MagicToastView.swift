@@ -4,11 +4,11 @@ import SwiftUI
 struct MagicToastView: View {
     let toast: MagicToastModel
     let onDismiss: (UUID) -> Void
-    
+
     @State private var progress: Double = 1.0
     @State private var isVisible = false
     @State private var dragOffset = CGSize.zero
-    
+
     var body: some View {
         VStack(spacing: 16) {
             // 图标
@@ -28,19 +28,19 @@ struct MagicToastView: View {
                         .multilineTextAlignment(.center)
                 }
             }
-            .frame(maxWidth: .infinity)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 12)
         .padding(.vertical, 12)
+        .frame(width: 180, height: 180)
         .background(backgroundView)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 4)
         .scaleEffect(isVisible ? 1.0 : 0.8)
-        .opacity(isVisible ? 1.0 : 0.0)
+        .opacity(isVisible ? 0.95 : 0.0)
         .offset(y: dragOffset.height)
         .gesture(
-            toast.tapToDismiss ? 
-            DragGesture()
+            toast.tapToDismiss ?
+                DragGesture()
                 .onChanged { value in
                     dragOffset = value.translation
                 }
@@ -55,7 +55,7 @@ struct MagicToastView: View {
                         }
                     }
                 }
-            : nil
+                : nil
         )
         .onTapGesture {
             if toast.tapToDismiss {
@@ -71,7 +71,7 @@ struct MagicToastView: View {
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                 isVisible = true
             }
-            
+
             // 进度条动画
             if toast.autoDismiss && toast.duration > 0 {
                 withAnimation(.linear(duration: toast.duration)) {
@@ -112,7 +112,7 @@ struct MagicToastView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var iconView: some View {
         Group {
@@ -129,26 +129,20 @@ struct MagicToastView: View {
             }
         }
         .font(.system(size: 64))
-        .frame(width: 64, height: 64)
+        .frame(width: 72, height: 72)
     }
-    
+
     @ViewBuilder
     private var backgroundView: some View {
-        // 使用材质背景以获得更好的视觉效果
-        if #available(macOS 12.0, iOS 15.0, *) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.regularMaterial)
-        } else {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.background)
-        }
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.regularMaterial)
     }
-} 
+}
 
 #if DEBUG
-#Preview {
-    MagicToastExampleView()
-        .withMagicToast()
-        .frame(width: 400, height: 600)
-}
+    #Preview {
+        MagicToastExampleView()
+            .withMagicToast()
+            .frame(width: 400, height: 600)
+    }
 #endif

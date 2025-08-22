@@ -13,6 +13,10 @@ import SwiftUI
                     messageProvider.info("这是信息", subtitle: "详细描述")
                 }
 
+                Button("信息 - 长文字") {
+                    messageProvider.info("开始下载你选择的文档")
+                }
+
                 Button("成功") {
                     messageProvider.success("操作成功")
                 }
