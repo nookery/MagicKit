@@ -10,48 +10,31 @@ struct MagicToastView: View {
     @State private var dragOffset = CGSize.zero
     
     var body: some View {
-        HStack(spacing: 12) {
+        VStack(spacing: 16) {
             // 图标
             iconView
-            
+
             // 内容
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(spacing: 4) {
                 Text(toast.title)
                     .font(.headline)
                     .foregroundColor(.primary)
-                
+                    .multilineTextAlignment(.center)
+
                 if let subtitle = toast.subtitle {
                     Text(subtitle)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                        .multilineTextAlignment(.leading)
+                        .multilineTextAlignment(.center)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            // 关闭按钮（仅在不自动消失时显示）
-            if !toast.autoDismiss {
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        onDismiss(toast.id)
-                    }
-                }) {
-                    Image(systemName: "xmark")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .frame(width: 24, height: 24)
-                        .background(Color.secondary.opacity(0.1))
-                        .clipShape(Circle())
-                }
-                .buttonStyle(PlainButtonStyle())
-                .contentShape(Rectangle())
-            }
+            .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(backgroundView)
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
         .scaleEffect(isVisible ? 1.0 : 0.8)
         .opacity(isVisible ? 1.0 : 0.0)
         .offset(y: dragOffset.height)
@@ -96,6 +79,26 @@ struct MagicToastView: View {
                 }
             }
         }
+        .overlay(alignment: .topTrailing) {
+            // 关闭按钮（仅在不自动消失时显示）
+            if !toast.autoDismiss {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        onDismiss(toast.id)
+                    }
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .frame(width: 24, height: 24)
+                        .background(Color.secondary.opacity(0.1))
+                        .clipShape(Circle())
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(8)
+                .contentShape(Rectangle())
+            }
+        }
         .overlay(alignment: .bottom) {
             // 进度条
             if toast.showProgress && toast.autoDismiss && toast.duration > 0 {
@@ -125,8 +128,8 @@ struct MagicToastView: View {
                     .foregroundColor(toast.type.color)
             }
         }
-        .font(.title2)
-        .frame(width: 24, height: 24)
+        .font(.system(size: 64))
+        .frame(width: 64, height: 64)
     }
     
     @ViewBuilder
