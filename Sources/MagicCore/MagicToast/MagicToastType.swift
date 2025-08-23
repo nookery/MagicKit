@@ -6,6 +6,7 @@ public enum MagicToastType {
     case success
     case warning
     case error
+    case errorDetail(error: Error, title: String)
     case loading
     case custom(systemImage: String, color: Color)
     
@@ -19,6 +20,8 @@ public enum MagicToastType {
             return "exclamationmark.triangle"
         case .error:
             return "xmark.circle"
+        case .errorDetail:
+            return "exclamationmark.triangle.fill"
         case .loading:
             return "arrow.clockwise"
         case .custom(let systemImage, _):
@@ -35,6 +38,8 @@ public enum MagicToastType {
         case .warning:
             return .orange
         case .error:
+            return .red
+        case .errorDetail:
             return .red
         case .loading:
             return .gray

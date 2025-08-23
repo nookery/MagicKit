@@ -17,8 +17,11 @@ import SwiftUI
 /// ```
 public extension Error {
     /// 创建一个用于展示该错误的视图
+    /// - Parameters:
+    ///   - title: 可选的标题，如果不提供则使用默认标题
+    ///   - onDismiss: 可选的关闭回调
     /// - Returns: 包含错误详情的视图
-    // func makeView() -> MagicErrorView {
-    //     MagicErrorView(error: self)
-    // }
+     func makeView(title: String? = nil, onDismiss: (() -> Void)? = nil) -> MagicErrorView {
+         MagicErrorView(error: self, title: title, onDismiss: onDismiss)
+     }
 }

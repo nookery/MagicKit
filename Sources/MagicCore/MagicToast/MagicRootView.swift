@@ -13,7 +13,7 @@ struct MagicRootView<Content: View>: View {
     var body: some View {
         content
             .overlay(
-                MagicToastContainerView(toastManager: toastManager)
+                MagicToastContainer(toastManager: toastManager)
                     .allowsHitTesting(true)
             )
             .environmentObject(toastManager)

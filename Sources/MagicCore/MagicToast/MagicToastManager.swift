@@ -67,6 +67,81 @@ public class MagicToastManager: ObservableObject {
         show(toast)
     }
     
+    /// 显示错误提示（传递Error对象）
+    /// - Parameters:
+    ///   - error: 错误对象
+    ///   - title: 可选的标题，如果不提供则使用错误类型名称
+    ///   - duration: 显示时长，0表示不自动消失
+    ///   - autoDismiss: 是否自动消失
+    public func error(_ error: Error, title: String? = nil, duration: TimeInterval = 0, autoDismiss: Bool = false) {
+        // 使用详细视图显示错误
+        let errorTitle = title ?? "错误"
+        let toast = MagicToastModel(
+            type: .errorDetail(error: error, title: errorTitle),
+            title: errorTitle,
+            subtitle: nil,
+            displayMode: .overlay,
+            duration: 0,
+            autoDismiss: false,
+            tapToDismiss: false
+        )
+        show(toast)
+    }
+    
+    /// 构建详细的错误信息
+    /// - Parameter error: 错误对象
+    /// - Returns: 格式化的错误详情字符串
+    private func buildErrorDetails(from error: Error) -> String {
+        var details: [String] = []
+        
+        // 基本错误描述
+        let localizedDescription = error.localizedDescription
+        if !localizedDescription.isEmpty {
+            details.append(localizedDescription)
+        }
+        
+        // 错误域和代码
+        let nsError = error as NSError
+        if nsError.domain != "NSCocoaErrorDomain" || nsError.code != 0 {
+            details.append("域: \(nsError.domain)")
+            details.append("代码: \(nsError.code)")
+        }
+        
+        // 用户信息中的额外详情
+        if let failureReason = nsError.localizedFailureReason, !failureReason.isEmpty {
+            details.append("原因: \(failureReason)")
+        }
+        
+        if let recoverySuggestion = nsError.localizedRecoverySuggestion, !recoverySuggestion.isEmpty {
+            details.append("建议: \(recoverySuggestion)")
+        }
+        
+        if let helpAnchor = nsError.helpAnchor, !helpAnchor.isEmpty {
+            details.append("帮助: \(helpAnchor)")
+        }
+        
+        // 底层错误
+        if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError {
+            details.append("底层错误: \(underlyingError.localizedDescription)")
+        }
+        
+        // 调试描述（仅在DEBUG模式下）
+        #if DEBUG
+        let debugDescription = String(reflecting: error)
+        let errorDescription = "\(error)"
+        if debugDescription != errorDescription && !debugDescription.isEmpty {
+            details.append("调试: \(debugDescription)")
+        }
+        #endif
+        
+        // 如果没有详细信息，返回错误描述
+        if details.isEmpty {
+            return "\(error)"
+        }
+        
+        return details.joined(separator: "\n")
+    }
+    
     /// 显示加载中提示
     public func loading(_ title: String, subtitle: String? = nil) {
         let toast = MagicToastModel(
@@ -150,7 +225,7 @@ public class MagicToastManager: ObservableObject {
     
     /// 显示操作失败
     public func operationError(_ operation: String, error: Error) {
-        self.error("\(operation)失败", subtitle: error.localizedDescription, autoDismiss: false)
+        self.error(error, title: "\(operation)失败", autoDismiss: false)
     }
     
     /// 显示操作开始
