@@ -8,6 +8,7 @@ public enum PlaybackState: Equatable {
     case paused
     case stopped
     case failed(PlaybackError)
+    case unsupportedFormat
     
     public enum LoadingState: Equatable {
         case connecting
@@ -71,7 +72,7 @@ public enum PlaybackState: Equatable {
     
     public var canSeek: Bool {
         switch self {
-        case .idle, .loading, .failed:
+        case .idle, .loading, .failed, .unsupportedFormat:
             return false
         case .playing, .paused, .stopped:
             return true
@@ -92,6 +93,8 @@ public enum PlaybackState: Equatable {
             return "stop.circle.fill"
         case .failed:
             return "exclamationmark.circle.fill"
+        case .unsupportedFormat:
+            return "nosign"
         }
     }
     
@@ -107,6 +110,8 @@ public enum PlaybackState: Equatable {
             return .primary
         case .failed:
             return .red
+        case .unsupportedFormat:
+            return .orange
         }
     }
     
@@ -133,6 +138,8 @@ public enum PlaybackState: Equatable {
             return "Stopped"
         case .failed:
             return "Failed"
+        case .unsupportedFormat:
+            return "Unsupported Format"
         }
     }
     

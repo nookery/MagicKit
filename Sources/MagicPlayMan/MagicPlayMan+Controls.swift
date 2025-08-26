@@ -9,19 +9,19 @@ public extension MagicPlayMan {
     ///   - url: 要播放的媒体 URL
     ///   - title: 可选的标题，如果不提供则使用文件名
     ///   - autoPlay: 是否自动开始播放，默认为 true
-    /// - Returns: 如果成功加载返回 true，否则返回 false
-    @MainActor @discardableResult
-    func play(url: URL, autoPlay: Bool = true) async -> Bool {
+    @MainActor
+    func play(url: URL, autoPlay: Bool = true) async {
         // 检查 URL 是否有效
         guard url.isFileURL || url.isNetworkURL else {
             log("Invalid URL scheme: \(url.scheme ?? "nil")", level: .error)
-            return false
+            return
         }
 
         // 判断媒体类型
         if url.isVideo == false && url.isAudio == false {
             log("Unsupported media type: \(url.pathExtension)", level: .error)
-            return false
+            setState(.unsupportedFormat)
+            return
         }
 
         self.currentURL = url
@@ -35,8 +35,6 @@ public extension MagicPlayMan {
         } else {
             log("▶️ Not added URL to playlist, playlist is disabled, just play it: \(url.absoluteString)")
         }
-
-        return true
     }
 
     /// 手动刷新当前资源的缩略图
@@ -181,7 +179,7 @@ public extension MagicPlayMan {
             pause()
         case .paused, .stopped:
             play()
-        case .loading, .failed, .idle:
+        case .loading, .failed, .idle, .unsupportedFormat:
             // 在这些状态下不执行任何操作
             log("Cannot toggle playback in current state: \(state)", level: .warning)
             break
