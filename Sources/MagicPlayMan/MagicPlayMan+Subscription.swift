@@ -83,6 +83,7 @@ extension MagicPlayMan {
 
         if let handler = onTrackFinished {
             events.onTrackFinished
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] asset in
                     self?.log("事件：单曲播放完成 - 将由 \(name) 处理")
                     handler(asset)
@@ -92,6 +93,7 @@ extension MagicPlayMan {
 
         if let handler = onPlaybackFailed {
             events.onPlaybackFailed
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] error in
                     self?.log("事件：播放失败 - 将由 \(name) 处理", level: .error)
                     handler(error)
@@ -101,6 +103,7 @@ extension MagicPlayMan {
 
         if let handler = onBufferingStateChanged {
             events.onBufferingStateChanged
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] isBuffering in
                     self?.log("事件：缓冲状态变化 - 将由 \(name) 处理")
                     handler(isBuffering)
@@ -110,6 +113,7 @@ extension MagicPlayMan {
 
         if let handler = onStateChanged {
             events.onStateChanged
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] state in
                     self?.log("事件：播放状态变化 - 将由 \(name) 处理")
                     handler(state)
@@ -119,6 +123,7 @@ extension MagicPlayMan {
 
         if let handler = onPreviousRequested {
             events.onPreviousRequested
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] asset in
                     self?.log("事件：请求上一首 - 将由 \(name) 处理")
                     handler(asset)
@@ -128,8 +133,9 @@ extension MagicPlayMan {
 
         if let handler = onNextRequested {
             events.onNextRequested
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] asset in
-                    self?.log("事件：当前(\(asset.absoluteString)，请求下一首 - 将由 \(name) 处理")
+                    self?.log("事件：当前(\(asset.absoluteString))，请求下一首 - 将由 \(name) 处理")
                     handler(asset)
                 }
                 .store(in: &cancellables)
@@ -137,6 +143,7 @@ extension MagicPlayMan {
 
         if let handler = onLikeStatusChanged {
             events.onLikeStatusChanged
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] event in
                     self?.log("事件：喜欢状态变化 - 将由 \(name) 处理")
                     handler(event.asset, event.isLiked)
@@ -146,6 +153,7 @@ extension MagicPlayMan {
 
         if let handler = onPlayModeChanged {
             events.onPlayModeChanged
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] mode in
                     self?.log("事件：播放模式变化 - 将由 \(name) 处理")
                     handler(mode)
@@ -155,6 +163,7 @@ extension MagicPlayMan {
 
         if let handler = onCurrentURLChanged {
             events.onCurrentURLChanged
+                .receive(on: DispatchQueue.main)
                 .sink { [weak self] url in
                     self?.log("事件：当前 URL 变化 - 将由 \(name) 处理")
                     handler(url)
