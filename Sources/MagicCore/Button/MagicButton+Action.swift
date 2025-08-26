@@ -16,15 +16,11 @@ extension MagicButton {
             
             // 创建完成回调
             let completion = {
-                DispatchQueue.main.async {
-                    self.isLoading = false
-                }
+                self.isLoading = false
             }
-            
-            // 在后台执行用户操作
-            DispatchQueue.global().async {
-                action(completion)
-            }
+
+            // 始终在主线程执行回调，由调用方自行决定是否切后台
+            action(completion)
         } else {
             // 不需要防重复点击时，立即执行
             let completion = {}
