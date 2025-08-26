@@ -12,7 +12,7 @@ public extension MagicPlayMan {
     @MainActor
     func play(_ url: URL, autoPlay: Bool = true) async {
         log("Play: \(url.title), AutoPlay: \(autoPlay)")
-        self.currentURL = url
+        self.setCurrentURL(url)
 
         // 检查 URL 是否有效
         guard url.isFileURL || url.isNetworkURL else {
@@ -236,7 +236,7 @@ public extension MagicPlayMan {
 
     internal func updateState(_ newState: PlaybackState) {
         Task { @MainActor in
-            state = newState
+            self.setState(newState)
         }
     }
 

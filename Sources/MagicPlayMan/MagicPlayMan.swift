@@ -3,6 +3,7 @@ import Combine
 import Foundation
 import MagicCore
 import MediaPlayer
+import OSLog
 import SwiftUI
 
 public class MagicPlayMan: ObservableObject, SuperLog {
@@ -24,15 +25,97 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     @Published public var items: [URL] = []
     @Published public var currentIndex: Int = -1
     @Published public var playMode: MagicPlayMode = .sequence
-    @Published public internal(set) var currentURL: URL?
-    @Published public internal(set) var state: PlaybackState = .idle
-    @Published public internal(set) var currentTime: TimeInterval = 0
-    @Published public internal(set) var duration: TimeInterval = 0
-    @Published public internal(set) var isBuffering = false
-    @Published public internal(set) var progress: Double = 0
-    @Published public internal(set) var currentThumbnail: Image?
-    @Published public internal(set) var isPlaylistEnabled: Bool = true
-    @Published public internal(set) var likedAssets: Set<URL> = []
+    @Published public private(set) var currentURL: URL?
+    @Published public private(set) var state: PlaybackState = .idle
+    @Published public private(set) var currentTime: TimeInterval = 0
+    @Published public private(set) var duration: TimeInterval = 0
+    @Published public private(set) var isBuffering = false
+    @Published public private(set) var progress: Double = 0
+    @Published public private(set) var currentThumbnail: Image?
+    @Published public private(set) var isPlaylistEnabled: Bool = true
+    @Published public private(set) var likedAssets: Set<URL> = []
+}
+
+//
+//  说明：所有 set 方法必须定义在本文件中
+//  原因：核心属性如 `currentURL` 使用了 `private(set)` 以限制外部直接赋值。
+//       只有与其同文件的代码可以访问 setter，从而保证所有状态修改
+//       都集中经由这些 set 方法（触发事件、日志与一致性校验）。
+//  约定：
+//  - 若需新增/修改状态，请新增对应的 set 方法并放在此分组中；
+//  - 业务代码一律调用 set 方法，禁止直接对属性赋值。
+//
+// MARK: - Setter Methods
+
+extension MagicPlayMan {
+    @MainActor
+    func setCurrentThumbnail(_ thumbnail: Image?) {
+        currentThumbnail = thumbnail
+    }
+
+    @MainActor
+    func setCurrentTime(_ time: TimeInterval) {
+        currentTime = time
+    }
+
+    @MainActor
+    func setDuration(_ value: TimeInterval) {
+        duration = value
+    }
+
+    @MainActor
+    func setBuffering(_ value: Bool) {
+        if verbose {
+            os_log("%{public}@🔄 Setting buffering: %{public}@", log: .default, type: .debug, t, String(value))
+        }
+        isBuffering = value
+    }
+
+    @MainActor
+    func setProgress(_ value: Double) {
+        if verbose {
+            os_log("%{public}@📊 Setting progress: %{public}f", log: .default, type: .debug, t, value)
+        }
+        progress = value
+    }
+
+    @MainActor
+    func setPlaylistEnabled(_ value: Bool) {
+        if verbose {
+            os_log("%{public}@📝 Setting playlist enabled: %{public}@", log: .default, type: .debug, t, String(value))
+        }
+        isPlaylistEnabled = value
+    }
+
+    @MainActor
+    func setLikedAssets(_ assets: Set<URL>) {
+        likedAssets = assets
+    }
+
+    @MainActor
+    func setState(_ state: PlaybackState) {
+        self.state = state
+
+        log("播放状态变更：\(state.stateText)")
+        events.onStateChanged.send(state)
+    }
+
+    @MainActor
+    func setCurrentURL(_ url: URL?) {
+        currentURL = url
+
+        if let url = currentURL {
+            events.onCurrentURLChanged.send(url)
+        }
+    }
+
+    @MainActor
+    func setPlayMode(_ mode: MagicPlayMode) {
+        playMode = mode
+
+        log("播放模式变更：\(playMode)")
+        events.onPlayModeChanged.send(playMode)
+    }
 }
 
 #Preview("MagicPlayMan") {

@@ -17,7 +17,7 @@ extension MagicPlayMan {
 
         // 检查文件是否存在
         guard url.isFileExist else {
-            state = .failed(.invalidAsset)
+            await self.setState(.failed(.invalidAsset))
             return
         }
 
@@ -105,7 +105,7 @@ extension MagicPlayMan {
                 try await url.download(verbose: true, reason: "MagicPlayMan requested")
             } catch {
                 await MainActor.run {
-                    self.state = .failed(.networkError(error.localizedDescription))
+                    self.setState(.failed(.networkError(error.localizedDescription)))
                     self.log("Download failed: \(error.localizedDescription)", level: .error)
                 }
             }
