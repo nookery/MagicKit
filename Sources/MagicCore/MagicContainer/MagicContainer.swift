@@ -5,10 +5,10 @@ struct MagicContainer<Content: View>: View {
     // MARK: - Properties
     private let content: Content
     private let showsIndicators: Bool
+    private let containerHeight: CGFloat
     @Environment(\.colorScheme) private var systemColorScheme
     @State private var isDarkMode: Bool = false
     @State private var selectedSize: PreviewSize = .full
-    @State private var containerHeight: CGFloat = 750
     
     // MARK: - Initialization
     /// 创建主题预览容器
@@ -17,10 +17,12 @@ struct MagicContainer<Content: View>: View {
     ///   - content: 要预览的内容视图
     public init(
         showsIndicators: Bool = true,
+        containerHeight: CGFloat = 750,
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
         self.showsIndicators = showsIndicators
+        self.containerHeight = containerHeight
     }
     
     // MARK: - Body

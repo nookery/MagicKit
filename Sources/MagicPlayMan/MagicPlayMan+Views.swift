@@ -122,5 +122,7 @@ public extension MagicPlayMan {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicPlayMan
+        .PreviewView()
+        .inMagicContainer(containerHeight: 1000)
 }
