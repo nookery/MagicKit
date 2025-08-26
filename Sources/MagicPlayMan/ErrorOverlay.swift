@@ -45,6 +45,8 @@ struct ErrorOverlay: View {
             return "Network error: \(message)"
         case let .playbackError(message):
             return "Playback error: \(message)"
+        case let .unsupportedFormat(ext):
+            return "Unsupported format: \(ext)"
         }
     }
 }

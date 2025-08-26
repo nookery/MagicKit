@@ -20,7 +20,7 @@ public extension MagicPlayMan {
         // 判断媒体类型
         if url.isVideo == false && url.isAudio == false {
             log("Unsupported media type: \(url.pathExtension)", level: .error)
-            setState(.unsupportedFormat)
+            setState(.failed(.unsupportedFormat(url.pathExtension)))
             return
         }
 
@@ -179,7 +179,7 @@ public extension MagicPlayMan {
             pause()
         case .paused, .stopped:
             play()
-        case .loading, .failed, .idle, .unsupportedFormat:
+        case .loading, .failed, .idle:
             // 在这些状态下不执行任何操作
             log("Cannot toggle playback in current state: \(state)", level: .warning)
             break

@@ -8,7 +8,6 @@ public enum PlaybackState: Equatable {
     case paused
     case stopped
     case failed(PlaybackError)
-    case unsupportedFormat
     
     public enum LoadingState: Equatable {
         case connecting
@@ -22,6 +21,7 @@ public enum PlaybackState: Equatable {
         case invalidAsset
         case networkError(String)
         case playbackError(String)
+        case unsupportedFormat(String)
         
         public var errorDescription: String? {
             switch self {
@@ -33,6 +33,8 @@ public enum PlaybackState: Equatable {
                 return "Network error: \(message)"
             case .playbackError(let message):
                 return "Playback error: \(message)"
+            case .unsupportedFormat(let ext):
+                return "Unsupported format: \(ext)"
             }
         }
         
@@ -46,6 +48,8 @@ public enum PlaybackState: Equatable {
                 return "There was a problem with the network connection"
             case .playbackError:
                 return "There was a problem during playback"
+            case .unsupportedFormat:
+                return "The selected media type is not supported"
             }
         }
         
@@ -59,6 +63,8 @@ public enum PlaybackState: Equatable {
                 return "Check your internet connection and try again"
             case .playbackError:
                 return "Try reloading the media file"
+            case .unsupportedFormat:
+                return "Choose a supported audio or video format"
             }
         }
     }
@@ -72,7 +78,7 @@ public enum PlaybackState: Equatable {
     
     public var canSeek: Bool {
         switch self {
-        case .idle, .loading, .failed, .unsupportedFormat:
+        case .idle, .loading, .failed:
             return false
         case .playing, .paused, .stopped:
             return true
@@ -93,8 +99,6 @@ public enum PlaybackState: Equatable {
             return "stop.circle.fill"
         case .failed:
             return "exclamationmark.circle.fill"
-        case .unsupportedFormat:
-            return "nosign"
         }
     }
     
@@ -110,8 +114,6 @@ public enum PlaybackState: Equatable {
             return .primary
         case .failed:
             return .red
-        case .unsupportedFormat:
-            return .orange
         }
     }
     
@@ -138,8 +140,6 @@ public enum PlaybackState: Equatable {
             return "Stopped"
         case .failed:
             return "Failed"
-        case .unsupportedFormat:
-            return "Unsupported Format"
         }
     }
     
