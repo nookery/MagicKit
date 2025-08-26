@@ -17,6 +17,7 @@ public extension MagicPlayMan {
         // 检查 URL 是否有效
         guard url.isFileURL || url.isNetworkURL else {
             log("Invalid URL scheme: \(url.scheme ?? "nil")", level: .error)
+            await stop()
             setState(.failed(.playbackError("Invalid URL scheme")))
             return
         }
@@ -24,6 +25,7 @@ public extension MagicPlayMan {
         // 判断媒体类型
         if url.isVideo == false && url.isAudio == false {
             log("Unsupported media type: \(url.pathExtension)", level: .error)
+            await stop()
             setState(.failed(.unsupportedFormat(url.pathExtension)))
             return
         }
@@ -160,16 +162,15 @@ public extension MagicPlayMan {
     }
 
     /// 停止播放
-    func stop() {
+    @MainActor
+    func stop() async {
         _player.pause()
-        _player.seek(to: .zero)
+        await _player.seek(to: .zero)
 
         log("⏹️ Stopped playback")
         updateNowPlayingInfo()
 
-        Task {
-            await self.setState(.stopped)
-        }
+        await self.setState(.stopped)
     }
 
     /// 切换播放状态
