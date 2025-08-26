@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import SwiftUI
 
 extension MagicPlayMan {
     /// 播放事件发布者
@@ -170,4 +171,12 @@ extension MagicPlayMan {
             log("取消订阅：\(subscriber.name)")
         }
     }
+}
+
+// MARK: - Preview
+
+#Preview("MagicPlayMan") {
+    MagicPlayMan
+        .PreviewView()
+        .inMagicContainer(containerHeight: 1000)
 }

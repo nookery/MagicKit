@@ -1,0 +1,32 @@
+---
+globs: Sources/MagicPlayMan/**/*.swift
+description: Ensure every Swift file under MagicPlayMan ends with a single, unified Preview section
+---
+
+# MagicPlayMan 通用规则
+
+在 `Sources/MagicPlayMan` 目录下的所有 Swift 文件底部，若缺少预览，则追加统一的预览代码段；若文件中已存在任意 `#Preview` 或旧的 `*Previews`，保持不变（不做替换），并确保新增的预览（若需）位于文件结尾。
+
+预览模板（`containerHeight` 为示例值，用户可按需修改）：
+
+```swift
+// MARK: - Preview
+
+#Preview("MagicPlayMan") {
+    MagicPlayMan
+        .PreviewView()
+        .inMagicContainer(containerHeight: 1000)
+}
+```
+
+执行细则：
+
+- 若文件已存在 `#Preview` 或 `struct ..._Previews`，不替换原有内容；如无需新预览则不追加。
+- 若缺少预览，则在文件末尾追加上述模板。`containerHeight` 仅作示例，默认可为 1000，但不强制；用户可随意调整。
+- 预览段必须放在文件末尾，不改变业务逻辑与现有导入。
+- 保持文件原有的缩进风格与空行习惯；不要混用空格与制表符。
+- 仅新增或替换预览段落，不进行其他重构或格式化。
+
+背景说明：
+
+- 本规则用于统一 `MagicPlayMan` 模块的 SwiftUI 预览，便于在容器中快速查看视图效果。

@@ -5,25 +5,16 @@ import SwiftUI
 extension MagicPlayMan {
     @MainActor
     func setCurrentThumbnail(_ thumbnail: Image?) {
-//        if verbose {
-//            os_log("%{public}@🖥️ Setting current thumbnail", log: .default, type: .debug, t)
-//        }
         currentThumbnail = thumbnail
     }
 
     @MainActor
     func setCurrentTime(_ time: TimeInterval) {
-//        if verbose {
-//            os_log("%{public}@⏱️ Setting current time: %{public}f", log: .default, type: .debug, t, time)
-//        }
         currentTime = time
     }
 
     @MainActor
     func setDuration(_ value: TimeInterval) {
-//        if verbose {
-//            os_log("%{public}@⌛️ Setting duration: %{public}f", log: .default, type: .debug, t, value)
-//        }
         duration = value
     }
 
@@ -53,9 +44,6 @@ extension MagicPlayMan {
 
     @MainActor
     func setLikedAssets(_ assets: Set<URL>) {
-//        if verbose {
-//            os_log("%{public}@❤️ Setting liked assets: %{public}d items", log: .default, type: .debug, t, assets.count)
-//        }
         likedAssets = assets
     }
 
