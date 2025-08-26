@@ -201,7 +201,7 @@ public extension MagicPlayMan {
             icon: .iconTerminal,
             popoverContent: AnyView(
                 self.makeLogView()
-                    .frame(width: 400, height: 400)
+                    .frame(width: 800, height: 400)
             )
         )
     }
@@ -215,7 +215,7 @@ public extension MagicPlayMan {
             selectedName: currentURL?.title,
             onSelect: { url in
                 Task {
-                    await self.play(url: url)
+                    await self.play(url)
                 }
             }
         )

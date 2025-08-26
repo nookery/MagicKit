@@ -18,15 +18,13 @@ extension MagicPlayMan {
         // 检查文件是否存在
         guard url.isFileExist else {
             state = .failed(.invalidAsset)
-            os_log("%{public}@File not found: %{public}@", log: .default, type: .error, self.t, url.path)
             return
         }
 
         self.downloadAndCache(url)
 
         let item = AVPlayerItem(url: url)
-        // 注意：不要在 @Sendable 闭包中直接捕获 self
-
+        
         // 使用 Combine 监听状态，避免 @Sendable 捕获问题
         let statusObserver = item.publisher(for: \.status)
             .receive(on: DispatchQueue.main)

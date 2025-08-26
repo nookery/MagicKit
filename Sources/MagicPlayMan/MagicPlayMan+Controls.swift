@@ -10,8 +10,8 @@ public extension MagicPlayMan {
     ///   - title: 可选的标题，如果不提供则使用文件名
     ///   - autoPlay: 是否自动开始播放，默认为 true
     @MainActor
-    func play(url: URL, autoPlay: Bool = true) async {
-        // 先记录当前 URL
+    func play(_ url: URL, autoPlay: Bool = true) async {
+        log("Play: \(url.title), AutoPlay: \(autoPlay)")
         self.currentURL = url
 
         // 检查 URL 是否有效
@@ -29,13 +29,12 @@ public extension MagicPlayMan {
         }
 
         // 加载资源
+        log("Load: \(url.title), AutoPlay: \(autoPlay)")
         await loadFromURL(url, autoPlay: autoPlay)
 
         if isPlaylistEnabled {
             append(url)
-            log("▶️ Added URL to playlist: \(url.absoluteString)")
-        } else {
-            log("▶️ Not added URL to playlist, playlist is disabled, just play it: \(url.absoluteString)")
+            log("Added URL to playlist: \(url.absoluteString)")
         }
     }
 
@@ -130,7 +129,7 @@ public extension MagicPlayMan {
     /// 开始播放
     func play() {
         guard hasAsset else {
-            log("⚠️ Cannot play: no asset loaded", level: .warning)
+            log("Cannot play: no asset loaded", level: .warning)
             return
         }
 
@@ -139,7 +138,7 @@ public extension MagicPlayMan {
         }
 
         _player.play()
-        log("▶️ Started playback: \(currentURL?.title ?? "Unknown")")
+        log("Started playback: \(currentURL?.title ?? "Unknown")")
         updateNowPlayingInfo()
 
         Task {
@@ -152,7 +151,7 @@ public extension MagicPlayMan {
         guard hasAsset else { return }
 
         _player.pause()
-        log("⏸️ Paused playback")
+        log("Paused playback")
         updateNowPlayingInfo()
 
         Task {
@@ -246,7 +245,7 @@ public extension MagicPlayMan {
         guard !isPlaylistEnabled else { return }
 
         await setPlaylistEnabled(true)
-        log("📑 Playlist enabled")
+        log("Playlist enabled")
     }
 
     /// 禁用播放列表功能
@@ -255,7 +254,7 @@ public extension MagicPlayMan {
         guard isPlaylistEnabled else { return }
 
         await setPlaylistEnabled(false)
-        log("📑 Playlist disabled")
+        log("Playlist disabled")
 
         // 如果禁用播放列表，保留当前播放的资源
         if let currentAsset = currentURL {
