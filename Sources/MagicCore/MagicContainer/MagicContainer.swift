@@ -8,6 +8,7 @@ struct MagicContainer<Content: View>: View {
     @Environment(\.colorScheme) private var systemColorScheme
     @State private var isDarkMode: Bool = false
     @State private var selectedSize: PreviewSize = .full
+    @State private var containerHeight: CGFloat = 750
     
     // MARK: - Initialization
     /// 创建主题预览容器
@@ -55,8 +56,7 @@ struct MagicContainer<Content: View>: View {
         }
         .background(.background)
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
-        .frame(minHeight: 850)
-        .frame(idealHeight: 1000)
+        .frame(height: containerHeight)
         .onAppear {
             // 初始化时跟随系统主题
             isDarkMode = systemColorScheme == .dark
