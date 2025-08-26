@@ -75,6 +75,15 @@ public enum PlaybackState: Equatable {
         }
         return false
     }
+
+    public var isDownloading: Bool {
+        if case .loading(let loadingState) = self {
+            if case .downloading = loadingState {
+                return true
+            }
+        }
+        return false
+    }
     
     public var canSeek: Bool {
         switch self {

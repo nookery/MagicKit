@@ -29,7 +29,6 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     @Published public private(set) var state: PlaybackState = .idle
     @Published public private(set) var currentTime: TimeInterval = 0
     @Published public private(set) var duration: TimeInterval = 0
-    @Published public private(set) var isBuffering = false
     @Published public private(set) var progress: Double = 0
     @Published public private(set) var currentThumbnail: Image?
     @Published public private(set) var isPlaylistEnabled: Bool = true
@@ -71,11 +70,6 @@ extension MagicPlayMan {
     @MainActor
     func setDuration(_ value: TimeInterval) {
         duration = value
-    }
-
-    @MainActor
-    func setBuffering(_ value: Bool) {
-        isBuffering = value
     }
 
     @MainActor

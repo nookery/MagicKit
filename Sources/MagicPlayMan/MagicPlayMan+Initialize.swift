@@ -105,13 +105,11 @@ internal extension MagicPlayMan {
                         if case .loading = self.state {
                             self.setState(.playing)
                         }
-                        self.setBuffering(false)
                     case .paused:
                         if case .playing = self.state {
                             self.setState(self.currentTime == 0 ? .stopped : .paused)
                         }
                     case .waitingToPlayAtSpecifiedRate:
-                        self.setBuffering(true)
                         if case .playing = self.state {
                             self.setState(.loading(.buffering))
                         }
@@ -129,7 +127,6 @@ internal extension MagicPlayMan {
                 guard let self = self else { return }
                 if let isEmpty = isEmpty {
                     Task { @MainActor in
-                        self.setBuffering(isEmpty)
                         if isEmpty, case .playing = self.state {
                             self.setState(.loading(.buffering))
                         } else if !isEmpty, case .loading(.buffering) = self.state {
