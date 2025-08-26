@@ -11,9 +11,13 @@ public extension MagicPlayMan {
     ///   - autoPlay: 是否自动开始播放，默认为 true
     @MainActor
     func play(url: URL, autoPlay: Bool = true) async {
+        // 先记录当前 URL
+        self.currentURL = url
+
         // 检查 URL 是否有效
         guard url.isFileURL || url.isNetworkURL else {
             log("Invalid URL scheme: \(url.scheme ?? "nil")", level: .error)
+            setState(.failed(.playbackError("Invalid URL scheme")))
             return
         }
 
@@ -23,8 +27,6 @@ public extension MagicPlayMan {
             setState(.failed(.unsupportedFormat(url.pathExtension)))
             return
         }
-
-        self.currentURL = url
 
         // 加载资源
         await loadFromURL(url, autoPlay: autoPlay)
