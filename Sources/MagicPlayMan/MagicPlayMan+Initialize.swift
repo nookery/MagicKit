@@ -52,14 +52,22 @@ public extension MagicPlayMan {
         
         // 修改监听方式
         _playlist.$items
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
-                self?.items = items
+                guard let self = self else { return }
+                Task { @MainActor in
+                    self.setItems(items)
+                }
             }
             .store(in: &cancellables)
         
         _playlist.$currentIndex
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] index in
-                self?.currentIndex = index
+                guard let self = self else { return }
+                Task { @MainActor in
+                    self.setCurrentIndex(index)
+                }
             }
             .store(in: &cancellables)
     }

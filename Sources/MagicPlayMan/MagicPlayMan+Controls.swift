@@ -258,11 +258,11 @@ public extension MagicPlayMan {
 
         // 如果禁用播放列表，保留当前播放的资源
         if let currentAsset = currentURL {
-            items = [currentAsset]
-            currentIndex = 0
+            await setItems([currentAsset])
+            await setCurrentIndex(0)
         } else {
-            items.removeAll()
-            currentIndex = -1
+            await setItems([])
+            await setCurrentIndex(-1)
         }
     }
 

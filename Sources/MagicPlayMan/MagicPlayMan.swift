@@ -17,14 +17,14 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     internal var verbose: Bool = true
     internal let logger = MagicLogger()
     public var cancellables = Set<AnyCancellable>()
-    public var downloadTask: URLSessionDataTask?
+    public private(set) var downloadTask: URLSessionDataTask?
 
     /// 播放相关的事件发布者
     public private(set) lazy var events = PlaybackEvents()
 
-    @Published public var items: [URL] = []
-    @Published public var currentIndex: Int = -1
-    @Published public var playMode: MagicPlayMode = .sequence
+    @Published public private(set) var items: [URL] = []
+    @Published public private(set) var currentIndex: Int = -1
+    @Published public private(set) var playMode: MagicPlayMode = .sequence
     @Published public private(set) var currentURL: URL?
     @Published public private(set) var state: PlaybackState = .idle
     @Published public private(set) var currentTime: TimeInterval = 0
@@ -48,6 +48,16 @@ public class MagicPlayMan: ObservableObject, SuperLog {
 // MARK: - Setter Methods
 
 extension MagicPlayMan {
+    @MainActor 
+    func setItems(_ items: [URL]) {
+        self.items = items
+    }
+
+    @MainActor
+    func setCurrentIndex(_ index: Int) {
+        currentIndex = index
+    }
+
     @MainActor
     func setCurrentThumbnail(_ thumbnail: Image?) {
         currentThumbnail = thumbnail
