@@ -58,13 +58,13 @@ extension MagicPlayMan {
         guard cache != nil else {
             return
         }
+        
+        if url.isDownloaded {
+            return
+        }
 
         Task {
             await self.setState(.loading(.connecting))
-        }
-
-        if url.isDownloaded {
-            return
         }
 
         // 添加节流控制

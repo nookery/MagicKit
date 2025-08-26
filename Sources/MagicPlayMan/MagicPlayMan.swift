@@ -75,25 +75,16 @@ extension MagicPlayMan {
 
     @MainActor
     func setBuffering(_ value: Bool) {
-        if verbose {
-            os_log("%{public}@🔄 Setting buffering: %{public}@", log: .default, type: .debug, t, String(value))
-        }
         isBuffering = value
     }
 
     @MainActor
     func setProgress(_ value: Double) {
-        if verbose {
-            os_log("%{public}@📊 Setting progress: %{public}f", log: .default, type: .debug, t, value)
-        }
         progress = value
     }
 
     @MainActor
     func setPlaylistEnabled(_ value: Bool) {
-        if verbose {
-            os_log("%{public}@📝 Setting playlist enabled: %{public}@", log: .default, type: .debug, t, String(value))
-        }
         isPlaylistEnabled = value
     }
 
