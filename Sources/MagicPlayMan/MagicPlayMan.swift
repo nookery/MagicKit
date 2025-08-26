@@ -1,13 +1,13 @@
 import AVFoundation
 import Combine
 import Foundation
-import SwiftUI
-import MediaPlayer
 import MagicCore
+import MediaPlayer
+import SwiftUI
 
 public class MagicPlayMan: ObservableObject, SuperLog {
     public nonisolated static let emoji = "🎧"
-    
+
     internal let _player = AVPlayer()
     internal var timeObserver: Any?
     internal var nowPlayingInfo: [String: Any] = [:]
@@ -17,10 +17,10 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     internal let logger = MagicLogger()
     public var cancellables = Set<AnyCancellable>()
     public var downloadTask: URLSessionDataTask?
-    
+
     /// 播放相关的事件发布者
     public private(set) lazy var events = PlaybackEvents()
-    
+
     @Published public var items: [URL] = []
     @Published public var currentIndex: Int = -1
     @Published public var playMode: MagicPlayMode = .sequence
@@ -33,9 +33,10 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     @Published public internal(set) var currentThumbnail: Image?
     @Published public internal(set) var isPlaylistEnabled: Bool = true
     @Published public internal(set) var likedAssets: Set<URL> = []
-
 }
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicPlayMan
+        .PreviewView()
+        .inMagicContainer(containerHeight: 1000)
 }

@@ -25,36 +25,39 @@ extension MagicPlayMan {
         self.downloadAndCache(url)
 
         let item = AVPlayerItem(url: url)
+        // 注意：不要在 @Sendable 闭包中直接捕获 self
 
-        // 监听加载状态
-        let observation = item.observe(\.status) { [weak self] item, _ in
-            guard let self = self else { return }
-
-            switch item.status {
-            case .readyToPlay:
-                self.setDuration(item.duration.seconds)
-                if self.isLoading {
-                    self.setState(autoPlay ? .playing : .paused)
-                    if autoPlay {
-                        self.play()
+        // 使用 Combine 监听状态，避免 @Sendable 捕获问题
+        let statusObserver = item.publisher(for: \.status)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                guard let self else { return }
+                switch status {
+                case .readyToPlay:
+                    Task { @MainActor in
+                        self.setDuration(item.duration.seconds)
+                        if self.isLoading {
+                            self.setState(autoPlay ? .playing : .paused)
+                            if autoPlay { self.play() }
+                        }
                     }
+                case .failed:
+                    let message = item.error?.localizedDescription ?? "Unknown error"
+                    Task { @MainActor in
+                        self.setState(.failed(.playbackError(message)))
+                    }
+                default:
+                    break
                 }
-
-            case .failed:
-                let message = item.error?.localizedDescription ?? "Unknown error"
-                self.setState(.failed(.playbackError(message)))
-            default:
-                break
             }
-        }
 
-        cancellables.insert(AnyCancellable { observation.invalidate() })
+        cancellables.insert(statusObserver)
         _player.replaceCurrentItem(with: item)
     }
 
     /// 下载并缓存资源
     private func downloadAndCache(_ url: URL) {
-        guard let cache = cache else {
+        guard cache != nil else {
             return
         }
 
@@ -69,7 +72,7 @@ extension MagicPlayMan {
         // 添加节流控制
         let progressSubject = CurrentValueSubject<Double, Never>(0)
         var progressObserver: AnyCancellable?
-        progressObserver = url.onDownloading(caller: "MagicPlayMan") { [weak self] progress in
+        progressObserver = url.onDownloading(caller: "MagicPlayMan") { progress in
             // 这里接收进度更新，应该在后台线程处理
             DispatchQueue.global().async {
                 progressSubject.send(progress)
@@ -90,7 +93,7 @@ extension MagicPlayMan {
 
         // 监听下载完成
         var finishObserver: AnyCancellable?
-        finishObserver = url.onDownloadFinished(verbose: self.verbose,caller: "MagicPlayMan") { [weak self] in
+        finishObserver = url.onDownloadFinished(verbose: self.verbose, caller: "MagicPlayMan") { [weak self] in
             guard let self = self else { return }
             progressObserver?.cancel()
             finishObserver?.cancel()
@@ -99,7 +102,7 @@ extension MagicPlayMan {
         }
 
         // 开始下载
-        Task.detached {
+        Task {
             do {
                 try await url.download(verbose: true, reason: "MagicPlayMan requested")
             } catch {
@@ -113,7 +116,7 @@ extension MagicPlayMan {
 
     /// 加载资源的缩略图
     func loadThumbnail(for url: URL, reason: String) {
-        Task.detached(priority: .background) {
+        Task(priority: .background) {
             do {
                 if self.verbose {
                     os_log("%{public}@🖥️ Loading thumbnail for %{public}@ 🐛 %{public}@", log: .default, type: .debug, self.t, url.shortPath(), reason)
@@ -131,6 +134,7 @@ extension MagicPlayMan {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
-        .inMagicContainer()
+    MagicPlayMan
+        .PreviewView()
+        .inMagicContainer(containerHeight: 1000)
 }
