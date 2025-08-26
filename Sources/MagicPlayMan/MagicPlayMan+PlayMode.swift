@@ -12,7 +12,6 @@ public extension MagicPlayMan {
     func togglePlayMode() {
         changePlayMode(self.playMode.next)
         log("Playback mode changed to: \(playMode.displayName)")
-        showToast("Playback mode: \(playMode.displayName)", icon: playMode.icon, style: .info)
     }
 
     /// 获取当前播放模式的显示名称
@@ -28,7 +27,8 @@ public extension MagicPlayMan {
 
 // MARK: - Preview
 
-#Preview("MagicPlayMan") {
+#Preview("MagicPlayMan - Large") {
     MagicPlayMan.PreviewView()
         .inMagicContainer()
+        .frame(height: 1000)
 }

@@ -55,7 +55,6 @@ extension MagicPlayMan {
     /// 下载并缓存资源
     private func downloadAndCache(_ url: URL) {
         guard let cache = cache else {
-            os_log("%{public}@Cache is disabled, loading directly", log: .default, type: .info, self.t)
             return
         }
 
@@ -95,12 +94,6 @@ extension MagicPlayMan {
             guard let self = self else { return }
             progressObserver?.cancel()
             finishObserver?.cancel()
-
-            Task { @MainActor in
-                if let cachedURL = self.cache?.cachedURL(for: url) {
-                    self.showToast("Download completed", icon: "checkmark.circle", style: .info)
-                }
-            }
 
             loadThumbnail(for: url, reason: "onDownloadFinished")
         }

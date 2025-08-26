@@ -55,7 +55,7 @@ struct MagicContainer<Content: View>: View {
         }
         .background(.background)
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
-        .frame(minHeight: 750)
+        .frame(minHeight: 850)
         .frame(idealHeight: 1000)
         .onAppear {
             // 初始化时跟随系统主题

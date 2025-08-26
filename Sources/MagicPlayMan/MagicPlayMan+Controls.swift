@@ -247,11 +247,6 @@ public extension MagicPlayMan {
 
         await setPlaylistEnabled(true)
         log("📑 Playlist enabled")
-        showToast(
-            "Playlist enabled",
-            icon: "list.bullet.circle.fill",
-            style: .info
-        )
     }
 
     /// 禁用播放列表功能
@@ -270,34 +265,12 @@ public extension MagicPlayMan {
             items.removeAll()
             currentIndex = -1
         }
-
-        showToast(
-            "Playlist disabled",
-            icon: "list.bullet.circle",
-            style: .info
-        )
     }
 
     /// 切换当前资源的喜欢状态
     func toggleLike() {
         guard let asset = currentURL else { return }
-        Task {
-            await setLike(!likedAssets.contains(asset))
-        }
-    }
-
-    func showToast(_ message: String, icon: String, style: MagicToast.Style) {
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .showToast,
-                object: nil,
-                userInfo: [
-                    "message": message,
-                    "icon": icon,
-                    "style": style,
-                ]
-            )
-        }
+        setLike(!likedAssets.contains(asset))
     }
 
     func log(_ message: String, level: MagicLogEntry.Level = .info) {
@@ -311,10 +284,8 @@ public extension MagicPlayMan {
         do {
             try cache?.clear()
             log("🗑️ Cache cleared")
-            showToast("Cache cleared successfully", icon: "trash", style: .info)
         } catch {
             log("❌ Failed to clear cache: \(error.localizedDescription)", level: .error)
-            showToast("Failed to clear cache", icon: "exclamationmark.triangle", style: .error)
         }
     }
 
@@ -330,11 +301,9 @@ public extension MagicPlayMan {
         if isLiked {
             newLikedAssets.insert(asset)
             log("❤️ Added to liked: \(asset.title)")
-            showToast("Added to liked", icon: .iconHeartFill, style: .info)
         } else {
             newLikedAssets.remove(asset)
             log("💔 Removed from liked: \(asset.title)")
-            showToast("Removed from liked", icon: .iconHeart, style: .info)
         }
 
         Task {
@@ -350,11 +319,6 @@ public extension MagicPlayMan {
     func setVerboseMode(_ enabled: Bool) {
         self.verbose = enabled
         log("🔍 Verbose mode \(enabled ? "enabled" : "disabled")")
-        showToast(
-            "Verbose mode \(enabled ? "enabled" : "disabled")",
-            icon: enabled ? "text.bubble.fill" : "text.bubble",
-            style: .info
-        )
     }
 
     /// 设置播放模式
@@ -364,7 +328,6 @@ public extension MagicPlayMan {
             await setPlayMode(mode)
         }
         log("Playback mode set to: \(mode.displayName)")
-        showToast("Playback mode: \(mode.displayName)", icon: mode.icon, style: .info)
     }
 }
 
