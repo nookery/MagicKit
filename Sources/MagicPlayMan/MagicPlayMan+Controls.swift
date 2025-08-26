@@ -156,7 +156,7 @@ public extension MagicPlayMan {
         updateNowPlayingInfo()
 
         Task {
-            await self.setState(.playing)
+            await self.setState(.paused)
         }
     }
 
@@ -332,5 +332,7 @@ public extension MagicPlayMan {
 }
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicPlayMan
+        .PreviewView()
+        .inMagicContainer(containerHeight: 800)
 }
