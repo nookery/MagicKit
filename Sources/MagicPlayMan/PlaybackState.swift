@@ -69,6 +69,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 是否是加载中
     public var isLoading: Bool {
         if case .loading = self {
             return true
@@ -76,6 +77,7 @@ public enum PlaybackState: Equatable {
         return false
     }
 
+    /// 是否是下载中
     public var isDownloading: Bool {
         if case .loading(let loadingState) = self {
             if case .downloading = loadingState {
@@ -85,14 +87,17 @@ public enum PlaybackState: Equatable {
         return false
     }
 
+    /// 是否是未支持的格式
     public var isUnsupportedFormat: Bool {
         if case .failed(let error) = self {
             if case .unsupportedFormat = error {
                 return true
             }
         }
+        return false
     }
     
+    /// 是否可以 seek
     public var canSeek: Bool {
         switch self {
         case .idle, .loading, .failed:
@@ -102,6 +107,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 状态图标名称
     public var iconName: String {
         switch self {
         case .idle:
@@ -119,6 +125,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 状态图标颜色
     public var iconColor: Color {
         switch self {
         case .idle:
@@ -134,6 +141,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 状态文本
     public var stateText: String {
         switch self {
         case .idle:
@@ -169,6 +177,8 @@ public enum PlaybackState: Equatable {
 }
 
 // MARK: - State View
+
+/// 状态视图
 public struct StateView: View {
     let state: PlaybackState
     let assetTitle: String?
