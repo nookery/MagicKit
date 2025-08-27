@@ -6,7 +6,7 @@ public extension MagicPlayMan {
     func makePlayPauseButton() -> MagicButton {
         MagicButton.simple(
             icon: state == .playing ? .iconPauseFill : .iconPlayFill,
-            style: state == .playing ? .primary : .secondary,
+            style: .primary,
             shape: .circle,
             disabledReason: !hasAsset ? "No media loaded" :
                 state.isLoading ? "Loading..." : nil,
