@@ -83,14 +83,14 @@ internal extension MagicPlayMan {
             queue: .main
         ) { [weak self] time in
             guard let self = self else { return }
-            Task { @MainActor in
-                let currentTime = time.seconds
-                let progress = self.duration > 0 ? currentTime / self.duration : 0
+            // 🔧 移除多余的Task包装，避免线程竞态
+            // 时间观察器已经在.main队列上运行，不需要额外的@MainActor包装
+            let currentTime = time.seconds
+            let progress = self.duration > 0 ? currentTime / self.duration : 0
 
-                // 更新内部状态并发送通知
-                self.setCurrentTime(currentTime)
-                self.setProgress(progress)
-            }
+            // 更新内部状态并发送通知
+            self.setCurrentTime(currentTime)
+            self.setProgress(progress)
         }
     }
     
