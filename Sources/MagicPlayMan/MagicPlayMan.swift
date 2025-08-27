@@ -22,6 +22,9 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     /// 播放相关的事件发布者
     public private(set) lazy var events = PlaybackEvents()
 
+    /// 当前下载监听器引用
+    private(set) var currentDownloadObservers: (progressObserver: AnyCancellable, finishObserver: AnyCancellable)?
+
     @Published public private(set) var items: [URL] = []
     @Published public private(set) var currentIndex: Int = -1
     @Published public private(set) var playMode: MagicPlayMode = .sequence
@@ -30,7 +33,6 @@ public class MagicPlayMan: ObservableObject, SuperLog {
     @Published public private(set) var currentTime: TimeInterval = 0
     @Published public private(set) var duration: TimeInterval = 0
     @Published public private(set) var progress: Double = 0
-    @Published public private(set) var currentThumbnail: Image?
     @Published public private(set) var isPlaylistEnabled: Bool = true
     @Published public private(set) var likedAssets: Set<URL> = []
 }
@@ -55,11 +57,6 @@ extension MagicPlayMan {
     @MainActor
     func setCurrentIndex(_ index: Int) {
         currentIndex = index
-    }
-
-    @MainActor
-    func setCurrentThumbnail(_ thumbnail: Image?) {
-        currentThumbnail = thumbnail
     }
 
     @MainActor
@@ -110,6 +107,11 @@ extension MagicPlayMan {
 
         log("播放模式变更：\(playMode)")
         events.onPlayModeChanged.send(playMode)
+    }
+
+    @MainActor
+    func setCurrentDownloadObservers(_ observers: (progressObserver: AnyCancellable, finishObserver: AnyCancellable)?) {
+        currentDownloadObservers = observers
     }
 }
 

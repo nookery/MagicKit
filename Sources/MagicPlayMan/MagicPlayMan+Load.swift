@@ -21,7 +21,7 @@ extension MagicPlayMan {
             return
         }
 
-        self.downloadAndCache(url)
+        await downloadAndCache(url)
 
         let item = AVPlayerItem(url: url)
         
@@ -33,6 +33,9 @@ extension MagicPlayMan {
                 switch status {
                 case .readyToPlay:
                     Task { @MainActor in
+                        // 播放器准备就绪后，清理下载监听器
+                        self.cleanupDownloadObservers()
+                        
                         self.setDuration(item.duration.seconds)
                         if self.isLoading {
                             self.setState(autoPlay ? .playing : .paused)
@@ -42,6 +45,9 @@ extension MagicPlayMan {
                 case .failed:
                     let message = item.error?.localizedDescription ?? "Unknown error"
                     Task { @MainActor in
+                        // 播放失败时也要清理下载监听器
+                        self.cleanupDownloadObservers()
+                        
                         self.setState(.failed(.playbackError(message)))
                     }
                 default:
@@ -54,6 +60,7 @@ extension MagicPlayMan {
     }
 
     /// 下载并缓存资源
+    @MainActor
     private func downloadAndCache(_ url: URL) {
         guard cache != nil else {
             return
@@ -69,8 +76,7 @@ extension MagicPlayMan {
 
         // 添加节流控制
         let progressSubject = CurrentValueSubject<Double, Never>(0)
-        var progressObserver: AnyCancellable?
-        progressObserver = url.onDownloading(caller: "MagicPlayMan") { progress in
+        let progressObserver = url.onDownloading(caller: "MagicPlayMan") { progress in
             // 这里接收进度更新，应该在后台线程处理
             DispatchQueue.global().async {
                 progressSubject.send(progress)
@@ -83,21 +89,23 @@ extension MagicPlayMan {
             .sink { [weak self] progress in
                 guard let self = self else { return }
                 Task {
-                    await self.setState(.loading(.downloading(progress)))
+                    // 只有在加载状态时才更新下载进度，避免与播放状态冲突
+                    if case .loading = self.state {
+                        await self.setState(.loading(.downloading(progress)))
+                    }
                 }
             }
 
         cancellables.insert(progressUpdateObserver)
 
         // 监听下载完成
-        var finishObserver: AnyCancellable?
-        finishObserver = url.onDownloadFinished(verbose: self.verbose, caller: "MagicPlayMan") { [weak self] in
+        let finishObserver = url.onDownloadFinished(verbose: self.verbose, caller: "MagicPlayMan") { [weak self] in
             guard let self = self else { return }
-            progressObserver?.cancel()
-            finishObserver?.cancel()
-
-            loadThumbnail(for: url, reason: "onDownloadFinished")
+            self.cleanupDownloadObservers()
         }
+
+        // 存储下载监听器引用
+        self.setCurrentDownloadObservers((progressObserver, finishObserver))
 
         // 开始下载
         Task {
@@ -105,6 +113,9 @@ extension MagicPlayMan {
                 try await url.download(verbose: true, reason: "MagicPlayMan requested")
             } catch {
                 await MainActor.run {
+                    // 下载失败时清理监听器
+                    self.cleanupDownloadObservers()
+                    
                     self.setState(.failed(.networkError(error.localizedDescription)))
                     self.log("Download failed: \(error.localizedDescription)", level: .error)
                 }
@@ -112,19 +123,13 @@ extension MagicPlayMan {
         }
     }
 
-    /// 加载资源的缩略图
-    func loadThumbnail(for url: URL, reason: String) {
-        Task(priority: .background) {
-            do {
-                if self.verbose {
-                    os_log("%{public}@🖥️ Loading thumbnail for %{public}@ 🐛 %{public}@", log: .default, type: .debug, self.t, url.shortPath(), reason)
-                }
-                let thumbnail = try await url.thumbnail(size: CGSize(width: 600, height: 600), verbose: self.verbose, reason: self.className + ".loadThumbnai")
-
-                await self.setCurrentThumbnail(thumbnail)
-            } catch {
-                os_log("%{public}@Failed to load thumbnail: %{public}@", log: .default, type: .error, self.t, error.localizedDescription)
-            }
+    /// 清理下载监听器
+    @MainActor
+    private func cleanupDownloadObservers() {
+        if let (progressObserver, finishObserver) = currentDownloadObservers {
+            progressObserver.cancel()
+            finishObserver.cancel()
+            setCurrentDownloadObservers(nil)
         }
     }
 }
