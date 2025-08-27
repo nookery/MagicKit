@@ -61,17 +61,34 @@ extension MagicPlayMan {
 
     @MainActor
     func setCurrentTime(_ time: TimeInterval) {
+        let oldTime = currentTime
         currentTime = time
+
+        // 发送时间更新通知
+        if oldTime != time {
+            let progress = self.duration > 0 ? time / self.duration : 0
+            sendTimeUpdate(currentTime: time, progress: progress)
+        }
     }
 
     @MainActor
     func setDuration(_ value: TimeInterval) {
+        let oldDuration = duration
         duration = value
+
+        // 发送时长变更通知
+        if oldDuration != value {
+            sendDurationChanged(duration: value)
+        }
     }
 
     @MainActor
     func setProgress(_ value: Double) {
+        let oldProgress = progress
         progress = value
+
+        // 注意：进度更新通常伴随着时间更新，所以这里不再单独发送通知
+        // 如果需要单独的进度更新通知，可以在这里添加
     }
 
     @MainActor
@@ -86,18 +103,32 @@ extension MagicPlayMan {
 
     @MainActor
     func setState(_ state: PlaybackState) {
+        let oldState = self.state
         self.state = state
 
         log("播放状态变更：\(state.stateText)")
         events.onStateChanged.send(state)
+
+        // 发送状态变更通知
+        let isPlaying = (state == .playing)
+        let oldIsPlaying = (oldState == .playing)
+        if oldIsPlaying != isPlaying {
+            sendStateChanged(isPlaying: isPlaying)
+        }
     }
 
     @MainActor
     func setCurrentURL(_ url: URL?) {
+        let oldURL = currentURL
         currentURL = url
 
         if let url = currentURL {
             events.onCurrentURLChanged.send(url)
+        }
+
+        // 发送播放资源变更通知
+        if oldURL != url {
+            sendAssetChanged(asset: url)
         }
     }
 

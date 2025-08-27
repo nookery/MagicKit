@@ -84,10 +84,12 @@ internal extension MagicPlayMan {
         ) { [weak self] time in
             guard let self = self else { return }
             Task { @MainActor in
-                self.setCurrentTime(time.seconds)
-                if self.duration > 0 {
-                    self.setProgress(self.currentTime / self.duration)
-                }
+                let currentTime = time.seconds
+                let progress = self.duration > 0 ? currentTime / self.duration : 0
+
+                // 更新内部状态并发送通知
+                self.setCurrentTime(currentTime)
+                self.setProgress(progress)
             }
         }
     }
