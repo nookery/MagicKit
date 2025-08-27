@@ -84,6 +84,14 @@ public enum PlaybackState: Equatable {
         }
         return false
     }
+
+    public var isUnsupportedFormat: Bool {
+        if case .failed(let error) = self {
+            if case .unsupportedFormat = error {
+                return true
+            }
+        }
+    }
     
     public var canSeek: Bool {
         switch self {
