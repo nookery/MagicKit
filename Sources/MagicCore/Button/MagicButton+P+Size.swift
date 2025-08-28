@@ -1,5 +1,7 @@
 import SwiftUI
 
+#if DEBUG
+
 /// 用于创建固定尺寸容器的辅助视图
 private struct Frame<Content: View>: View {
     let width: CGFloat?
@@ -54,18 +56,15 @@ struct SizeButtonsPreview: View {
                     MagicButton(icon: "star")
                         .magicSize(.mini)
                         .magicShape(.circle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Mini")
                         .magicSize(.mini)
                         .magicShape(.capsule)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.mini)
                         .magicShape(.roundedSquare)
-                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -81,23 +80,19 @@ struct SizeButtonsPreview: View {
                         .magicTitle("Small")
                         .magicSize(.small)
                         .magicShape(.roundedRectangle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.small)
                         .magicShape(.circle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Small")
                         .magicSize(.small)
                         .magicShape(.capsule)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.small)
                         .magicShape(.roundedSquare)
-                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -113,23 +108,19 @@ struct SizeButtonsPreview: View {
                         .magicTitle("Regular")
                         .magicSize(.regular)
                         .magicShape(.roundedRectangle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.regular)
                         .magicShape(.circle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Regular")
                         .magicSize(.regular)
                         .magicShape(.capsule)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.regular)
                         .magicShape(.roundedSquare)
-                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -145,23 +136,19 @@ struct SizeButtonsPreview: View {
                         .magicTitle("Large")
                         .magicSize(.large)
                         .magicShape(.roundedRectangle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.large)
                         .magicShape(.circle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Large")
                         .magicSize(.large)
                         .magicShape(.capsule)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.large)
                         .magicShape(.roundedSquare)
-                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -177,23 +164,19 @@ struct SizeButtonsPreview: View {
                         .magicTitle("Extra Large")
                         .magicSize(.extraLarge)
                         .magicShape(.roundedRectangle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.extraLarge)
                         .magicShape(.circle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Extra Large")
                         .magicSize(.extraLarge)
                         .magicShape(.capsule)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.extraLarge)
                         .magicShape(.roundedSquare)
-                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -209,23 +192,19 @@ struct SizeButtonsPreview: View {
                         .magicTitle("Huge")
                         .magicSize(.huge)
                         .magicShape(.roundedRectangle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.huge)
                         .magicShape(.circle)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Huge")
                         .magicSize(.huge)
                         .magicShape(.capsule)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicSize(.huge)
                         .magicShape(.roundedSquare)
-                        .magicDebugBorder()
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -241,20 +220,16 @@ struct SizeButtonsPreview: View {
                         MagicButton(icon: "star", size: .custom(40))
                             .magicTitle("40")
                             .magicShape(.roundedRectangle)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(40))
                             .magicShape(.circle)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(40))
                             .magicTitle("40")
                             .magicShape(.capsule)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(40))
                             .magicShape(.roundedSquare)
-                            .magicDebugBorder()
                     }
 
                     // 60 尺寸
@@ -262,20 +237,16 @@ struct SizeButtonsPreview: View {
                         MagicButton(icon: "star", size: .custom(60))
                             .magicTitle("60")
                             .magicShape(.roundedRectangle)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(60))
                             .magicShape(.circle)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(60))
                             .magicTitle("60")
                             .magicShape(.capsule)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(60))
                             .magicShape(.roundedSquare)
-                            .magicDebugBorder()
                     }
 
                     // 80 尺寸
@@ -283,20 +254,16 @@ struct SizeButtonsPreview: View {
                         MagicButton(icon: "star", size: .custom(80))
                             .magicTitle("80")
                             .magicShape(.roundedRectangle)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(80))
                             .magicShape(.circle)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(80))
                             .magicTitle("80")
                             .magicShape(.capsule)
-                            .magicDebugBorder()
 
                         MagicButton(icon: "star", size: .custom(80))
                             .magicShape(.roundedSquare)
-                            .magicDebugBorder()
                     }
                 }
             }
@@ -313,20 +280,17 @@ struct SizeButtonsPreview: View {
                         Frame(width: 32, height: 32) {
                             MagicButton(icon: "star", size: .auto)
                                 .magicShape(.circle)
-                                .magicDebugBorder()
                         }
 
                         Frame(width: 60, height: 32) {
                             MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Mini")
                                 .magicShape(.capsule)
-                                .magicDebugBorder()
                         }
 
                         Frame(width: 40, height: 40) {
                             MagicButton(icon: "star", size: .auto)
                                 .magicShape(.roundedSquare)
-                                .magicDebugBorder()
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -337,20 +301,17 @@ struct SizeButtonsPreview: View {
                             MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Regular")
                                 .magicShape(.roundedRectangle)
-                                .magicDebugBorder()
                         }
 
                         Frame(width: 60, height: 60) {
                             MagicButton(icon: "star", size: .auto)
                                 .magicShape(.circle)
-                                .magicDebugBorder()
                         }
 
                         Frame(width: 100, height: 50) {
                             MagicButton(icon: "star", size: .auto)
                                 .magicTitle("Medium")
                                 .magicShape(.capsule)
-                                .magicDebugBorder()
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -360,20 +321,17 @@ struct SizeButtonsPreview: View {
                         MagicButton(icon: "star", size: .auto)
                             .magicTitle("Large")
                             .magicShape(.roundedRectangle)
-                            .magicDebugBorder()
                     }
 
                     Frame(width: 100, height: 100) {
                         MagicButton(icon: "star", size: .auto)
                             .magicShape(.circle)
-                            .magicDebugBorder()
                     }
 
                     Frame(width: 140, height: 70) {
                         MagicButton(icon: "star", size: .auto)
                             .magicTitle("Big")
                             .magicShape(.capsule)
-                            .magicDebugBorder()
                     }
 
                     // 超大尺寸
@@ -381,20 +339,17 @@ struct SizeButtonsPreview: View {
                         MagicButton(icon: "star", size: .auto)
                             .magicTitle("Extra Large")
                             .magicShape(.roundedRectangle)
-                            .magicDebugBorder()
                     }
 
                     Frame(width: 150, height: 150) {
                         MagicButton(icon: "star", size: .auto)
                             .magicShape(.circle)
-                            .magicDebugBorder()
                     }
 
                     Frame(width: 180, height: 90) {
                         MagicButton(icon: "star", size: .auto)
                             .magicTitle("Huge")
                             .magicShape(.capsule)
-                            .magicDebugBorder()
                     }
 
                     // 巨大尺寸
@@ -402,20 +357,17 @@ struct SizeButtonsPreview: View {
                         MagicButton(icon: "star", size: .auto)
                             .magicTitle("Giant")
                             .magicShape(.roundedRectangle)
-                            .magicDebugBorder()
                     }
 
                     Frame(width: 250, height: 250) {
                         MagicButton(icon: "star", size: .auto)
                             .magicShape(.circle)
-                            .magicDebugBorder()
                     }
 
                     Frame(width: 280, height: 140) {
                         MagicButton(icon: "star", size: .auto)
                             .magicTitle("Massive")
                             .magicShape(.capsule)
-                            .magicDebugBorder()
                     }
                 }
             }
@@ -426,7 +378,8 @@ struct SizeButtonsPreview: View {
     }
 }
 
-#Preview {
+#Preview("Size") {
     SizeButtonsPreview()
         .inMagicContainer()
 }
+#endif

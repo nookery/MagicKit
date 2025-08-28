@@ -1,6 +1,7 @@
 import SwiftUI
 
-struct BackgroundColorButtonsPreview: View {
+#if DEBUG
+    struct BackgroundColorButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
             Text("背景色变体")
@@ -12,17 +13,14 @@ struct BackgroundColorButtonsPreview: View {
                     MagicButton(icon: "star")
                         .magicTitle("Blue")
                         .magicBackgroundColor(.blue)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "heart")
                         .magicTitle("Red")
                         .magicBackgroundColor(.red)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "leaf")
                         .magicTitle("Green")
                         .magicBackgroundColor(.green)
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -35,18 +33,15 @@ struct BackgroundColorButtonsPreview: View {
                     MagicButton(icon: "star")
                         .magicShape(.circle)
                         .magicBackgroundColor(.purple)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicShape(.roundedSquare)
                         .magicBackgroundColor(.orange)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Capsule")
                         .magicShape(.capsule)
                         .magicBackgroundColor(.mint)
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -82,17 +77,14 @@ struct BackgroundColorButtonsPreview: View {
                     MagicButton(icon: "sun.max")
                         .magicTitle("Dawn")
                         .magicBackground(MagicBackground.dawnSky)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "cloud.bolt")
                         .magicTitle("Storm")
                         .magicBackground(MagicBackground.stormyHeaven)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "sunset")
                         .magicTitle("Sunset")
                         .magicBackground(MagicBackground.sunsetGlow)
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -111,7 +103,6 @@ struct BackgroundColorButtonsPreview: View {
                                 endPoint: .trailing
                             )
                         )
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Angular")
@@ -121,7 +112,6 @@ struct BackgroundColorButtonsPreview: View {
                                 center: .center
                             )
                         )
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("Radial")
@@ -133,7 +123,6 @@ struct BackgroundColorButtonsPreview: View {
                                 endRadius: 50
                             )
                         )
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -143,8 +132,9 @@ struct BackgroundColorButtonsPreview: View {
         .padding()
     }
 }
+#endif
 
-#Preview {
+#Preview("Background") {
     BackgroundColorButtonsPreview()
         .inMagicContainer()
 }

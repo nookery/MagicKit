@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG   
 struct ShapeButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -85,7 +86,8 @@ struct ShapeButtonsPreview: View {
     }
 }
 
-#Preview {
+#Preview("Shape") {
     ShapeButtonsPreview()
         .inMagicContainer()
 }
+#endif

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct ShapeVisibilityButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -12,13 +13,11 @@ struct ShapeVisibilityButtonsPreview: View {
                     MagicButton(icon: "star")
                         .magicTitle("Always")
                         .magicShapeVisibility(.always)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicStyle(.primary)
                         .magicTitle("Always")
                         .magicShapeVisibility(.always)
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -31,13 +30,11 @@ struct ShapeVisibilityButtonsPreview: View {
                     MagicButton(icon: "star")
                         .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicStyle(.primary)
                         .magicTitle("On Hover")
                         .magicShapeVisibility(.onHover)
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -48,7 +45,8 @@ struct ShapeVisibilityButtonsPreview: View {
     }
 }
 
-#Preview {
+#Preview("ShapeVisibility") {
     ShapeVisibilityButtonsPreview()
         .inMagicContainer()
 }
+#endif

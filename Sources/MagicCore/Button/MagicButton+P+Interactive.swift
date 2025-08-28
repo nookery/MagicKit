@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct InteractiveButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -13,7 +14,6 @@ struct InteractiveButtonsPreview: View {
                     disabledReason: "This button is disabled"
                 )
                 .magicTitle("Disabled Button")
-                .magicDebugBorder()
             }
             .padding()
             .background(Color.blue.opacity(0.1))
@@ -29,7 +29,6 @@ struct InteractiveButtonsPreview: View {
                             Text("Click Triggered Popover")
                                 .padding()
                         }
-                        .magicDebugBorder()
 
                     // 默认显示的弹出内容
                     MagicButton(icon: "bell")
@@ -38,7 +37,6 @@ struct InteractiveButtonsPreview: View {
                             Text("Default Shown Popover")
                                 .padding()
                         }
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -52,19 +50,16 @@ struct InteractiveButtonsPreview: View {
                     MagicButton(icon: "star")
                         .magicTitle("收藏") // 设置标题但不显示
                         .magicShape(.circle)
-                        .magicDebugBorder()
-
+                    
                     MagicButton(icon: "heart")
                         .magicTitle("喜欢") // 设置标题但不显示
                         .magicShape(.roundedSquare)
                         .magicStyle(.primary)
-                        .magicDebugBorder()
 
                     MagicButton(icon: "bell")
                         .magicTitle("通知") // 设置标题但不显示
                         .magicShape(.circle)
                         .magicBackgroundColor(.orange)
-                        .magicDebugBorder()
                 }
                 .padding(.vertical)
                 Text("提示：将鼠标悬停在按钮上查看提示文本")
@@ -79,7 +74,8 @@ struct InteractiveButtonsPreview: View {
     }
 }
 
-#Preview {
+#Preview("Interactive") {
     InteractiveButtonsPreview()
         .inMagicContainer()
 }
+#endif

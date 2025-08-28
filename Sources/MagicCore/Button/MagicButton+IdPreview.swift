@@ -105,7 +105,7 @@ struct MagicButtonIdPreview: View {
     }
 }
 
-#Preview {
+#Preview("ID Preview") {
     MagicButtonIdPreview()
         .inMagicContainer()
 }

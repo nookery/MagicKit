@@ -29,7 +29,7 @@ extension MagicButton {
     }
 }
 
-#Preview {
+#Preview("Action") {
     LoadingAndPreventDoubleClickPreview()
         .inMagicContainer()
 }

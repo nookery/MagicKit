@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct LoadingAndPreventDoubleClickPreview: View {
     @State private var message = "点击按钮测试功能"
 
@@ -173,7 +174,8 @@ struct LoadingAndPreventDoubleClickPreview: View {
     }
 }
 
-#Preview {
+#Preview("Action") {
     LoadingAndPreventDoubleClickPreview()
         .inMagicContainer()
 }
+#endif

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG
 struct BasicButtonsPreview: View {
     @State private var isLoading = false
     
@@ -13,7 +14,6 @@ struct BasicButtonsPreview: View {
 
             MagicButton(icon: "star")
                 .magicTitle("默认按钮")
-                .magicDebugBorder()
 
             MagicButton(icon: "heart")
                 .magicTitle("主要按钮")
@@ -39,7 +39,8 @@ struct BasicButtonsPreview: View {
     }
 }
 
-#Preview {
+#Preview("Basic") {
     BasicButtonsPreview()
         .inMagicContainer()
 }
+#endif

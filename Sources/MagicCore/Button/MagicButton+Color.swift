@@ -50,7 +50,7 @@ extension MagicButton {
     }
 }
 
-#Preview {
+#Preview("MagicButton+Color - Theming") {
     BasicButtonsPreview()
         .inMagicContainer()
 }

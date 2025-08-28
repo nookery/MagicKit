@@ -306,7 +306,7 @@ public extension MagicButton {
     }
 }
 
-#Preview {
+#Preview("Basic") {
     BasicButtonsPreview()
         .inMagicContainer()
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if DEBUG   
 struct CustomShapeButtonsPreview: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -17,7 +18,6 @@ struct CustomShapeButtonsPreview: View {
                             bottomLeft: 0,
                             bottomRight: 0
                         ))
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("仅右圆角")
@@ -27,7 +27,6 @@ struct CustomShapeButtonsPreview: View {
                             bottomLeft: 0,
                             bottomRight: 16
                         ))
-                        .magicDebugBorder()
 
                     MagicButton(icon: "star")
                         .magicTitle("不同圆角")
@@ -37,7 +36,6 @@ struct CustomShapeButtonsPreview: View {
                             bottomLeft: 16,
                             bottomRight: 8
                         ))
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -60,7 +58,6 @@ struct CustomShapeButtonsPreview: View {
                             leftRadius: 8,
                             rightRadius: 24
                         ))
-                        .magicDebugBorder()
                 }
             }
             .padding()
@@ -71,7 +68,8 @@ struct CustomShapeButtonsPreview: View {
     }
 }
 
-#Preview {
+#Preview("CustomShape") {
     CustomShapeButtonsPreview()
         .inMagicContainer()
 }
+#endif

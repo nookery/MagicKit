@@ -69,7 +69,7 @@ struct MagicButtonStyle: ButtonStyle {
     }
 }
 
-#Preview {
+#Preview("Container") {
     BasicButtonsPreview()
         .inMagicContainer()
 }
