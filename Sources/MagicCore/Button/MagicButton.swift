@@ -698,12 +698,6 @@ public struct MagicButton: View {
             }
             // 使用稳定的 id，避免未提供 id 时每次渲染生成新 UUID 触发重建
             .id(currentViewId)
-        #if DEBUG
-            // 仅在视图身份变化时记录一次渲染日志，避免因重绘频繁刷日志
-            .onChange(of: currentViewId) { _ in
-                os_log("MagicButton: 开始渲染")
-            }
-        #endif
     }
 
     private var isCircularShape: Bool {

@@ -67,11 +67,15 @@ extension MagicPlayMan {
 
     @MainActor
     func setCurrentTime(_ time: TimeInterval) {
+        let verbose = false
         let oldTime = currentTime
         currentTime = time
 
         // 发送时间更新通知
         if oldTime != time {
+            if verbose {
+                os_log("setCurrentTime: \(time)")
+            }
             let progress = self.duration > 0 ? time / self.duration : 0
             sendTimeUpdate(currentTime: time, progress: progress)
         }
@@ -92,9 +96,6 @@ extension MagicPlayMan {
     func setProgress(_ value: Double) {
         let oldProgress = progress
         progress = value
-
-        // 注意：进度更新通常伴随着时间更新，所以这里不再单独发送通知
-        // 如果需要单独的进度更新通知，可以在这里添加
     }
 
     @MainActor

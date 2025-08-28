@@ -75,24 +75,13 @@ public extension MagicPlayMan {
     }
 
     /// 创建播放进度条视图
-    /// - Returns: 返回一个 MagicProgressBar 进度条视图，具有以下功能：
-    /// - 显示当前播放位置
-    /// - 支持拖动进度条来调整播放位置
-    /// - 显示媒体总时长
-    /// 进度条会随播放进度自动更新，并响应用户的拖动操作
+    /// 
+    /// 这是一个自观察的进度条视图，会自动监听播放进度状态变化。
+    /// 提供播放进度显示和拖动控制功能，支持实时进度更新和用户交互。
+    /// 
+    /// - Returns: 自观察的播放进度条视图
     func makeProgressView() -> some View {
-        MagicProgressBar(
-            currentTime: .init(
-                get: { self.currentTime },
-                set: { time in
-                    self.seek(time: time)
-                }
-            ),
-            duration: duration,
-            onSeek: { time in
-                self.seek(time: time)
-            }
-        )
+        MagicPlayProgressView(man: self)
     }
 
     /// 创建支持的媒体格式视图
