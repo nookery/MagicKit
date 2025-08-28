@@ -16,6 +16,45 @@ extension URL: SuperLog {
 
 /// URL 类型的扩展，提供文件操作和路径处理功能
 public extension URL {
+    /// 统计当前 URL 下的文件数量（包含所有子孙文件夹）
+    /// 
+    /// - Note: 会跳过隐藏文件与隐藏文件夹（以系统属性识别）。
+    /// - Returns: 文件总数；若路径不存在则为 0
+    func filesCountRecursively() -> Int {
+        let fm = FileManager.default
+        var isDirectory: ObjCBool = false
+        guard fm.fileExists(atPath: self.path, isDirectory: &isDirectory) else { return 0 }
+
+        // 若是文件，直接返回 1
+        if isDirectory.boolValue == false {
+            return 1
+        }
+
+        // 若是目录，递归统计所有非目录条目
+        let keys: [URLResourceKey] = [.isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey]
+        let options: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles]
+        guard let enumerator = fm.enumerator(
+            at: self,
+            includingPropertiesForKeys: keys,
+            options: options
+        ) else { return 0 }
+
+        var count = 0
+        for case let itemURL as URL in enumerator {
+            do {
+                let values = try itemURL.resourceValues(forKeys: Set(keys))
+                // 仅统计常规文件与符号链接（不计目录本身）
+                if values.isDirectory == true { continue }
+                if values.isRegularFile == true || values.isSymbolicLink == true {
+                    count += 1
+                }
+            } catch {
+                // 读取属性失败时跳过该条目
+                continue
+            }
+        }
+        return count
+    }
     /// 计算文件的 MD5 哈希值
     /// 
     /// 用于获取文件的唯一标识或验证文件完整性
@@ -380,6 +419,11 @@ struct URLExtensionDemoView: View {
                             }
                             MagicKeyValue(key: "getBlob()", value: "获取Base64编码") {
                                 Image(systemName: .iconDocBinary)
+                            }
+                            // 演示：统计临时目录下的文件总数（包含子孙目录）
+                            let tmp = FileManager.default.temporaryDirectory
+                            MagicKeyValue(key: "filesCountRecursively()", value: tmp.filesCountRecursively().description) {
+                                Image(systemName: .iconFolder)
                             }
                         }
                         .padding()
