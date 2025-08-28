@@ -41,6 +41,16 @@ public struct MagicButton: View {
         case primary
         /// 次要样式，用于普通操作
         case secondary
+        /// 成功样式，用于表示操作成功或正向结果
+        case success
+        /// 警告样式，用于需要用户注意但非致命的问题
+        case warning
+        /// 危险样式，用于破坏性或不可逆操作
+        case danger
+        /// 信息样式，用于一般信息展示
+        case info
+        /// 中性样式，用于次要、低强调的操作
+        case neutral
         /// 自定义颜色样式
         case custom(Color)
         /// 自定义背景视图
@@ -399,7 +409,7 @@ extension MagicButton {
     }
 }
 
-#Preview("MagicButton - Basic") {
+#Preview("Basic") {
     BasicButtonsPreview()
         .inMagicContainer()
 }
