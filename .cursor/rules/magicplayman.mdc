@@ -5,7 +5,7 @@ description: Ensure every Swift file under MagicPlayMan ends with a single, unif
 
 # MagicPlayMan 通用规则
 
-在 `Sources/MagicPlayMan` 目录下的所有 Swift 文件底部，若缺少预览，则追加统一的预览代码段；若文件中已存在任意 `#Preview` 或旧的 `*Previews`，保持不变（不做替换），并确保新增的预览（若需）位于文件结尾。
+在 `Sources/MagicPlayMan` 目录下的所有 Swift 文件底部，若缺少预览，则追加统一的预览代码段；若文件中已存在任意 `#Preview`，保持不变（不做替换），并确保新增的预览（若需）位于文件结尾。
 
 预览模板（`containerHeight` 为示例值，用户可按需修改）：
 
