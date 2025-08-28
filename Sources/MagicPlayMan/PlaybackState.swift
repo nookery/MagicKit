@@ -68,6 +68,15 @@ public enum PlaybackState: Equatable {
             }
         }
     }
+
+    // MARK: - Is
+
+    public var isPlaying: Bool {
+        if case .playing = self {
+            return true
+        }
+        return false
+    }
     
     /// 是否是加载中
     public var isLoading: Bool {

@@ -1,10 +1,21 @@
 import MagicCore
 import SwiftUI
+import OSLog
 
 public extension MagicPlayMan {
     /// 创建播放/暂停按钮
+    @MainActor
     func makePlayPauseButton() -> MagicButton {
-        MagicButton.simple(
+        os_log("\(self.t) makePlayPauseButton, current state: \(self.state.stateText)")
+        
+        // 检查缓存中是否有可用的按钮
+        if let cachedButton = cachedPlayPauseButton,
+           cachedButton.buttonId == playPauseButtonId {
+            return cachedButton
+        }
+        
+        // 创建新按钮并缓存
+        let newButton = MagicButton.simple(
             icon: state == .playing ? .iconPauseFill : .iconPlayFill,
             style: .primary,
             shape: .circle,
@@ -12,6 +23,28 @@ public extension MagicPlayMan {
                 state.isLoading ? "Loading..." : nil,
             action: toggle
         )
+        .magicId(playPauseButtonId)
+        
+        setCachedPlayPauseButton(newButton)
+        return newButton
+    }
+    
+    /// 获取播放/暂停按钮的动态 ID
+    /// 用于在 SwiftUI View 中通过 .id() 修饰符响应状态变化
+    var playPauseButtonId: String {
+        if self.state.isLoading {
+            return "play-pause-button-loading"
+        } else if self.state == .playing {
+            return "play-pause-button-playing"
+        } else if self.state == .paused {
+            return "play-pause-button-paused"
+        } else if self.state == .stopped {
+            return "play-pause-button-stopped"
+        } else if case .failed = self.state {
+            return "play-pause-button-failed"
+        } else {
+            return "play-pause-button-idle"
+        }
     }
 
     /// 创建上一曲按钮
@@ -102,13 +135,31 @@ public extension MagicPlayMan {
     }
 
     /// 创建播放模式按钮
+    @MainActor
     func makePlayModeButton() -> MagicButton {
-        MagicButton.simple(
+        // 检查缓存中是否有可用的按钮
+        if let cachedButton = cachedPlayModeButton,
+           cachedButton.buttonId == playModeButtonId {
+            return cachedButton
+        }
+        
+        // 创建新按钮并缓存
+        let newButton = MagicButton.simple(
             icon: playMode.iconName,
             style: playMode != .sequence ? .primary : .secondary,
             shape: .circle,
             action: togglePlayMode
         )
+        .magicId(playModeButtonId)
+        
+        setCachedPlayModeButton(newButton)
+        return newButton
+    }
+    
+    /// 获取播放模式按钮的动态 ID
+    /// 用于在 SwiftUI View 中通过 .id() 修饰符响应播放模式变化
+    var playModeButtonId: String {
+        return "play-mode-button-\(playMode.rawValue)"
     }
 
     /// 创建喜欢按钮
@@ -116,8 +167,16 @@ public extension MagicPlayMan {
     /// - Note: 按钮的外观会根据喜欢状态改变：
     ///   - 喜欢时：使用填充图标和主要样式
     ///   - 未喜欢时：使用轮廓图标和次要样式
+    @MainActor
     func makeLikeButton() -> MagicButton {
-        MagicButton(
+        // 检查缓存中是否有可用的按钮
+        if let cachedButton = cachedLikeButton,
+           cachedButton.buttonId == likeButtonId {
+            return cachedButton
+        }
+        
+        // 创建新按钮并缓存
+        let newButton = MagicButton(
             icon: isCurrentAssetLiked ? "heart.fill" : "heart",
             style: isCurrentAssetLiked ? .primary : .secondary,
             shape: .roundedSquare,
@@ -129,6 +188,22 @@ public extension MagicPlayMan {
                 }
             }
         )
+        .magicId(likeButtonId)
+        
+        setCachedLikeButton(newButton)
+        return newButton
+    }
+    
+    /// 获取喜欢按钮的动态 ID
+    /// 用于在 SwiftUI View 中通过 .id() 修饰符响应喜欢状态变化
+    var likeButtonId: String {
+        if !hasAsset {
+            return "like-button-no-asset"
+        } else if isCurrentAssetLiked {
+            return "like-button-liked"
+        } else {
+            return "like-button-not-liked"
+        }
     }
 
     /// 创建播放列表按钮
@@ -155,16 +230,36 @@ public extension MagicPlayMan {
     ///   - 禁用时：使用轮廓图标和次要样式
     /// - Important: 切换播放列表状态时会触发相应的事件通知，
     ///             订阅者可以通过这些事件来响应状态变化
+    @MainActor
     func makePlaylistToggleButton() -> MagicButton {
-        MagicButton(
+        // 检查缓存中是否有可用的按钮
+        if let cachedButton = cachedPlaylistToggleButton,
+           cachedButton.buttonId == playlistToggleButtonId {
+            return cachedButton
+        }
+        
+        // 创建新按钮并缓存
+        let newButton = MagicButton(
             icon: self.isPlaylistEnabled ? .iconListCircleFill : .iconListCircle,
             style: self.isPlaylistEnabled ? .primary : .secondary,
             shape: .circle,
             action: { [self] completion in
-                self.setPlaylistEnabled(!self.isPlaylistEnabled)
-                completion()
+                Task { @MainActor in
+                    self.setPlaylistEnabled(!self.isPlaylistEnabled)
+                    completion()
+                }
             }
         )
+        .magicId(playlistToggleButtonId)
+        
+        setCachedPlaylistToggleButton(newButton)
+        return newButton
+    }
+    
+    /// 获取播放列表切换按钮的动态 ID
+    /// 用于在 SwiftUI View 中通过 .id() 修饰符响应播放列表状态变化
+    var playlistToggleButtonId: String {
+        return "playlist-toggle-button-\(isPlaylistEnabled ? "enabled" : "disabled")"
     }
 
     /// 创建订阅者列表按钮

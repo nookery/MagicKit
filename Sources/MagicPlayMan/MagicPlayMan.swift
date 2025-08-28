@@ -24,6 +24,12 @@ public class MagicPlayMan: ObservableObject, SuperLog {
 
     /// 当前下载监听器引用
     private(set) var currentDownloadObservers: (progressObserver: AnyCancellable, finishObserver: AnyCancellable)?
+    
+    /// 按钮缓存，避免重复创建
+    private var _cachedPlayPauseButton: MagicButton?
+    private var _cachedPlayModeButton: MagicButton?
+    private var _cachedLikeButton: MagicButton?
+    private var _cachedPlaylistToggleButton: MagicButton?
 
     @Published public private(set) var items: [URL] = []
     @Published public private(set) var currentIndex: Int = -1
@@ -94,11 +100,17 @@ extension MagicPlayMan {
     @MainActor
     func setPlaylistEnabled(_ value: Bool) {
         isPlaylistEnabled = value
+        
+        // 清理播放列表切换按钮缓存
+        setCachedPlaylistToggleButton(nil)
     }
 
     @MainActor
     func setLikedAssets(_ assets: Set<URL>) {
         likedAssets = assets
+        
+        // 清理喜欢按钮缓存，因为喜欢状态变化可能影响按钮外观
+        setCachedLikeButton(nil)
     }
 
     @MainActor
@@ -115,6 +127,9 @@ extension MagicPlayMan {
         if oldIsPlaying != isPlaying {
             sendStateChanged(isPlaying: isPlaying)
         }
+        
+        // 清理按钮缓存，因为状态变化可能影响按钮外观
+        clearButtonCache()
     }
 
     @MainActor
@@ -130,6 +145,9 @@ extension MagicPlayMan {
         if oldURL != url {
             sendAssetChanged(asset: url)
         }
+        
+        // 清理按钮缓存，因为当前资源变化可能影响按钮外观
+        clearButtonCache()
     }
 
     @MainActor
@@ -138,11 +156,69 @@ extension MagicPlayMan {
 
         log("播放模式变更：\(playMode)")
         events.onPlayModeChanged.send(playMode)
+        
+        // 清理播放模式按钮缓存
+        setCachedPlayModeButton(nil)
     }
 
     @MainActor
     func setCurrentDownloadObservers(_ observers: (progressObserver: AnyCancellable, finishObserver: AnyCancellable)?) {
         currentDownloadObservers = observers
+    }
+    
+    // MARK: - Button Cache Management
+    
+    /// 设置播放/暂停按钮缓存
+    @MainActor
+    func setCachedPlayPauseButton(_ button: MagicButton?) {
+        _cachedPlayPauseButton = button
+    }
+    
+    /// 设置播放模式按钮缓存
+    @MainActor
+    func setCachedPlayModeButton(_ button: MagicButton?) {
+        _cachedPlayModeButton = button
+    }
+    
+    /// 设置喜欢按钮缓存
+    @MainActor
+    func setCachedLikeButton(_ button: MagicButton?) {
+        _cachedLikeButton = button
+    }
+    
+    /// 设置播放列表切换按钮缓存
+    @MainActor
+    func setCachedPlaylistToggleButton(_ button: MagicButton?) {
+        _cachedPlaylistToggleButton = button
+    }
+    
+    /// 清理所有按钮缓存
+    @MainActor
+    func clearButtonCache() {
+        setCachedPlayPauseButton(nil)
+        setCachedPlayModeButton(nil)
+        setCachedLikeButton(nil)
+        setCachedPlaylistToggleButton(nil)
+    }
+    
+    /// 获取播放/暂停按钮缓存
+    var cachedPlayPauseButton: MagicButton? {
+        _cachedPlayPauseButton
+    }
+    
+    /// 获取播放模式按钮缓存
+    var cachedPlayModeButton: MagicButton? {
+        _cachedPlayModeButton
+    }
+    
+    /// 获取喜欢按钮缓存
+    var cachedLikeButton: MagicButton? {
+        _cachedLikeButton
+    }
+    
+    /// 获取播放列表切换按钮缓存
+    var cachedPlaylistToggleButton: MagicButton? {
+        _cachedPlaylistToggleButton
     }
 }
 
