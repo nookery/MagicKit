@@ -110,14 +110,14 @@ public extension MagicPlayMan {
 
         private var trailingToolbarItems: some View {
             HStack {
-                playMan.makePlayPauseButton()
-                playMan.makePlayModeButton()
-                playMan.makePlaylistButton()
-                playMan.makePlaylistToggleButton()
-                playMan.makeSubscribersButton()
-                playMan.makeSupportedFormatsButton()
-                playMan.makeLogButton()
-                playMan.makeLikeButton()
+                playMan.makePlayPauseButtonView()
+                playMan.makePlayModeButtonView()
+                playMan.makePlaylistButtonView()
+                playMan.makePlaylistToggleButtonView()
+                playMan.makeSubscribersButtonView()
+                playMan.makeSupportedFormatsButtonView()
+                playMan.makeLogButtonView()
+                playMan.makeLikeButtonView()
             }
         }
 
@@ -187,12 +187,12 @@ public extension MagicPlayMan {
 
         private var playbackControls: some View {
             HStack(spacing: 16) {
-                playMan.makePlayModeButton()
-                playMan.makePreviousButton()
-                playMan.makeRewindButton()
-                playMan.makePlayPauseButton()
-                playMan.makeForwardButton()
-                playMan.makeNextButton()
+                playMan.makePlayModeButtonView()
+                playMan.makePreviousButtonView()
+                playMan.makeRewindButtonView()
+                playMan.makePlayPauseButtonView()
+                playMan.makeForwardButtonView()
+                playMan.makeNextButtonView()
             }.frame(height: 40)
         }
 

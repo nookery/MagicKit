@@ -1,34 +1,21 @@
 import MagicCore
-import SwiftUI
 import OSLog
+import SwiftUI
 
 public extension MagicPlayMan {
-    /// 创建播放/暂停按钮
+    /// 自观察版本：播放/暂停按钮视图（推荐外部调用，零负担自动刷新）
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放状态变化并自动刷新。
+    /// 无需外部订阅或手动刷新，推荐在 SwiftUI 视图中使用。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的播放/暂停按钮视图
     @MainActor
-    func makePlayPauseButton() -> MagicButton {
-        os_log("\(self.t) makePlayPauseButton, current state: \(self.state.stateText)")
-        
-        // 检查缓存中是否有可用的按钮
-        if let cachedButton = cachedPlayPauseButton,
-           cachedButton.buttonId == playPauseButtonId {
-            return cachedButton
-        }
-        
-        // 创建新按钮并缓存
-        let newButton = MagicButton.simple(
-            icon: state == .playing ? .iconPauseFill : .iconPlayFill,
-            style: .primary,
-            shape: .circle,
-            disabledReason: !hasAsset ? "No media loaded" :
-                state.isLoading ? "Loading..." : nil,
-            action: toggle
-        )
-        .magicId(playPauseButtonId)
-        
-        setCachedPlayPauseButton(newButton)
-        return newButton
+    @ViewBuilder
+    func makePlayPauseButtonView(size: MagicButton.Size = .regular) -> some View {
+        PlayPauseButtonView(man: self, size: size)
     }
-    
+
     /// 获取播放/暂停按钮的动态 ID
     /// 用于在 SwiftUI View 中通过 .id() 修饰符响应状态变化
     var playPauseButtonId: String {
@@ -47,153 +34,90 @@ public extension MagicPlayMan {
         }
     }
 
-    /// 创建上一曲按钮
-    /// - Returns: 用于播放上一首曲目的按钮
-    /// - Note: 按钮的可用性基于以下条件：
-    ///   - 当没有加载任何资源时，按钮将被禁用
-    ///   - 当播放列表被禁用且没有导航订阅者时，按钮将被禁用
-    ///   - 当播放列表启用且当前是第一首时，按钮将被禁用
-    ///   - 其他情况下，按钮可用
-    /// - Important: 当播放列表被禁用但存在导航订阅者时，按钮始终可用，
-    ///             导航逻辑将由订阅者控制
-    func makePreviousButton() -> MagicButton {
-        let disabledReason: String? = if !hasAsset {
-            "No media loaded"
-        } else if !isPlaylistEnabled && !events.hasNavigationSubscribers {
-            "Playlist is disabled and no handler for previous track"
-        } else if isPlaylistEnabled && currentIndex <= 0 {
-            "This is the first track"
-        } else {
-            nil
-        }
-
-        return MagicButton.simple(
-            icon: .iconBackwardEndFill,
-            style: .secondary,
-            shape: .circle,
-            disabledReason: disabledReason,
-            action: previous
-        )
-    }
-
-    /// 创建下一曲按钮
-    /// - Returns: 用于播放下一首曲目的按钮
-    /// - Note: 按钮的可用性基于以下条件：
-    ///   - 当没有加载任何资源时，按钮将被禁用
-    ///   - 当播放列表被禁用且没有导航订阅者时，按钮将被禁用
-    ///   - 当播放列表启用且当前是最后一首时，按钮将被禁用
-    ///   - 其他情况下，按钮可用
-    /// - Important: 当播放列表被禁用但存在导航订阅者时，按钮始终可用，
-    ///             导航逻辑将由订阅者控制
-    /// - SeeAlso: ``previous()``，用于了解具体的导航实现
-    func makeNextButton() -> MagicButton {
-        let disabledReason: String? = if !hasAsset {
-            "No media loaded"
-        } else if !isPlaylistEnabled && !events.hasNavigationSubscribers {
-            "Playlist is disabled and no handler for next track"
-        } else if isPlaylistEnabled && currentIndex >= items.count - 1 {
-            "This is the last track"
-        } else {
-            nil
-        }
-
-        return MagicButton.simple(
-            icon: .iconForwardEndFill,
-            style: .secondary,
-            shape: .circle,
-            disabledReason: disabledReason,
-            action: next
-        )
-    }
-
-    /// 创建快退按钮
-    func makeRewindButton() -> MagicButton {
-        MagicButton.simple(
-            icon: .iconGobackward10,
-            style: .secondary,
-            shape: .circle,
-            disabledReason: !hasAsset ? "No media loaded" :
-                state.isLoading ? "Loading..." : nil,
-            action: {
-                self.skipBackward()
-            }
-        )
-    }
-
-    /// 创建快进按钮
-    func makeForwardButton() -> MagicButton {
-        MagicButton.simple(
-            icon: .iconGoforward10,
-            style: .secondary,
-            shape: .circle,
-            disabledReason: !hasAsset ? "No media loaded" :
-                state.isLoading ? "Loading..." : nil,
-            action: {
-                self.skipForward()
-            }
-        )
-    }
-
-    /// 创建播放模式按钮
+    /// 自观察版本：上一曲按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放列表状态变化。
+    /// 根据当前播放位置和播放列表状态智能管理按钮的可用性。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的上一曲按钮视图
     @MainActor
-    func makePlayModeButton() -> MagicButton {
-        // 检查缓存中是否有可用的按钮
-        if let cachedButton = cachedPlayModeButton,
-           cachedButton.buttonId == playModeButtonId {
-            return cachedButton
-        }
-        
-        // 创建新按钮并缓存
-        let newButton = MagicButton.simple(
-            icon: playMode.iconName,
-            style: playMode != .sequence ? .primary : .secondary,
-            shape: .circle,
-            action: togglePlayMode
-        )
-        .magicId(playModeButtonId)
-        
-        setCachedPlayModeButton(newButton)
-        return newButton
+    @ViewBuilder
+    func makePreviousButtonView(size: MagicButton.Size = .regular) -> some View {
+        PreviousButtonView(man: self, size: size)
     }
-    
+
+    /// 自观察版本：下一曲按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放列表状态变化。
+    /// 根据当前播放位置和播放列表状态智能管理按钮的可用性。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的下一曲按钮视图
+    @MainActor
+    @ViewBuilder
+    func makeNextButtonView(size: MagicButton.Size = .regular) -> some View {
+        NextButtonView(man: self, size: size)
+    }
+
+    /// 自观察版本：快退按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放状态变化。
+    /// 提供快退功能，允许用户快速回退播放进度。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的快退按钮视图
+    @MainActor
+    @ViewBuilder
+    func makeRewindButtonView(size: MagicButton.Size = .regular) -> some View {
+        RewindButtonView(man: self, size: size)
+    }
+
+    /// 自观察版本：快进按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放状态变化。
+    /// 提供快进功能，允许用户快速前进播放进度。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的快进按钮视图
+    @MainActor
+    @ViewBuilder
+    func makeForwardButtonView(size: MagicButton.Size = .regular) -> some View {
+        ForwardButtonView(man: self, size: size)
+    }
+
+    /// 自观察版本：播放模式按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放模式状态变化。
+    /// 根据当前播放模式显示相应的图标和样式，支持循环、随机等播放模式切换。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的播放模式按钮视图
+    @MainActor
+    @ViewBuilder
+    func makePlayModeButtonView(size: MagicButton.Size = .regular) -> some View {
+        PlayModeButtonView(man: self, size: size)
+    }
+
     /// 获取播放模式按钮的动态 ID
     /// 用于在 SwiftUI View 中通过 .id() 修饰符响应播放模式变化
     var playModeButtonId: String {
         return "play-mode-button-\(playMode.rawValue)"
     }
 
-    /// 创建喜欢按钮
-    /// - Returns: 用于切换当前资源喜欢状态的按钮
-    /// - Note: 按钮的外观会根据喜欢状态改变：
-    ///   - 喜欢时：使用填充图标和主要样式
-    ///   - 未喜欢时：使用轮廓图标和次要样式
+    /// 自观察版本：喜欢按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听喜欢状态变化。
+    /// 根据当前媒体资源的喜欢状态显示不同的图标和样式，支持喜欢/取消喜欢操作。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的喜欢按钮视图
     @MainActor
-    func makeLikeButton() -> MagicButton {
-        // 检查缓存中是否有可用的按钮
-        if let cachedButton = cachedLikeButton,
-           cachedButton.buttonId == likeButtonId {
-            return cachedButton
-        }
-        
-        // 创建新按钮并缓存
-        let newButton = MagicButton(
-            icon: isCurrentAssetLiked ? "heart.fill" : "heart",
-            style: isCurrentAssetLiked ? .primary : .secondary,
-            shape: .roundedSquare,
-            disabledReason: !hasAsset ? "No media loaded" : nil,
-            action: { completion in
-                Task {
-                    await self.toggleLike()
-                    completion()
-                }
-            }
-        )
-        .magicId(likeButtonId)
-        
-        setCachedLikeButton(newButton)
-        return newButton
+    @ViewBuilder
+    func makeLikeButtonView(size: MagicButton.Size = .regular) -> some View {
+        LikeButtonView(man: self, size: size)
     }
-    
+
     /// 获取喜欢按钮的动态 ID
     /// 用于在 SwiftUI View 中通过 .id() 修饰符响应喜欢状态变化
     var likeButtonId: String {
@@ -206,99 +130,75 @@ public extension MagicPlayMan {
         }
     }
 
-    /// 创建播放列表按钮
-    func makePlaylistButton() -> MagicButton {
-        MagicButton(
-            icon: .iconList,
-            style: .secondary,
-            shape: .circle,
-            disabledReason: !self.isPlaylistEnabled ? "Playlist is disabled\nEnable playlist to view and manage tracks" : nil,
-            popoverContent: self.isPlaylistEnabled ? AnyView(
-                ZStack {
-                    self.makePlaylistView()
-                        .frame(width: 300, height: 400)
-                        .padding()
-                }
-            ) : nil
-        )
+    /// 自观察版本：播放列表按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放列表状态变化。
+    /// 提供播放列表查看功能，通过弹窗展示当前播放列表内容。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的播放列表按钮视图
+    @MainActor
+    @ViewBuilder
+    func makePlaylistButtonView(size: MagicButton.Size = .regular) -> some View {
+        PlaylistButtonView(man: self, size: size)
     }
 
-    /// 创建播放列表启用/禁用按钮
-    /// - Returns: 用于切换播放列表启用状态的按钮
-    /// - Note: 按钮的外观会根据播放列表的启用状态改变：
-    ///   - 启用时：使用填充图标和主要样式
-    ///   - 禁用时：使用轮廓图标和次要样式
-    /// - Important: 切换播放列表状态时会触发相应的事件通知，
-    ///             订阅者可以通过这些事件来响应状态变化
+    /// 自观察版本：播放列表开关按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听播放列表启用状态变化。
+    /// 提供播放列表功能的开启/关闭切换，根据状态显示不同的图标和样式。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的播放列表开关按钮视图
     @MainActor
-    func makePlaylistToggleButton() -> MagicButton {
-        // 检查缓存中是否有可用的按钮
-        if let cachedButton = cachedPlaylistToggleButton,
-           cachedButton.buttonId == playlistToggleButtonId {
-            return cachedButton
-        }
-        
-        // 创建新按钮并缓存
-        let newButton = MagicButton(
-            icon: self.isPlaylistEnabled ? .iconListCircleFill : .iconListCircle,
-            style: self.isPlaylistEnabled ? .primary : .secondary,
-            shape: .circle,
-            action: { [self] completion in
-                Task { @MainActor in
-                    self.setPlaylistEnabled(!self.isPlaylistEnabled)
-                    completion()
-                }
-            }
-        )
-        .magicId(playlistToggleButtonId)
-        
-        setCachedPlaylistToggleButton(newButton)
-        return newButton
+    @ViewBuilder
+    func makePlaylistToggleButtonView(size: MagicButton.Size = .regular) -> some View {
+        PlaylistToggleButtonView(man: self, size: size)
     }
-    
+
     /// 获取播放列表切换按钮的动态 ID
     /// 用于在 SwiftUI View 中通过 .id() 修饰符响应播放列表状态变化
     var playlistToggleButtonId: String {
         return "playlist-toggle-button-\(isPlaylistEnabled ? "enabled" : "disabled")"
     }
 
-    /// 创建订阅者列表按钮
-    func makeSubscribersButton() -> MagicButton {
-        MagicButton(
-            icon: .iconPersonGroup,
-            style: .secondary,
-            shape: .circle,
-            popoverContent: AnyView(
-                SubscribersView(subscribers: events.subscribers)
-                    .frame(width: 300, height: 400)
-                    .padding()
-            )
-        )
+    /// 自观察版本：订阅者按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听订阅者状态变化。
+    /// 提供订阅者列表查看功能，通过弹窗展示当前注册的事件订阅者信息。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的订阅者按钮视图
+    @MainActor
+    @ViewBuilder
+    func makeSubscribersButtonView(size: MagicButton.Size = .regular) -> some View {
+        SubscribersButtonView(man: self, size: size)
     }
 
-    /// 创建支持的格式按钮
-    func makeSupportedFormatsButton() -> MagicButton {
-        MagicButton(
-            icon: .iconMusicNote,
-            style: .secondary,
-            shape: .circle,
-            popoverContent: AnyView(
-                self.makeSupportedFormatsView()
-            )
-        )
+    /// 自观察版本：支持格式按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听媒体格式支持状态变化。
+    /// 提供支持的媒体格式查看功能，通过弹窗展示播放器支持的所有媒体格式信息。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的支持格式按钮视图
+    @MainActor
+    @ViewBuilder
+    func makeSupportedFormatsButtonView(size: MagicButton.Size = .regular) -> some View {
+        SupportedFormatsButtonView(man: self, size: size)
     }
 
-    /// 创建日志按钮
-    /// - Returns: 用于显示日志的按钮
-    /// - Note: 点击按钮会显示一个包含日志内容的弹出窗口
-    func makeLogButton(shape: MagicButton.Shape = .circle) -> MagicButton {
-        MagicButton(
-            icon: .iconTerminal,
-            popoverContent: AnyView(
-                self.makeLogView()
-                    .frame(width: 800, height: 400)
-            )
-        )
+    /// 自观察版本：日志按钮视图
+    /// 
+    /// 这是一个自观察的按钮视图，会自动监听日志状态变化。
+    /// 提供播放器日志查看功能，通过弹窗展示播放器的操作历史和调试信息。
+    /// 
+    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Returns: 自观察的日志按钮视图
+    @MainActor
+    @ViewBuilder
+    func makeLogButtonView(size: MagicButton.Size = .regular) -> some View {
+        LogButtonView(man: self, size: size)
     }
 
     /// 创建媒体选择按钮
@@ -323,7 +223,7 @@ public extension MagicPlayMan {
     MagicPlayMan.PreviewView()
 }
 
-#Preview("Buttons") {
+#Preview("Button Views") {
     let man = MagicPlayMan()
 
     return VStack(spacing: 20) {
@@ -332,35 +232,35 @@ public extension MagicPlayMan {
 
         // 播放控制按钮组
         HStack(spacing: 16) {
-            man.makePreviousButton()
-            man.makeRewindButton()
-            man.makePlayPauseButton()
-            man.makeForwardButton()
-            man.makeNextButton()
+            man.makePreviousButtonView()
+            man.makeRewindButtonView()
+            man.makePlayPauseButtonView()
+            man.makeForwardButtonView()
+            man.makeNextButtonView()
         }
 
         // 功能按钮组
         HStack(spacing: 16) {
-            man.makePlayModeButton()
-            man.makeLikeButton()
-            man.makePlaylistButton()
-            man.makePlaylistToggleButton()
+            man.makePlayModeButtonView()
+            man.makeLikeButtonView()
+            man.makePlaylistButtonView()
+            man.makePlaylistToggleButtonView()
         }
 
         // 工具按钮组
         HStack(spacing: 16) {
-            man.makeSubscribersButton()
-            man.makeSupportedFormatsButton()
-            man.makeLogButton()
+            man.makeSubscribersButtonView()
+            man.makeSupportedFormatsButtonView()
+            man.makeLogButtonView()
         }
 
-        // 不同形状的按钮示例
+        // 不同尺寸的按钮示例
         VStack(spacing: 16) {
-            Text("Different Shapes").font(.caption)
+            Text("Different Sizes").font(.caption)
             HStack(spacing: 16) {
-                man.makeLikeButton()
-                man.makeLikeButton().magicShape(.circle)
-                man.makeLikeButton().magicShape(.roundedSquare)
+                man.makeLikeButtonView(size: .small)
+                man.makeLikeButtonView(size: .regular)
+                man.makeLikeButtonView(size: .large)
             }
         }
     }

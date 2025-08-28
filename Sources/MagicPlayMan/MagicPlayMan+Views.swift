@@ -102,6 +102,14 @@ public extension MagicPlayMan {
         FormatInfoView(formats: SupportedFormat.allFormats)
     }
 
+    /// 创建订阅者列表视图
+    /// - Returns: 返回订阅者列表弹窗内容
+    func makeSubscribersView() -> some View {
+        SubscribersView(subscribers: events.subscribers)
+            .frame(width: 300, height: 400)
+            .padding()
+    }
+
     /// 创建主要展示视图
     /// - Returns: 返回一个根据当前媒体资源类型自动适配的主要展示视图：
     /// - 当资源为音频时，显示音频缩略图，不包括音频的标题和艺术家
