@@ -80,8 +80,9 @@ extension MagicButton {
     }
 }
 
+#if DEBUG
 #Preview("MagicButton+Color - Theming") {
     BasicButtonsPreview()
         .inMagicContainer()
 }
-
+#endif

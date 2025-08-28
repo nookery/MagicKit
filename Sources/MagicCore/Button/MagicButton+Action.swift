@@ -29,7 +29,9 @@ extension MagicButton {
     }
 }
 
+#if DEBUG
 #Preview("Action") {
     LoadingAndPreventDoubleClickPreview()
         .inMagicContainer()
 }
+#endif
