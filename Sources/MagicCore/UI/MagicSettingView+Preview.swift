@@ -63,7 +63,7 @@ public struct SettingExampleView: View {
         MagicContainer {
             VStack(alignment: .leading, spacing: 24) {
                 // Radio Confirmation Demo Section
-                MagicSettingSection(title: "Data Sync Mode") {
+                MagicSettingSection(title: "Data Sync Mode", titleAlignment: .leading) {
                     VStack(spacing: 0) {
                         ForEach(dataModes, id: \.self) { mode in
                             MagicSettingRow(
@@ -111,7 +111,7 @@ public struct SettingExampleView: View {
                 }
                 
                 // Sheet Confirmation Demo Section
-                MagicSettingSection(title: "Processing Quality") {
+                MagicSettingSection(title: "Processing Quality", titleAlignment: .center) {
                     VStack(spacing: 0) {
                         ForEach(qualityModes, id: \.self) { mode in
                             MagicSettingRow(
@@ -148,7 +148,7 @@ public struct SettingExampleView: View {
                     )
                 }
                 
-                MagicSettingSection(title: "Audio Devices") {
+                MagicSettingSection(title: "Audio Devices", titleAlignment: .leading) {
                     VStack(spacing: 16) {
                         // Tab Picker
                         Picker("Audio Device Type", selection: $selectedAudioTab) {
@@ -220,7 +220,7 @@ public struct SettingExampleView: View {
                     }
                 }
                 
-                MagicSettingSection(title: "Media Library Location") {
+                MagicSettingSection(title: "Media Library Location", titleAlignment: .trailing) {
                     VStack(spacing: 0) {
                         MagicSettingPicker(
                             title: "Store Media Files",
@@ -261,7 +261,7 @@ public struct SettingExampleView: View {
                     }
                 }
                 
-                MagicSettingSection(title: "General") {
+                MagicSettingSection(title: "General", titleAlignment: .leading) {
                     VStack(spacing: 0) {
                         MagicSettingToggle(
                             title: "Enable Notifications",
@@ -293,7 +293,7 @@ public struct SettingExampleView: View {
                     }
                 }
                 
-                MagicSettingSection(title: "Advanced") {
+                MagicSettingSection(title: "Advanced", titleAlignment: .center) {
                     VStack(spacing: 0) {
                         MagicSettingToggle(
                             title: "Developer Mode",
@@ -314,7 +314,7 @@ public struct SettingExampleView: View {
                     }
                 }
                 
-                MagicSettingSection(title: "Custom Row Examples") {
+                MagicSettingSection(title: "Custom Row Examples", titleAlignment: .leading) {
                     VStack(spacing: 0) {
                         // Basic row with text
                         MagicSettingRow(
@@ -377,7 +377,7 @@ public struct SettingExampleView: View {
                     }
                 }
                 
-                MagicSettingSection(title: "About") {
+                MagicSettingSection(title: "About", titleAlignment: .center) {
                     VStack(spacing: 0) {
                         MagicSettingRow(
                             title: "Version",
