@@ -351,6 +351,18 @@ struct StringIconExtensionDemoView: View {
                     ("插入图片", .iconInsertImage),
                     ("清除格式", .iconClearFormat)
                 ])
+                
+                // 分页导航
+                IconSection(title: "分页导航", icons: [
+                    ("上一页", .iconPreviousPage),
+                    ("下一页", .iconNextPage),
+                    ("上一页圆形", .iconPreviousPageCircle),
+                    ("下一页圆形", .iconNextPageCircle),
+                    ("上一页圆形填充", .iconPreviousPageCircleFill),
+                    ("下一页圆形填充", .iconNextPageCircleFill),
+                    ("第一页", .iconFirstPage),
+                    ("最后一页", .iconLastPage)
+                ])
             }
             .padding()
         }

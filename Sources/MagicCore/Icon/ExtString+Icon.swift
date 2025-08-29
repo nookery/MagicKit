@@ -825,6 +825,31 @@ public extension String {
     
     /// 顶部工具栏填充图标 (menubar.dock.rectangle)
     static let iconTopToolbarFill = "menubar.dock.rectangle"
+    
+    // MARK: - 分页导航
+    /// 上一页图标名称 (chevron.left)
+    static let iconPreviousPage = "chevron.left"
+    
+    /// 下一页图标名称 (chevron.right)
+    static let iconNextPage = "chevron.right"
+    
+    /// 上一页圆形图标名称 (chevron.left.circle)
+    static let iconPreviousPageCircle = "chevron.left.circle"
+    
+    /// 下一页圆形图标名称 (chevron.right.circle)
+    static let iconNextPageCircle = "chevron.right.circle"
+    
+    /// 上一页圆形填充图标名称 (chevron.left.circle.fill)
+    static let iconPreviousPageCircleFill = "chevron.left.circle.fill"
+    
+    /// 下一页圆形填充图标名称 (chevron.right.circle.fill)
+    static let iconNextPageCircleFill = "chevron.right.circle.fill"
+    
+    /// 第一页图标名称 (chevron.left.2)
+    static let iconFirstPage = "chevron.left.2"
+    
+    /// 最后一页图标名称 (chevron.right.2)
+    static let iconLastPage = "chevron.right.2"
 } 
 
 #Preview("图标演示") {
