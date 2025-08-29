@@ -110,4 +110,5 @@ struct NoteIcon: View {
     IconPreviewHelper(title: "Note Icon") {
         Image.makeNoteIcon()
     }
+    .inMagicContainer(containerHeight: 800)
 }

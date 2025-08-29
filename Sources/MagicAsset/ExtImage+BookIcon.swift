@@ -114,4 +114,5 @@ struct BookIcon: View {
             Image.makeBookIcon(shape: .roundedRectangle(radius: 24))
         }
     }
+    .inMagicContainer(containerHeight: 800)
 }

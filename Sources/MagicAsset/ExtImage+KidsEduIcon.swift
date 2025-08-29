@@ -181,4 +181,5 @@ struct KidsEduIcon: View {
             )
         }
     }
+    .inMagicContainer(containerHeight: 800)
 }

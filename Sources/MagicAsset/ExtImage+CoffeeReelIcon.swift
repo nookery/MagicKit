@@ -117,8 +117,9 @@ struct CoffeeReelIcon: View {
     }
 }
 
-#Preview {
+#Preview("Coffee Reel Icon") {
     IconPreviewHelper(title: "Coffee Reel Icon") {
         Image.makeCoffeeReelIcon()
     }
+    .inMagicContainer(containerHeight: 1200)
 }

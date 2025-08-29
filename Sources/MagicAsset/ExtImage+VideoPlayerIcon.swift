@@ -125,4 +125,5 @@ struct VideoPlayerIcon: View {
     IconPreviewHelper(title: "Video Player Icon") {
         Image.makeVideoPlayerIcon()
     }
+    .inMagicContainer(containerHeight: 800)
 }
