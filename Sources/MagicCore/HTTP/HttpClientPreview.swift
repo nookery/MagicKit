@@ -40,6 +40,17 @@ public struct HttpClientPreview: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                         
+                        Button(action: performGetWithCache) {
+                            HStack {
+                                Image(systemName: "tray.and.arrow.down.fill")
+                                Text("GET (Cached 10s)")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                        
                         Button(action: performPost) {
                             HStack {
                                 Image(systemName: "arrow.up.circle")
@@ -97,6 +108,21 @@ public struct HttpClientPreview: View {
                 let client = HttpClient(url: URL(string: "https://httpbin.org/get")!)
                 self.client = client
                 
+                responseText = try await client.get()
+            } catch let error {
+                responseText = "Error: \(error.localizedDescription)"
+            }
+        }
+    }
+    
+    private func performGetWithCache() {
+        Task {
+            isLoading = true
+            defer { isLoading = false }
+            
+            do {
+                let client = HttpClient(url: URL(string: "https://httpbin.org/get")!, cacheMaxAge: 10)
+                self.client = client
                 responseText = try await client.get()
             } catch let error {
                 responseText = "Error: \(error.localizedDescription)"
