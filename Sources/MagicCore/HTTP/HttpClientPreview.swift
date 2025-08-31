@@ -83,6 +83,17 @@ public struct HttpClientPreview: View {
                             .background(.ultraThinMaterial)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
+
+                        Button(action: openCacheDir) {
+                            HStack {
+                                Image(systemName: "folder")
+                                Text("Open Cache Directory")
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
                     }
                 }
             }
@@ -168,6 +179,10 @@ public struct HttpClientPreview: View {
         client?.cancel()
         responseText = "Request cancelled"
         isLoading = false
+    }
+
+    private func openCacheDir() {
+        HttpClient.openCacheDirectory()
     }
     
     public init() {}

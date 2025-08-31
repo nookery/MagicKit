@@ -76,6 +76,18 @@ public extension URL {
         return try await client.getDataAndResponse()
     }
 
+    // MARK: - Cache Utilities
+    /// 打开 HttpClient 的缓存目录（与 URL 无关，仅作便捷入口）
+    ///
+    /// 用法示例：
+    /// ```swift
+    /// let url = URL(string: "https://httpbin.org/get")!
+    /// url.openHttpCacheDirectory() // 在 Finder 打开缓存目录
+    /// ```
+    func openHttpCacheDirectory() {
+        HttpClient.openCacheDirectory()
+    }
+
     // MARK: - POST
     /// 便捷 POST 请求
     ///

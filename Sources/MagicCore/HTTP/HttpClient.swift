@@ -305,6 +305,18 @@ public class HttpClient: SuperLog {
         
         return (data, httpResponse)
     }
+
+    // MARK: - Cache Directory Utilities
+    /// 返回 HttpClient 使用的缓存目录 URL。若目录不存在会自动创建。
+    public static func cacheDirectoryURL() -> URL {
+        FileCacheStore.cacheDirectoryURL()
+    }
+
+    /// 打开缓存目录（macOS 在访达中打开；iOS 尝试通过系统打开该目录）
+    public static func openCacheDirectory() {
+        let dir = cacheDirectoryURL()
+        dir.openFolder()
+    }
 }
 
 // MARK: - 简单文件缓存实现
@@ -313,12 +325,19 @@ private final class FileCacheStore {
     private let fm = FileManager.default
     
     init() {
+        let dir = Self.cacheDirectoryURL()
+        self.directory = dir
+    }
+
+    /// 计算并确保缓存目录存在
+    static func cacheDirectoryURL() -> URL {
+        let fm = FileManager.default
         let base = fm.urls(for: .cachesDirectory, in: .userDomainMask).first!
         let dir = base.appendingPathComponent("HttpClientCache", isDirectory: true)
         if !fm.fileExists(atPath: dir.path) {
             try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
         }
-        self.directory = dir
+        return dir
     }
     
     func read(url: URL, headers: [String:String], maxAge: TimeInterval) throws -> Data? {
