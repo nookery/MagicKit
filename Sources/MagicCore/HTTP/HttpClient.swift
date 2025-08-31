@@ -139,9 +139,15 @@ public class HttpClient: SuperLog {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw HttpError.HttpNoResponse
         }
-        // 写入缓存
+        // 写入缓存（仅在 2xx 且内容长度完整时）
         if cacheMaxAge > 0 {
-            try? cacheStore.write(url: url, headers: headers, data: data)
+            let isStatusOK = httpResponse.statusCode.isHttpOkCode()
+            let expectedLength = response.expectedContentLength
+            let isUnknownLength = expectedLength == NSURLResponseUnknownLength
+            let isLengthOK = isUnknownLength || Int64(data.count) == expectedLength
+            if isStatusOK && isLengthOK {
+                try? cacheStore.write(url: url, headers: headers, data: data)
+            }
         }
 
         return (data, httpResponse)
