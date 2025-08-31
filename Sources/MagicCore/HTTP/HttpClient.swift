@@ -143,9 +143,13 @@ public class HttpClient: SuperLog {
         if cacheMaxAge > 0 {
             let isStatusOK = httpResponse.statusCode.isHttpOkCode()
             let expectedLength = response.expectedContentLength
-            let isUnknownLength = expectedLength == NSURLResponseUnknownLength
+            let isUnknownLength = expectedLength < 0
             let isLengthOK = isUnknownLength || Int64(data.count) == expectedLength
-            if isStatusOK && isLengthOK {
+            // 若是 JSON，则校验 JSON 合法性后再缓存，避免将截断数据写入缓存
+            let acceptHeader = headers["Accept"]?.lowercased() ?? ""
+            let shouldValidateJSON = acceptHeader.contains("application/json") || acceptHeader.contains("text/json")
+            let isValidJSON = !shouldValidateJSON || (try? JSONSerialization.jsonObject(with: data)) != nil
+            if isStatusOK && isLengthOK && isValidJSON {
                 try? cacheStore.write(url: url, headers: headers, data: data)
             }
         }
