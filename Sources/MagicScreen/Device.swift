@@ -7,12 +7,12 @@ public enum DeviceType: Equatable {
     case iPad
 }
 
-public enum Device: String, Equatable {
-    case iMac
-    case MacBook
-    case iPhoneBig
-    case iPhoneSmall
-    case iPad
+public enum Device: String, Equatable, CaseIterable {
+    case iMac = "iMac 27\""
+    case MacBook = "MacBook Pro 16\""
+    case iPhoneBig = "iPhone 14 Pro Max"
+    case iPhoneSmall = "iPhone 14 Pro"
+    case iPad = "iPad Pro 13\""
 
     public var isMac: Bool {
         self.type == .Mac
@@ -41,19 +41,12 @@ public enum Device: String, Equatable {
         }
     }
 
+    public var name: String {
+        self.rawValue
+    }
+    
     public var description: String {
-        switch self {
-        case .iMac:
-            return "iMac 27\""
-        case .MacBook:
-            return "MacBook Pro 16\""
-        case .iPad:
-            return "iPad Pro 13\""
-        case .iPhoneBig:
-            return "iPhone 14 Pro Max"
-        case .iPhoneSmall:
-            return "iPhone 14 Pro"
-        }
+        self.rawValue
     }
 
     public var systemImageName: String {
