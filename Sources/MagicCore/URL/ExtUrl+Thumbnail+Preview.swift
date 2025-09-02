@@ -7,6 +7,7 @@ struct ThumbnailPreview: View {
     @State private var videoThumbnail: Image?
     @State private var isLoading = false
     @State private var errorMessage: String?
+    @State private var useDefaultIcon: Bool = true
 
     // 测试用的音频和视频文件 URL
     private let audioURL = URL.sample_temp_mp3
@@ -60,6 +61,10 @@ struct ThumbnailPreview: View {
                         .frame(width: 200, height: 200)
                         .background(Color.gray.opacity(0.2))
                 }
+
+                Toggle("使用默认图标", isOn: $useDefaultIcon)
+                    .toggleStyle(.switch)
+                    .frame(maxWidth: 240)
 
                 Button("加载视频封面") {
                     loadVideoThumbnail()
@@ -122,7 +127,7 @@ struct ThumbnailPreview: View {
 
         Task {
             do {
-                if let thumbnail = try await url.thumbnail(size: CGSize(width: 200, height: 200), verbose: true, reason: "loadVideoThumbnail") {
+                if let thumbnail = try await url.thumbnail(size: CGSize(width: 200, height: 200), useDefaultIcon: useDefaultIcon, verbose: true, reason: "loadVideoThumbnail") {
                     await MainActor.run {
                         videoThumbnail = thumbnail
                     }

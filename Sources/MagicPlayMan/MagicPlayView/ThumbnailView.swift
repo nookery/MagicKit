@@ -17,6 +17,7 @@ struct ThumbnailView: View, SuperLog {
         verbose: Bool = false,
         defaultImage: Image? = nil
     ) {
+        os_log("\(Self.t) Make ThumbnailView with defaultImage")
         self.url = url
         self.verbose = verbose
         self.defaultImage = defaultImage
@@ -28,6 +29,7 @@ struct ThumbnailView: View, SuperLog {
         verbose: Bool = false,
         defaultImage: Image
     ) {
+        os_log("\(Self.t) Make ThumbnailView with defaultImage")
         self.url = url
         self.verbose = verbose
         self.defaultImage = defaultImage
@@ -39,6 +41,7 @@ struct ThumbnailView: View, SuperLog {
         verbose: Bool = false,
         @ViewBuilder defaultView: () -> Content
     ) {
+        os_log("\(Self.t) Make ThumbnailView with defaultView")
         self.url = url
         self.verbose = verbose
         self.defaultImage = nil
@@ -102,7 +105,9 @@ struct ThumbnailView: View, SuperLog {
                                 width: preferredThumbnailSize,
                                 height: preferredThumbnailSize
                             ),
-                            verbose: true, reason: "MagicPlayMan." + self.className + ".task"
+                            useDefaultIcon: false,
+                            verbose: true,
+                            reason: "MagicPlayMan." + self.className + ".task"
                         )
                     } catch {
                         loadedArtwork = nil
@@ -141,9 +146,9 @@ struct ThumbnailView: View, SuperLog {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     })
-        .frame(height: 500)
-        .frame(width: 500)
-        .inMagicContainer(containerHeight: 600)
+    .frame(height: 500)
+    .frame(width: 500)
+    .inMagicContainer(containerHeight: 600)
 }
 
 #Preview("MagicPlayMan") {
