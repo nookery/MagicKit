@@ -115,9 +115,18 @@ public class MagicImage {
     /// - Parameter view: 需要转换的 SwiftUI 视图
     /// - Returns: 转换后的 CGImage 对象
     /// - Note: 此方法必须在主线程上调用
-    ///        该方法假设转换总是会成功，如果转换失败会触发运行时错误
+    ///        如果转换失败，会创建一个1x1的透明图片作为fallback
     @MainActor static public func makeCGImage(_ view: some View) -> CGImage {
-        ImageRenderer(content: view).cgImage!
+        let renderer = ImageRenderer(content: view)
+        if let cgImage = renderer.cgImage {
+            return cgImage
+        } else {
+            // 如果渲染失败，创建一个1x1的透明图片作为fallback
+            let size = CGSize(width: 1, height: 1)
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let context = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+            return context.makeImage()!
+        }
     }
 
     /// 将 SwiftUI 视图转换为 SwiftUI Image 对象

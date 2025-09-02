@@ -1,0 +1,103 @@
+import Foundation
+import SwiftUI
+
+public enum DeviceType: Equatable {
+    case Mac
+    case iPhone
+    case iPad
+}
+
+public enum Device: String, Equatable {
+    case iMac
+    case MacBook
+    case iPhoneBig
+    case iPhoneSmall
+    case iPad
+
+    public var isMac: Bool {
+        self.type == .Mac
+    }
+
+    public var isiPhone: Bool {
+        self.type == .iPhone
+    }
+
+    public var isiPad: Bool {
+        self.type == .iPad
+    }
+
+    public var type: DeviceType {
+        switch self {
+        case .iMac:
+            return .Mac
+        case .MacBook:
+            return .Mac
+        case .iPad:
+            return .iPad
+        case .iPhoneBig:
+            return .iPhone
+        case .iPhoneSmall:
+            return .iPhone
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .iMac:
+            return "iMac 27\""
+        case .MacBook:
+            return "MacBook Pro 16\""
+        case .iPad:
+            return "iPad Pro 13\""
+        case .iPhoneBig:
+            return "iPhone 14 Pro Max"
+        case .iPhoneSmall:
+            return "iPhone 14 Pro"
+        }
+    }
+
+    public var systemImageName: String {
+        switch self {
+        case .iMac:
+            return "desktopcomputer"
+        case .MacBook:
+            return "laptopcomputer"
+        case .iPad:
+            return "ipad"
+        case .iPhoneBig:
+            return "iphone"
+        case .iPhoneSmall:
+            return "iphone"
+        }
+    }
+
+    public var width: CGFloat {
+        switch self {
+        case .iMac:
+            2880
+        case .MacBook:
+            2880
+        case .iPhoneBig:
+            1290
+        case .iPhoneSmall:
+            1242
+        case .iPad:
+            2048
+        }
+    }
+
+    public var height: CGFloat {
+        switch self {
+        case .iMac:
+            1800
+        case .MacBook:
+            1800
+        case .iPhoneBig:
+            2796
+        case .iPhoneSmall:
+            2208
+        case .iPad:
+            2732
+        }
+    }
+}

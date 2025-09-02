@@ -15,6 +15,7 @@ let package = Package(
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
         .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
         .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
+        .library(name: "MagicScreen", targets: ["MagicScreen"]),         // 屏幕设备模块
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -42,6 +43,11 @@ let package = Package(
        .target(
            name: "MagicSync",
            dependencies: ["MagicCore"]
+       ),
+       .target(
+           name: "MagicScreen",
+           dependencies: ["MagicCore"],
+           resources: [.process("Assets.xcassets")]
        ),
        .testTarget(
            name: "Tests",
