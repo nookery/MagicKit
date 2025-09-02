@@ -5,16 +5,44 @@ import SwiftUI
 struct ThumbnailView: View, SuperLog {
     nonisolated static let emoji = "🖥️"
 
-    let url: URL?
-    let verbose: Bool
-    var defaultImage: Image = .imageDocument
+    private let url: URL?
+    private let verbose: Bool
+    private let defaultImage: Image?
+    private let defaultView: AnyView?
     private let preferredThumbnailSize: CGFloat = 512 // 或其他合适的尺寸
     @State private var loadedArtwork: Image?
 
-    init(url: URL? = nil, verbose: Bool = false, defaultImage: Image = .imageDocument) {
+    init(
+        url: URL? = nil,
+        verbose: Bool = false,
+        defaultImage: Image? = nil
+    ) {
         self.url = url
         self.verbose = verbose
         self.defaultImage = defaultImage
+        self.defaultView = nil
+    }
+
+    init(
+        url: URL? = nil,
+        verbose: Bool = false,
+        defaultImage: Image
+    ) {
+        self.url = url
+        self.verbose = verbose
+        self.defaultImage = defaultImage
+        self.defaultView = nil
+    }
+
+    init<Content: View>(
+        url: URL? = nil,
+        verbose: Bool = false,
+        @ViewBuilder defaultView: () -> Content
+    ) {
+        self.url = url
+        self.verbose = verbose
+        self.defaultImage = nil
+        self.defaultView = AnyView(defaultView())
     }
 
     var body: some View {
@@ -36,14 +64,32 @@ struct ThumbnailView: View, SuperLog {
                                 }
                             }
                     } else {
-                        defaultImage
-                            .font(.system(size: min(geo.size.width, geo.size.height) * 0.3))
-                            .foregroundStyle(.secondary)
-                            .onAppear {
-                                if verbose {
-                                    os_log("\(self.t) artwork default")
+                        if let defaultImage = defaultImage {
+                            defaultImage
+                                .font(.system(size: min(geo.size.width, geo.size.height) * 0.3))
+                                .foregroundStyle(.secondary)
+                                .onAppear {
+                                    if verbose {
+                                        os_log("\(self.t) artwork default (image)")
+                                    }
                                 }
-                            }
+                        } else if let defaultView = defaultView {
+                            defaultView
+                                .onAppear {
+                                    if verbose {
+                                        os_log("\(self.t) artwork default (view)")
+                                    }
+                                }
+                        } else {
+                            Image(systemName: (url == nil) ? .iconDoc : .iconMusic)
+                                .font(.system(size: min(geo.size.width, geo.size.height) * 0.3))
+                                .foregroundStyle(.secondary)
+                                .onAppear {
+                                    if verbose {
+                                        os_log("\(self.t) artwork default (builtin)")
+                                    }
+                                }
+                        }
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -86,7 +132,15 @@ struct ThumbnailView: View, SuperLog {
 }
 
 #Preview("Fallback (Invalid URL)") {
-    ThumbnailView(url: .sample_invalid_url, defaultImage: Image(systemName: .iconDoc))
+    ThumbnailView(url: .sample_invalid_url, defaultView: {
+        VStack(spacing: 12) {
+            Image(systemName: .iconDoc)
+            Text("No Artwork")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    })
         .frame(height: 500)
         .frame(width: 500)
         .inMagicContainer(containerHeight: 600)

@@ -103,12 +103,30 @@ public extension MagicPlayMan {
     /// - Returns: 返回一个根据当前媒体资源类型自动适配的主要展示视图：
     /// - 当资源为音频时，显示音频缩略图，不包括音频的标题和艺术家
     /// - 当资源为视频时，显示视频播放视图
-    func makeHeroView(defaultImage: Image = .imageDocument) -> some View {
+    func makeHeroView(defaultImage: Image? = nil) -> some View {
         Group {
             if currentAsset == nil {
                 makeEmptyView()
             } else if currentAsset!.isAudio {
-                ThumbnailView(url: currentAsset!, defaultImage: defaultImage)
+                ThumbnailView(
+                    url: currentAsset!,
+                    defaultImage: defaultImage
+                )
+            } else {
+                makeVideoView()
+            }
+        }
+    }
+
+    func makeHeroView<Content: View>(@ViewBuilder defaultView: () -> Content) -> some View {
+        Group {
+            if currentAsset == nil {
+                makeEmptyView()
+            } else if currentAsset!.isAudio {
+                ThumbnailView(
+                    url: currentAsset!,
+                    defaultView: defaultView
+                )
             } else {
                 makeVideoView()
             }

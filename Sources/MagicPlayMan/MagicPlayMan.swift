@@ -94,7 +94,6 @@ extension MagicPlayMan {
 
     @MainActor
     func setProgress(_ value: Double) {
-        let oldProgress = progress
         progress = value
     }
 
