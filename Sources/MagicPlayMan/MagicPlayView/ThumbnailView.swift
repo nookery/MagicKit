@@ -2,19 +2,19 @@ import MagicCore
 import OSLog
 import SwiftUI
 
-// MARK: - Thumbnail View
-
 struct ThumbnailView: View, SuperLog {
     nonisolated static let emoji = "🖥️"
 
     let url: URL?
     let verbose: Bool
+    var defaultImage: Image = .imageDocument
     private let preferredThumbnailSize: CGFloat = 512 // 或其他合适的尺寸
     @State private var loadedArtwork: Image?
 
-    init(url: URL? = nil, verbose: Bool = false) {
+    init(url: URL? = nil, verbose: Bool = false, defaultImage: Image = .imageDocument) {
         self.url = url
         self.verbose = verbose
+        self.defaultImage = defaultImage
     }
 
     var body: some View {
@@ -36,7 +36,7 @@ struct ThumbnailView: View, SuperLog {
                                 }
                             }
                     } else {
-                        Image(systemName: "music.note")
+                        defaultImage
                             .font(.system(size: min(geo.size.width, geo.size.height) * 0.3))
                             .foregroundStyle(.secondary)
                             .onAppear {
@@ -59,7 +59,6 @@ struct ThumbnailView: View, SuperLog {
                             verbose: true, reason: "MagicPlayMan." + self.className + ".task"
                         )
                     } catch {
-                        print("Failed to load thumbnail: \(error.localizedDescription)")
                         loadedArtwork = nil
                     }
                 } else {
@@ -72,7 +71,28 @@ struct ThumbnailView: View, SuperLog {
 
 // MARK: - Preview
 
+#Preview("ThumbnailView") {
+    ThumbnailView(defaultImage: Image(systemName: .iconDoc))
+        .frame(height: 500)
+        .frame(width: 500)
+        .inMagicContainer(containerHeight: 600)
+}
+
+#Preview("Success (MP3)") {
+    ThumbnailView(url: .sample_web_mp3_kennedy, defaultImage: Image(systemName: .iconMusic))
+        .frame(height: 500)
+        .frame(width: 500)
+        .inMagicContainer(containerHeight: 600)
+}
+
+#Preview("Fallback (Invalid URL)") {
+    ThumbnailView(url: .sample_invalid_url, defaultImage: Image(systemName: .iconDoc))
+        .frame(height: 500)
+        .frame(width: 500)
+        .inMagicContainer(containerHeight: 600)
+}
+
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .inMagicContainer()
+        .inMagicContainer(containerHeight: 600)
 }
