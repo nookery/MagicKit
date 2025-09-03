@@ -4,20 +4,20 @@ import SwiftUI
 public extension Image {
     /**
         创建咖啡卷图标
-        
+
         ## 参数
         - `useDefaultBackground`: 是否使用默认的绿色渐变背景，默认为 true
         - `plateColor`: 盘子边框的颜色，默认为白色
         - `size`: 图标的大小，如果为 nil 则使用容器默认大小
-        
+
         ## 返回值
         一个包含咖啡卷图标的视图
-        
+
         ## 示例
         ```swift
         // 创建默认咖啡卷图标
         Image.makeCoffeeReelIcon()
-        
+
         // 创建自定义咖啡卷图标
         Image.makeCoffeeReelIcon(
             useDefaultBackground: false,
@@ -29,12 +29,14 @@ public extension Image {
     static func makeCoffeeReelIcon(
         useDefaultBackground: Bool = true,
         plateColor: Color = .white,
+        handleRotation: Double = 30,
         size: CGFloat? = nil
     ) -> some View {
         IconContainer(size: size) {
             CoffeeReelIcon(
                 useDefaultBackground: useDefaultBackground,
-                plateColor: plateColor
+                plateColor: plateColor,
+                handleRotation: handleRotation
             )
         }
     }
@@ -54,19 +56,23 @@ struct CoffeeReelIcon: View {
     let useDefaultBackground: Bool
     /// 盘子边框的颜色
     let plateColor: Color
+    /// 手柄旋转角度
+    let handleRotation: Double
     /// 咖啡杯的颜色
     let cupColor: Color = Color(red: 0.8, green: 0.6, blue: 0.2)
 
     /**
         初始化咖啡卷图标
-        
+
         ## 参数
         - `useDefaultBackground`: 是否使用默认背景
         - `plateColor`: 盘子边框颜色
+        - `handleRotation`: 手柄旋转角度，默认为30度
      */
-    init(useDefaultBackground: Bool = true, plateColor: Color = .white) {
+    init(useDefaultBackground: Bool = true, plateColor: Color = .white, handleRotation: Double = 30) {
         self.useDefaultBackground = useDefaultBackground
         self.plateColor = plateColor
+        self.handleRotation = handleRotation
     }
 
     /// 咖啡卷图标视图的主体
@@ -112,7 +118,7 @@ struct CoffeeReelIcon: View {
                                 Capsule()
                                     .frame(width: handleLength, height: handleWidth)
                                     .offset(x: cupSize * 0.3)
-                                    .rotationEffect(.degrees(30))
+                                    .rotationEffect(.degrees(handleRotation))
                                     .shadow(color: .black.opacity(0.3), radius: 3, x: 2, y: 2)
                                     .blendMode(.destinationOut)
                             }
@@ -175,48 +181,93 @@ struct CoffeeReelIcon: View {
         .tabItem {
             Label("默认", systemImage: "leaf.fill")
         }
-        
+
         // 自定义配置：无背景，棕色盘子
         VStack {
-            IconPreviewHelper(title: "Coffee Reel Icon (Custom)") {
-                Image.makeCoffeeReelIcon(
-                    useDefaultBackground: false,
-                    plateColor: .brown
-                )
-            }
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: false,
+                plateColor: .brown
+            )
+            .frame(height: 200)
+            .frame(width: 200)
         }
         .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("棕色盘子", systemImage: "circle.fill")
         }
-        
+
         // 自定义配置：无背景，蓝色盘子
         VStack {
-            IconPreviewHelper(title: "Coffee Reel Icon (Blue Plate)") {
-                Image.makeCoffeeReelIcon(
-                    useDefaultBackground: false,
-                    plateColor: .blue
-                )
-            }
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: false,
+                plateColor: .blue
+            )
+            .frame(height: 200)
+            .frame(width: 200)
         }
         .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("蓝色盘子", systemImage: "circle.fill")
         }
-        
+
         // 自定义配置：无背景，红色盘子
         VStack {
-            IconPreviewHelper(title: "Coffee Reel Icon (Red Plate)") {
-                Image.makeCoffeeReelIcon(
-                    useDefaultBackground: false,
-                    plateColor: .red
-                )
-            }
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: false,
+                plateColor: .red
+            )
+            .frame(width: 200)
+            .frame(height: 200)
         }
-        
         .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("红色盘子", systemImage: "circle.fill")
+        }
+
+        // 自定义配置：不同手柄角度
+        VStack(spacing: 20) {
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: true,
+                handleRotation: -90
+            )
+            .frame(height: 200)
+            .frame(width: 200)
+            
+            // 0度手柄
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: true,
+                handleRotation: 0
+            )
+            .frame(height: 200)
+            .frame(width: 200)
+
+            // 30度手柄
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: true,
+                handleRotation: 30
+            )
+            .frame(height: 200)
+            .frame(width: 200)
+
+            // 45度手柄
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: true,
+                handleRotation: 45
+            )
+            .frame(height: 200)
+            .frame(width: 200)
+
+            // 90度手柄
+            Image.makeCoffeeReelIcon(
+                useDefaultBackground: true,
+                handleRotation: 90
+            )
+            .frame(height: 200)
+            .frame(width: 200)
+        }
+        .inMagicContainer(containerHeight: 800)
+        .tabItem {
+            Label("手柄角度", systemImage: "rotate.right")
         }
     }
 }
