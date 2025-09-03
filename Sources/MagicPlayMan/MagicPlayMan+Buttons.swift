@@ -110,12 +110,27 @@ public extension MagicPlayMan {
     /// 这是一个自观察的按钮视图，会自动监听喜欢状态变化。
     /// 根据当前媒体资源的喜欢状态显示不同的图标和样式，支持喜欢/取消喜欢操作。
     /// 
-    /// - Parameter size: 按钮尺寸，默认为 .regular
+    /// - Parameters:
+    ///   - size: 按钮尺寸，默认为 .regular
+    ///   - style: 按钮样式，默认为 nil（使用默认样式：喜欢时为 .primary，不喜欢时为 .secondary）
+    ///   - shape: 按钮形状，默认为 .roundedSquare
+    ///   - shapeVisibility: 形状显示时机，默认为 .always
     /// - Returns: 自观察的喜欢按钮视图
     @MainActor
     @ViewBuilder
-    func makeLikeButtonView(size: MagicButton.Size = .regular) -> some View {
-        LikeButtonView(man: self, size: size)
+    func makeLikeButtonView(
+        size: MagicButton.Size = .regular,
+        style: MagicButton.Style? = nil,
+        shape: MagicButton.Shape = .roundedSquare,
+        shapeVisibility: MagicButton.ShapeVisibility = .always
+    ) -> some View {
+        LikeButtonView(
+            man: self,
+            size: size,
+            style: style,
+            shape: shape,
+            shapeVisibility: shapeVisibility
+        )
     }
 
     /// 获取喜欢按钮的动态 ID
