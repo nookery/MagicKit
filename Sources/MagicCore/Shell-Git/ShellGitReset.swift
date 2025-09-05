@@ -2,6 +2,7 @@ import Foundation
 import OSLog
 import SwiftUI
 
+#if os(macOS)
 extension ShellGit {
     /// 重置文件或文件夹到指定状态
     /// - Parameters:
@@ -66,10 +67,11 @@ extension ShellGit {
         return try Shell.runSync("git reset HEAD", at: path)
     }
 }
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Reset Demo") {
     ShellGitResetPreview()
         .inMagicContainer()

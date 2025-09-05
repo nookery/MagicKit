@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct ShellSystemPreviewView: View {
     
     var body: some View {
@@ -86,3 +86,4 @@ struct ShellSystemPreviewView: View {
     ShellSystemPreviewView()
         .inMagicContainer()
 } 
+#endif

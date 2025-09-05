@@ -2,6 +2,7 @@ import Foundation
 import OSLog
 import SwiftUI
 
+#if os(macOS)
 extension ShellGit {
     /// 暂存更改
     /// - Parameters:
@@ -44,11 +45,13 @@ extension ShellGit {
         }
         return result
     }
-} 
+}
+
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Stash Demo") {
     ShellGitStashPreview()
         .inMagicContainer()

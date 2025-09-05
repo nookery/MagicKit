@@ -2,6 +2,8 @@ import Foundation
 import OSLog
 import SwiftUI
 
+#if os(macOS)
+
 /// 网络相关的Shell命令工具类
 class ShellNetwork: SuperLog {
     static let emoji = "🌐"
@@ -181,5 +183,7 @@ class ShellNetwork: SuperLog {
         }
     }
 }
+
+#endif
 
 // MARK: - Preview

@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 获取提交日志
     /// - Parameters:
@@ -255,4 +255,6 @@ private extension String {
     ShellGitLogPreview()
         .inMagicContainer()
 } 
+#endif
+
 #endif

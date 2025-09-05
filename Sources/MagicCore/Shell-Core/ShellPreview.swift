@@ -1,6 +1,6 @@
 import SwiftUI
 
-#if DEBUG
+#if DEBUG && os(macOS)
 struct ShellDemoView: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -271,7 +271,7 @@ struct ShellDemoView: View {
 }
 #endif
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()

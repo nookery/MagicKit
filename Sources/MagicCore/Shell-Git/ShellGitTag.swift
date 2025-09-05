@@ -2,6 +2,7 @@ import Foundation
 import OSLog
 import SwiftUI
 
+#if os(macOS)
 extension ShellGit {
     /// 获取标签列表
     /// - Parameter path: 仓库路径
@@ -79,11 +80,12 @@ extension ShellGit {
         }
         return tags
     }
-} 
+}
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Tag Demo") {
     ShellGitTagPreview()
         .inMagicContainer()

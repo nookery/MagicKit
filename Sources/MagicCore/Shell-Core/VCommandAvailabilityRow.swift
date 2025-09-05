@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct VCommandAvailabilityRow: View {
     let command: String
     @State private var isAvailable: Bool?
@@ -55,3 +55,4 @@ struct VCommandAvailabilityRow: View {
         }
     }
 }
+#endif

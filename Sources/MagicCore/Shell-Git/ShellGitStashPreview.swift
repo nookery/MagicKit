@@ -1,6 +1,6 @@
 import SwiftUI
 
-#if DEBUG
+#if DEBUG && os(macOS)
 struct ShellGitStashPreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -50,7 +50,7 @@ struct ShellGitStashPreview: View {
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Stash Demo") {
     ShellGitStashPreview()
         .inMagicContainer()

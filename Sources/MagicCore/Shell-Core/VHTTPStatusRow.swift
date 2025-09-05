@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct VHTTPStatusRow: View {
     let url: String
     @State private var statusCode: Int?
@@ -63,3 +63,4 @@ struct VHTTPStatusRow: View {
         }
     }
 }
+#endif

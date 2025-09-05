@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 切换分支
     /// - Parameters:
@@ -91,10 +91,10 @@ extension ShellGit {
         return try Shell.runSync("git checkout -- .", at: path)
     }
 }
-
+#endif
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Checkout Demo") {
     ShellGitCheckoutPreview()
         .inMagicContainer()

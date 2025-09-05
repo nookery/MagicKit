@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 获取分支列表
     /// - Parameters:
@@ -119,10 +119,11 @@ extension ShellGit {
         return GitBranch(id: name, name: name, isCurrent: true, upstream: nil, latestCommitHash: "", latestCommitMessage: "")
     }
 }
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Branch Demo") {
     ShellGitBranchPreview()
         .inMagicContainer()

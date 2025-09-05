@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct ShellProcessPreviewView: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -109,3 +109,4 @@ struct ShellProcessPreviewView: View {
     ShellProcessPreviewView()
         .inMagicContainer()
 }
+#endif

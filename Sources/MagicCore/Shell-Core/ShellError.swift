@@ -19,7 +19,7 @@ enum ShellError: Error, LocalizedError {
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()

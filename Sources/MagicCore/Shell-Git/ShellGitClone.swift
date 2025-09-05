@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 克隆远程仓库
     /// - Parameters:
@@ -127,10 +127,10 @@ extension ShellGit {
         }
     }
 }
-
+#endif
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Clone Demo") {
     ShellGitClonePreview()
         .inMagicContainer()

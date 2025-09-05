@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct VAsyncCommandButton: View {
     @State private var isLoading = false
     @State private var result = ""
@@ -57,3 +57,4 @@ struct VAsyncCommandButton: View {
     }
 }
 
+#endif

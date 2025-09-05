@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 /// 系统信息相关的Shell命令工具类
 class ShellSystem: SuperLog {
     static let emoji = "💻"
@@ -167,3 +167,4 @@ class ShellSystem: SuperLog {
         }
     }
 }
+#endif

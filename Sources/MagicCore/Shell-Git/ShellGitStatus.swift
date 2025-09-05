@@ -2,6 +2,7 @@ import Foundation
 import OSLog
 import SwiftUI
 
+#if os(macOS)
 extension ShellGit {
     /// 获取暂存区的状态
     /// - Parameter path: 仓库路径
@@ -41,10 +42,11 @@ extension ShellGit {
         return !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Status Demo") {
     ShellGitStatusPreview()
         .inMagicContainer()

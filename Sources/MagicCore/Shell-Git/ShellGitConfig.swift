@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 检查是否为Git仓库
     /// - Parameter path: 路径
@@ -78,10 +78,11 @@ extension ShellGit {
         return "Name: \(nameResult)\nEmail: \(emailResult)"
     }
 }
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+ConfigInfo Demo") {
     ShellGitConfigInfoPreview()
         .inMagicContainer()

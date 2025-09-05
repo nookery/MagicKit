@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if os(macOS)
 struct VCommandCheckRow: View {
     let command: String
     @State private var exists: Bool?
@@ -38,3 +39,4 @@ struct VCommandCheckRow: View {
         }
     }
 }
+#endif

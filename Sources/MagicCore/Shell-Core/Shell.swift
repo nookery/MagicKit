@@ -31,6 +31,8 @@ class Shell: SuperLog {
 }
 #else
 
+#if os(macOS)
+
 /// Shell命令执行的核心类
 /// 提供基础的Shell命令执行功能
 class Shell: SuperLog {
@@ -253,9 +255,11 @@ class Shell: SuperLog {
     }
 }
 
+#endif
+
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()

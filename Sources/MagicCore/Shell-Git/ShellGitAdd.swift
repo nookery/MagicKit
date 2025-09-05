@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 将文件添加到暂存区
     /// - Parameters:
@@ -21,8 +21,9 @@ extension ShellGit {
         try Shell.runSync("git reset \(filesStr)", at: path)
     }
 }
+#endif
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Add Demo") {
     ShellGitAddPreview()
         .inMagicContainer()

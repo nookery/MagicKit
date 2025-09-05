@@ -1,6 +1,6 @@
 import SwiftUI
 
-#if DEBUG
+#if DEBUG && os(macOS)
 struct ShellGitTagPreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -50,7 +50,7 @@ struct ShellGitTagPreview: View {
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Tag Demo") {
     ShellGitTagPreview()
         .inMagicContainer()

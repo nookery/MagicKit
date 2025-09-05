@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 合并分支
     /// - Parameters:
@@ -132,10 +132,11 @@ extension ShellGit {
         }
     }
 }
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Merge Demo") {
     ShellGitMergePreview()
         .inMagicContainer()

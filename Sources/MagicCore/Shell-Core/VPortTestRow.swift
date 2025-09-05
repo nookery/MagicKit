@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct VPortTestRow: View {
     let host: String
     let port: Int
@@ -52,3 +52,4 @@ struct VPortTestRow: View {
         }
     }
 }
+#endif

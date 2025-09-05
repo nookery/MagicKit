@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct VProcessDetailView: View {
     @State private var selectedPID = ""
     @State private var processDetails = ""
@@ -33,3 +33,4 @@ struct VProcessDetailView: View {
         }
     }
 }
+#endif

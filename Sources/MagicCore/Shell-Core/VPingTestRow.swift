@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if os(macOS)
 struct VPingTestRow: View {
     let host: String
     @State private var isReachable: Bool?
@@ -50,3 +50,4 @@ struct VPingTestRow: View {
         }
     }
 }
+#endif

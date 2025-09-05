@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 获取差异
     /// - Parameters:
@@ -206,10 +206,10 @@ extension ShellGit {
         return !output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 }
-
+#endif
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Diff Demo") {
    ShellGitDiffPreview()
        .inMagicContainer()

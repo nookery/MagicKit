@@ -1,6 +1,6 @@
 import SwiftUI
 
-#if DEBUG
+#if DEBUG && os(macOS)
 struct ShellFilePreviewView: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -72,7 +72,7 @@ struct ShellFilePreviewView: View {
 }
 #endif
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
         .inMagicContainer()

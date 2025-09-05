@@ -2,6 +2,8 @@ import Foundation
 import OSLog
 import SwiftUI
 
+#if os(macOS)
+
 /// 进程管理相关的Shell命令工具类
 class ShellProcess: SuperLog {
     static let emoji = "⚙️"
@@ -250,3 +252,5 @@ class ShellProcess: SuperLog {
         try Shell.runSync("launchctl stop \(serviceName)")
     }
 }
+
+#endif

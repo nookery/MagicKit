@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 extension ShellGit {
     /// 推送到远程仓库
     /// - Parameters:
@@ -124,10 +124,10 @@ extension ShellGit {
         return remotes
     }
 }
-
+#endif
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellGit+Remote Demo") {
     ShellGitRemotePreview()
         .inMagicContainer()

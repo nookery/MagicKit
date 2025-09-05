@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
-
+#if os(macOS)
 /// 文件操作相关的Shell命令工具类
 class ShellFile: SuperLog {
     static let emoji = "📁"
@@ -149,10 +149,11 @@ class ShellFile: SuperLog {
         try Shell.runSync("chmod \(permissions) \"\(path)\"")
     }
 }
+#endif
 
 // MARK: - Preview
 
-#if DEBUG
+#if DEBUG && os(macOS)
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
         .inMagicContainer()
