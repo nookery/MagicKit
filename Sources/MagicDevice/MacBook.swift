@@ -1,16 +1,16 @@
 import SwiftUI
 
-public struct iMacDevice: SuperScreen {
+public struct MacBookDevice: SuperScreen {
     public var screenWidth: CGFloat {
-        5120
+        2550
     }
     
     public var screenHeight: CGFloat {
-        2890
+        1650
     }
     
     public var deviceImageName: String {
-        "iMac 27\" - Silver"
+        "MacBook Air 13\" - 4th Gen - Midnight"
     }
     
     public var landscapeImageName: String? {
@@ -22,11 +22,11 @@ public struct iMacDevice: SuperScreen {
     }
     
     public var screenOffsetY: CGFloat {
-        -568
+        0
     }
 }
 
-public struct ScreeniMac<Content>: View where Content: View {
+public struct MacBookScreen<Content>: View where Content: View {
     private let content: Content
 
     public init(@ViewBuilder content: () -> Content) {
@@ -34,7 +34,7 @@ public struct ScreeniMac<Content>: View where Content: View {
     }
 
     public var body: some View {
-        ScreenBase(device: iMacDevice(), horizon: false) {
+        ScreenBase(device: MacBookDevice(), horizon: false) {
             content
         }
     }
@@ -43,10 +43,10 @@ public struct ScreeniMac<Content>: View where Content: View {
 // MARK: - View Extensions
 
 public extension View {
-    /// 将当前视图包装在 iMac 屏幕中
-    /// - Returns: 包装在 iMac 屏幕中的视图
-    func inIMacScreen() -> some View {
-        ScreeniMac {
+    /// 将当前视图包装在 MacBook 屏幕中
+    /// - Returns: 包装在 MacBook 屏幕中的视图
+    func inMacBookScreen() -> some View {
+        MacBookScreen {
             self
         }
     }
@@ -54,16 +54,16 @@ public extension View {
 
 // MARK: - Preview
 
-#Preview("iMac - Basic") {
+#Preview("MacBook - Basic") {
     HStack {
         Spacer()
         VStack {
             Spacer()
-            Image(systemName: "desktopcomputer")
+            Image(systemName: "laptopcomputer")
                 .font(.system(size: 400))
                 .foregroundColor(.blue)
             
-            Text("iMac 预览")
+            Text("MacBook 预览")
                 .font(.system(size: 300))
                 .fontWeight(.bold)
             Spacer()
@@ -72,10 +72,10 @@ public extension View {
     }
     .padding(40)
     .background(.orange.opacity(0.2))
-    .inIMacScreen()
+    .inMacBookScreen()
 }
 
-#Preview("iMac - Custom View") {
+#Preview("MacBook - Custom View") {
     HStack {
         Spacer()
         VStack(spacing: 20) {
@@ -93,5 +93,5 @@ public extension View {
     }
     .padding(30)
     .background(.blue.opacity(0.1))
-    .inIMacScreen()
+    .inMacBookScreen()
 }

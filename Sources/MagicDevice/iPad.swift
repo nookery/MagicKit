@@ -32,7 +32,7 @@ public struct iPadDevice: SuperScreen {
     }
 }
 
-public struct ScreeniPad<Content>: View where Content: View {
+public struct iPadScreen<Content>: View where Content: View {
     private let content: Content
     public var horizon = false
 
@@ -55,7 +55,7 @@ public extension View {
     /// - Parameter horizon: 是否使用横屏模式，默认为 false
     /// - Returns: 包装在 iPad 屏幕中的视图
     func inIPadScreen(horizon: Bool = false) -> some View {
-        ScreeniPad(horizon: horizon) {
+        iPadScreen(horizon: horizon) {
             self
         }
     }
