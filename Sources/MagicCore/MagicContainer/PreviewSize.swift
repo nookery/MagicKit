@@ -63,6 +63,8 @@ enum PreviewSize: String, CaseIterable {
 
 #if DEBUG
 #Preview("MagicThemePreviewPreview") {
-    MagicContainerPreview()
+    Text("Hello, World!")
+        .padding()
+        .inMagicContainer(containerWidth: 500)
 }
 #endif

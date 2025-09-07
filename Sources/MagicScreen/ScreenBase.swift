@@ -72,7 +72,7 @@ public struct ScreenBase<Content>: View where Content: View {
     // MARK: 设备图片的高度
 
     @MainActor private func getDeviceHeight() -> CGFloat {
-        CGFloat(MagicImage.getViewHeigth(getDeviceImage()))
+        CGFloat(MagicImage.getViewHeight(getDeviceImage()))
     }
 
     // MARK: 设备图片的宽度
@@ -85,7 +85,7 @@ public struct ScreenBase<Content>: View where Content: View {
 
     @MainActor private func getDeviceSize() -> String {
         let deviceImage = getDeviceImage()
-        return "\(MagicImage.getViewWidth(deviceImage)) X \(MagicImage.getViewHeigth(deviceImage))"
+        return "\(MagicImage.getViewWidth(deviceImage)) X \(MagicImage.getViewHeight(deviceImage))"
     }
 
     // MARK: 设备图片的屏幕尺寸
