@@ -60,6 +60,6 @@ extension View {
             .onlyDebug()
     }
     .padding()
-    .inMagicContainer()
+    
 }
 #endif

@@ -173,5 +173,4 @@ struct GlobeIcon: View {
             )
         }
     }
-    .inMagicContainer(containerHeight: 800)
 }

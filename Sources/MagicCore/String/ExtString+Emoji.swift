@@ -130,5 +130,5 @@ extension String {
     }
 
     // #Preview {
-    //     StringEmojiPreview().inMagicContainer()
+    //     StringEmojiPreview()
     // }

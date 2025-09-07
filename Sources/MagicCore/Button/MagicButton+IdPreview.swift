@@ -108,6 +108,5 @@ struct MagicButtonIdPreview: View {
 #if DEBUG
 #Preview("ID Preview") {
     MagicButtonIdPreview()
-        .inMagicContainer()
 }
 #endif

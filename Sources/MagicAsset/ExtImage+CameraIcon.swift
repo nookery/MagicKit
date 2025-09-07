@@ -104,5 +104,4 @@ struct CameraIcon: View {
     IconPreviewHelper(title: "Camera Icon") {
         Image.makeCameraIcon()
     }
-    .inMagicContainer(containerHeight: 800)
 }

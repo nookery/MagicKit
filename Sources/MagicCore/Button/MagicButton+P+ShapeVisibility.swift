@@ -47,6 +47,5 @@ struct ShapeVisibilityButtonsPreview: View {
 
 #Preview("ShapeVisibility") {
     ShapeVisibilityButtonsPreview()
-        .inMagicContainer()
 }
 #endif

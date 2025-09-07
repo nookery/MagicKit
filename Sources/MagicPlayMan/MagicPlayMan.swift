@@ -225,5 +225,4 @@ extension MagicPlayMan {
 #Preview("MagicPlayMan") {
     MagicPlayMan
         .PreviewView()
-        .inMagicContainer(containerHeight: 1000)
 }

@@ -218,7 +218,7 @@ struct DiffLineView: View, SuperLog {
 #if DEBUG
     #Preview("MagicDiffPreviewView") {
         MagicDiffPreviewView()
-            .inMagicContainer()
+            
     }
 
     #Preview {

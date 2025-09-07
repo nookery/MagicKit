@@ -72,6 +72,5 @@ struct MagicButtonStyle: ButtonStyle {
 #if DEBUG   
 #Preview("Container") {
     BasicButtonsPreview()
-        .inMagicContainer()
 }
 #endif

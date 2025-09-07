@@ -15,7 +15,7 @@ description: Ensure every Swift file under MagicPlayMan ends with a single, unif
 #Preview("MagicPlayMan") {
     MagicPlayMan
         .PreviewView()
-        .inMagicContainer(containerHeight: 1000)
+
 }
 ```
 

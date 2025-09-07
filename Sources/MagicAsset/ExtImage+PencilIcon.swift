@@ -57,5 +57,4 @@ struct PencilIcon: View {
     IconPreviewHelper(title: "Pencil Icon") {
         Image.makePencilIcon()
     }
-    .inMagicContainer(containerHeight: 800)
 }

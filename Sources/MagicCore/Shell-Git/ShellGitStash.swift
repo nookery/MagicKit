@@ -54,6 +54,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Stash Demo") {
     ShellGitStashPreview()
-        .inMagicContainer()
+        
 } 
 #endif

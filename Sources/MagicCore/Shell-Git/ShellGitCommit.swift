@@ -37,6 +37,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Commit Demo") {
     ShellGitCommitPreview()
-        .inMagicContainer()
+        
 } 
 #endif

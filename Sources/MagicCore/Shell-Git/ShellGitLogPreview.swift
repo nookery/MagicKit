@@ -127,6 +127,6 @@ struct ShellGitLogPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Log Demo") {
         ShellGitLogPreview()
-            .inMagicContainer()
+            
 } 
 #endif

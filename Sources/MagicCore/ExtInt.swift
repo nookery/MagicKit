@@ -16,7 +16,7 @@ public extension Int {
     func isHttpOkCode() -> Bool {
         self >= 200 && self < 300
     }
-    
+
     /// 将整数转换为字符串
     ///
     /// 提供一个简便的方式将整数转换为字符串
@@ -27,7 +27,7 @@ public extension Int {
     var string: String {
         "\(self)"
     }
-    
+
     /// 检查是否为偶数
     ///
     /// ```swift
@@ -39,7 +39,7 @@ public extension Int {
     var isEven: Bool {
         self % 2 == 0
     }
-    
+
     /// 检查是否为奇数
     ///
     /// ```swift
@@ -51,7 +51,7 @@ public extension Int {
     var isOdd: Bool {
         !isEven
     }
-    
+
     /// 将整数转换为带前导零的字符串
     /// - Parameter length: 目标字符串长度
     /// - Returns: 带前导零的字符串
@@ -63,7 +63,7 @@ public extension Int {
     func padded(length: Int) -> String {
         String(format: "%0\(length)d", self)
     }
-    
+
     /// 将整数转换为人类可读的文件大小字符串
     ///
     /// ```swift
@@ -74,12 +74,12 @@ public extension Int {
         let units = ["B", "KB", "MB", "GB", "TB"]
         var size = Double(self)
         var unitIndex = 0
-        
+
         while size >= 1024 && unitIndex < units.count - 1 {
             size /= 1024
             unitIndex += 1
         }
-        
+
         return String(format: "%.1f %@", size, units[unitIndex])
     }
 }
@@ -89,79 +89,77 @@ struct IntExtensionDemoView: View {
     var body: some View {
         TabView {
             // 基础功能演示
-            MagicContainer {
-                VStack(spacing: 20) {
-                    // HTTP 状态码
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("HTTP 状态码")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "200", value: "200.isHttpOkCode()") {
-                                Image(systemName: 200.isHttpOkCode() ? .iconCheckmark : .iconClose)
-                                    .foregroundStyle(200.isHttpOkCode() ? .green : .red)
-                            }
-                            MagicKeyValue(key: "404", value: "404.isHttpOkCode()") {
-                                Image(systemName: 404.isHttpOkCode() ? .iconCheckmark : .iconClose)
-                                    .foregroundStyle(404.isHttpOkCode() ? .green : .red)
-                            }
+            VStack(spacing: 20) {
+                // HTTP 状态码
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("HTTP 状态码")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "200", value: "200.isHttpOkCode()") {
+                            Image(systemName: 200.isHttpOkCode() ? .iconCheckmark : .iconClose)
+                                .foregroundStyle(200.isHttpOkCode() ? .green : .red)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    
-                    // 数字属性
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("数字属性")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "42.isEven", value: "true") {
-                                Image(systemName: 42.isEven ? .iconCheckmark : .iconClose)
-                                    .foregroundStyle(.green)
-                            }
-                            MagicKeyValue(key: "7.isOdd", value: "true") {
-                                Image(systemName: 7.isOdd ? .iconCheckmark : .iconClose)
-                                    .foregroundStyle(.green)
-                            }
+                        MagicKeyValue(key: "404", value: "404.isHttpOkCode()") {
+                            Image(systemName: 404.isHttpOkCode() ? .iconCheckmark : .iconClose)
+                                .foregroundStyle(404.isHttpOkCode() ? .green : .red)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
+
+                // 数字属性
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("数字属性")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "42.isEven", value: "true") {
+                            Image(systemName: 42.isEven ? .iconCheckmark : .iconClose)
+                                .foregroundStyle(.green)
+                        }
+                        MagicKeyValue(key: "7.isOdd", value: "true") {
+                            Image(systemName: 7.isOdd ? .iconCheckmark : .iconClose)
+                                .foregroundStyle(.green)
+                        }
+                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: .iconNumberCircleFill1)
                 Text("基础")
             }
-            
+
             // 格式化演示
-            MagicContainer {
-                VStack(spacing: 20) {
-                    // 数字格式化
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("数字格式化")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "7.padded(3)", value: "007")
-                            MagicKeyValue(key: "42.string", value: "42")
-                            MagicKeyValue(key: "(1024 * 1024).fileSizeString", value: (1024 * 1024).fileSizeString)
-                            MagicKeyValue(key: "(1024 * 1024 * 1024).fileSizeString", value: (1024 * 1024 * 1024).fileSizeString)
-                        }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+            VStack(spacing: 20) {
+                // 数字格式化
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("数字格式化")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "7.padded(3)", value: "007")
+                        MagicKeyValue(key: "42.string", value: "42")
+                        MagicKeyValue(key: "(1024 * 1024).fileSizeString", value: (1024 * 1024).fileSizeString)
+                        MagicKeyValue(key: "(1024 * 1024 * 1024).fileSizeString", value: (1024 * 1024 * 1024).fileSizeString)
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: .iconNumberCircleFill2)
                 Text("格式化")

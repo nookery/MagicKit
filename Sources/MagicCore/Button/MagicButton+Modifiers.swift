@@ -309,6 +309,5 @@ public extension MagicButton {
 #if DEBUG
 #Preview("Basic") {
     BasicButtonsPreview()
-        .inMagicContainer()
 }
 #endif

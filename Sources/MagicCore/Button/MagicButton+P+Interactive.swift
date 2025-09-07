@@ -76,6 +76,5 @@ struct InteractiveButtonsPreview: View {
 
 #Preview("Interactive") {
     InteractiveButtonsPreview()
-        .inMagicContainer()
 }
 #endif

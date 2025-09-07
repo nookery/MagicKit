@@ -137,6 +137,5 @@ import SwiftUI
 #if DEBUG
 #Preview("Background") {
     BackgroundColorButtonsPreview()
-        .inMagicContainer()
 }
 #endif

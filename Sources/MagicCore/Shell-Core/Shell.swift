@@ -263,7 +263,7 @@ class Shell: SuperLog {
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()
-        .inMagicContainer()
+        
 }
 #endif
 #endif

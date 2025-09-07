@@ -123,6 +123,6 @@ struct ShellGitCommitPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Commit Demo") {
     ShellGitCommitPreview()
-        .inMagicContainer()
+        
 } 
 #endif

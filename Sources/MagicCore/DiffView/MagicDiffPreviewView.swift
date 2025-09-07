@@ -105,7 +105,7 @@ struct MagicDiffPreviewView: View {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        .inMagicContainer()
+        
 }
 
 /// 动态文本变化演示视图
@@ -175,7 +175,7 @@ struct DynamicTextPreview: View {
 
 #Preview("动态文本变化") {
     DynamicTextPreview()
-        .inMagicContainer()
+        
 }
 
 #Preview("语言检测测试") {
@@ -196,7 +196,7 @@ struct DynamicTextPreview: View {
         newText: swiftCode,
         verbose: true
     )
-    .inMagicContainer()
+    
 }
 
 #Preview("调试语言检测") {
@@ -279,5 +279,5 @@ struct DynamicTextPreview: View {
     }
     
     return DebugLanguageDetectionView()
-        .inMagicContainer()
+        
 }

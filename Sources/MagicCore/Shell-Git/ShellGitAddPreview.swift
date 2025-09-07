@@ -93,6 +93,6 @@ struct ShellGitAddPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Add Demo") {
     ShellGitAddPreview()
-        .inMagicContainer()
+        
 }
 #endif

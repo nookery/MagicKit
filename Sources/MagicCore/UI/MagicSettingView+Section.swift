@@ -92,7 +92,7 @@ public struct MagicSettingSection<Content: View>: View {
             }
         }
     }
-    .inMagicContainer()
+    
     .frame(width: 500)
     .padding()
 }

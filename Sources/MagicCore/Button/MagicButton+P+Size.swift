@@ -380,6 +380,5 @@ struct SizeButtonsPreview: View {
 
 #Preview("Size") {
     SizeButtonsPreview()
-        .inMagicContainer()
 }
 #endif

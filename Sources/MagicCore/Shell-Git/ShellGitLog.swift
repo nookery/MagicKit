@@ -253,7 +253,7 @@ private extension String {
 #if DEBUG
 #Preview("ShellGit+Log Demo") {
     ShellGitLogPreview()
-        .inMagicContainer()
+        
 } 
 #endif
 

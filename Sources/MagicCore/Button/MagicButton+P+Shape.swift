@@ -88,6 +88,5 @@ struct ShapeButtonsPreview: View {
 
 #Preview("Shape") {
     ShapeButtonsPreview()
-        .inMagicContainer()
 }
 #endif

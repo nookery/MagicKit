@@ -156,6 +156,5 @@ class ShellFile: SuperLog {
 #if DEBUG && os(macOS)
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
-        .inMagicContainer()
 }
 #endif

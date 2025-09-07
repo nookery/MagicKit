@@ -261,5 +261,5 @@ public extension View {
 
 #Preview {
     TooltipPreviews()
-        .inMagicContainer()
+        
 }

@@ -139,6 +139,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Merge Demo") {
     ShellGitMergePreview()
-        .inMagicContainer()
+        
 } 
 #endif

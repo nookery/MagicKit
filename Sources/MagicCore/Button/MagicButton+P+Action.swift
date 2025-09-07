@@ -176,6 +176,5 @@ struct LoadingAndPreventDoubleClickPreview: View {
 
 #Preview("Action") {
     LoadingAndPreventDoubleClickPreview()
-        .inMagicContainer()
 }
 #endif

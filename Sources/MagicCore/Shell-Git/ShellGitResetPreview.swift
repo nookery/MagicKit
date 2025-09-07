@@ -37,6 +37,6 @@ struct ShellGitResetPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Reset Demo") {
     ShellGitResetPreview()
-        .inMagicContainer()
+        
 } 
 #endif

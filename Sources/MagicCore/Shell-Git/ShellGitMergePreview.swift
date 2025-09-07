@@ -160,6 +160,6 @@ struct ShellGitMergePreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Merge Demo") {
     ShellGitMergePreview()
-        .inMagicContainer()
+        
 } 
 #endif

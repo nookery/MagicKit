@@ -123,7 +123,7 @@ struct ErrorPreviewView: View {
             .error($customError)
         }
         .padding()
-        .inMagicContainer()
+        
     }
 }
 
@@ -150,6 +150,6 @@ struct ToastPreviewView: View {
             .toast($errorMessage)
         }
         .padding()
-        .inMagicContainer()
+        
     }
 }

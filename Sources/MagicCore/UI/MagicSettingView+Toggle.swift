@@ -6,7 +6,7 @@ public struct MagicSettingToggle: View {
     let description: String?
     let icon: String?
     @Binding var isOn: Bool
-    
+
     public init(
         title: String,
         description: String? = nil,
@@ -18,7 +18,7 @@ public struct MagicSettingToggle: View {
         self.icon = icon
         self._isOn = isOn
     }
-    
+
     public var body: some View {
         MagicSettingRow(title: title, description: description, icon: icon) {
             Toggle("", isOn: $isOn)
@@ -29,25 +29,24 @@ public struct MagicSettingToggle: View {
 }
 
 // MARK: - Preview
+
 #Preview {
-    MagicContainer {
-        VStack(spacing: 0) {
-            MagicSettingToggle(
-                title: "Enable Feature",
-                description: "Turn this on to enable the awesome feature",
-                icon: "star",
-                isOn: .constant(true)
-            )
-            
-            Divider()
-            
-            MagicSettingToggle(
-                title: "Simple Toggle",
-                icon: "bell",
-                isOn: .constant(false)
-            )
-        }
-        .padding()
-        .frame(width: 400)
+    VStack(spacing: 0) {
+        MagicSettingToggle(
+            title: "Enable Feature",
+            description: "Turn this on to enable the awesome feature",
+            icon: "star",
+            isOn: .constant(true)
+        )
+
+        Divider()
+
+        MagicSettingToggle(
+            title: "Simple Toggle",
+            icon: "bell",
+            isOn: .constant(false)
+        )
     }
+    .padding()
+    .frame(width: 400)
 }

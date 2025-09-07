@@ -346,6 +346,6 @@ public struct MagicPerformanceDemo: View {
 }
 
 #Preview("性能监控演示") {
-    MagicPerformanceDemo().inMagicContainer()
+    MagicPerformanceDemo()
 }
 #endif 

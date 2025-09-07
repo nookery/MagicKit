@@ -130,6 +130,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Remote Demo") {
     ShellGitRemotePreview()
-        .inMagicContainer()
+        
 } 
 #endif

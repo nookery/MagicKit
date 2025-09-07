@@ -61,6 +61,5 @@ struct DebugBorderButtonsPreview: View {
 
 #Preview("DebugBorder") {
     DebugBorderButtonsPreview()
-        .inMagicContainer()
 }
 #endif

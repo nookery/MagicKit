@@ -126,5 +126,5 @@ struct TooltipPreviews: View {
 
 #Preview {
     TooltipPreviews()
-        .inMagicContainer()
+        
 }

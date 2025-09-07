@@ -186,5 +186,5 @@ internal extension MagicPlayMan {
 #Preview("MagicPlayMan") {
     
         MagicPlayMan.PreviewView()
-        .inMagicContainer()
+        
 }

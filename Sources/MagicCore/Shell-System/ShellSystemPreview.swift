@@ -84,6 +84,6 @@ struct ShellSystemPreviewView: View {
 
 #Preview("ShellSystem Demo") {
     ShellSystemPreviewView()
-        .inMagicContainer()
+        
 } 
 #endif

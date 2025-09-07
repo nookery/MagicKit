@@ -70,6 +70,5 @@ struct CustomShapeButtonsPreview: View {
 
 #Preview("CustomShape") {
     CustomShapeButtonsPreview()
-        .inMagicContainer()
 }
 #endif

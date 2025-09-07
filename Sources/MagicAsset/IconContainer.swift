@@ -62,5 +62,5 @@ public struct IconContainer<Content: View>: View {
             }
         }
         .frame(height: 50)
-    }.inMagicContainer()
+    }
 }

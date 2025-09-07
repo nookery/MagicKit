@@ -275,6 +275,6 @@ struct ShellDemoView: View {
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()
-        .inMagicContainer()
+        
 }
 #endif

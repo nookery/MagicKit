@@ -95,8 +95,7 @@ fileprivate struct PressActionModifier: ViewModifier {
 
 // MARK: - Preview
 #Preview {
-    MagicContainer {
-        VStack(spacing: 0) {
+    VStack(spacing: 0) {
             // Basic row with text content
             MagicSettingRow(
                 title: "Basic Setting",
@@ -166,5 +165,5 @@ fileprivate struct PressActionModifier: ViewModifier {
                 }
             }
         }
-    }
+    
 }

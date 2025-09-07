@@ -281,5 +281,5 @@ struct MagicShape: View {
             )
     }
     .padding()
-    .inMagicContainer()
+    
 }

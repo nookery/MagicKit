@@ -75,6 +75,5 @@ struct ShellFilePreviewView: View {
 #if DEBUG && os(macOS)
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
-        .inMagicContainer()
 }
 #endif

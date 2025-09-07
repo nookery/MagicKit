@@ -133,6 +133,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Clone Demo") {
     ShellGitClonePreview()
-        .inMagicContainer()
+        
 } 
 #endif

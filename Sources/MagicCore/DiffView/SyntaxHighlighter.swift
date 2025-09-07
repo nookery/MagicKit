@@ -369,6 +369,6 @@ public enum CodeLanguage: String, CaseIterable {
 #if DEBUG
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        .inMagicContainer()
+        
 }
 #endif

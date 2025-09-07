@@ -29,6 +29,5 @@ public extension MagicPlayMan {
 
 #Preview("MagicPlayMan - Large") {
     MagicPlayMan.PreviewView()
-        .inMagicContainer()
         .frame(height: 1000)
 }

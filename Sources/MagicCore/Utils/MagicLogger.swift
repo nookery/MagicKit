@@ -263,5 +263,5 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
         MagicLogger.warning("Warning message")
         MagicLogger.error("Error message")
     }
-    .inMagicContainer()
+    
 }

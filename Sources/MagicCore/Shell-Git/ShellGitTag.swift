@@ -88,6 +88,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Tag Demo") {
     ShellGitTagPreview()
-        .inMagicContainer()
+        
 } 
 #endif

@@ -93,6 +93,5 @@ private struct PlaylistItemRow: View {
 #Preview("MagicPlayMan") {
     
         MagicPlayMan.PreviewView()
-        .inMagicContainer()
 }
 

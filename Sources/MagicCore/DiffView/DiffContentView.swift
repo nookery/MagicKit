@@ -77,5 +77,5 @@ struct DiffContentView: View, SuperLog {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        .inMagicContainer()
+        
 }

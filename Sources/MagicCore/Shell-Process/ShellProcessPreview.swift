@@ -107,6 +107,6 @@ struct ShellProcessPreviewView: View {
 
 #Preview("ShellProcess Demo") {
     ShellProcessPreviewView()
-        .inMagicContainer()
+        
 }
 #endif

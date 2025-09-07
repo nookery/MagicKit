@@ -91,5 +91,5 @@ public extension URL {
 
 #Preview("Open Buttons") {
     OpenPreivewView()
-        .inMagicContainer()
+        
 }

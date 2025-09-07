@@ -53,6 +53,6 @@ struct ShellGitTagPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Tag Demo") {
     ShellGitTagPreview()
-        .inMagicContainer()
+        
 } 
 #endif

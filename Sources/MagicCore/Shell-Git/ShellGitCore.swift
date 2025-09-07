@@ -22,6 +22,6 @@ import SwiftUI
 #if DEBUG && os(macOS)
     #Preview("ShellGit+Core Demo") {
         ShellGitCorePreview()
-            .inMagicContainer()
+            
     }
 #endif

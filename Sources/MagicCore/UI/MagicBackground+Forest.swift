@@ -117,7 +117,6 @@ extension MagicBackground {
 #Preview("Forest Themes") {
     TabView {
         // 森林主题
-        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("森林主题")
@@ -143,7 +142,7 @@ extension MagicBackground {
                 }
                 .padding()
             }
-        }
+        
         .tabItem {
             Image(systemName: "leaf.fill")
             Text("森林")

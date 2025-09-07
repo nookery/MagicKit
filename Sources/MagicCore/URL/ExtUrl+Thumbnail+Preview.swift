@@ -182,5 +182,5 @@ struct ThumbnailPreview: View {
 }
 
 #Preview {
-    ThumbnailPreview().inMagicContainer()
+    ThumbnailPreview()
 }

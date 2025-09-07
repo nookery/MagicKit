@@ -34,5 +34,5 @@ struct IconPreviewHelper<Content: View>: View {
 #Preview {
     IconPreviewHelper(title: "Book Icon") {
         Image.makeBookIcon()
-    }.inMagicContainer()
+    }
 }

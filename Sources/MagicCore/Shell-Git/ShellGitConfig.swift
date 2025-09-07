@@ -85,6 +85,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+ConfigInfo Demo") {
     ShellGitConfigInfoPreview()
-        .inMagicContainer()
+        
 }
 #endif

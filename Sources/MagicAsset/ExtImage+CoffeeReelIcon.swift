@@ -177,7 +177,6 @@ struct CoffeeReelIcon: View {
                 Image.makeCoffeeReelIcon()
             }
         }
-        .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("默认", systemImage: "leaf.fill")
         }
@@ -191,7 +190,6 @@ struct CoffeeReelIcon: View {
             .frame(height: 200)
             .frame(width: 200)
         }
-        .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("棕色盘子", systemImage: "circle.fill")
         }
@@ -205,7 +203,6 @@ struct CoffeeReelIcon: View {
             .frame(height: 200)
             .frame(width: 200)
         }
-        .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("蓝色盘子", systemImage: "circle.fill")
         }
@@ -219,7 +216,6 @@ struct CoffeeReelIcon: View {
             .frame(width: 200)
             .frame(height: 200)
         }
-        .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("红色盘子", systemImage: "circle.fill")
         }
@@ -265,7 +261,6 @@ struct CoffeeReelIcon: View {
             .frame(height: 200)
             .frame(width: 200)
         }
-        .inMagicContainer(containerHeight: 800)
         .tabItem {
             Label("手柄角度", systemImage: "rotate.right")
         }

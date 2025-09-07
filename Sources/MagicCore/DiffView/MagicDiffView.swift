@@ -200,6 +200,6 @@ public struct MagicDiffView: View, SuperLog {
 #if DEBUG
     #Preview("MagicDiffPreviewView") {
         MagicDiffPreviewView()
-            .inMagicContainer()
+            
     }
 #endif

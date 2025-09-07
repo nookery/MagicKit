@@ -79,6 +79,5 @@ struct CustomCapsule: Shape {
 #if DEBUG
 #Preview("Shapes") {
     ShapeButtonsPreview()
-        .inMagicContainer()
 }
 #endif

@@ -126,14 +126,12 @@ struct ThumbnailView: View, SuperLog {
     ThumbnailView(defaultImage: Image(systemName: .iconDoc))
         .frame(height: 500)
         .frame(width: 500)
-        .inMagicContainer(containerHeight: 600)
 }
 
 #Preview("Success (MP3)") {
     ThumbnailView(url: .sample_web_mp3_kennedy, defaultImage: Image(systemName: .iconMusic))
         .frame(height: 500)
         .frame(width: 500)
-        .inMagicContainer(containerHeight: 600)
 }
 
 #Preview("Fallback (Invalid URL)") {
@@ -148,10 +146,8 @@ struct ThumbnailView: View, SuperLog {
     })
     .frame(height: 500)
     .frame(width: 500)
-    .inMagicContainer(containerHeight: 600)
 }
 
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .inMagicContainer(containerHeight: 600)
 }

@@ -156,5 +156,5 @@ struct OpenPreivewView: View {
 
 #Preview("Open Buttons") {
     OpenPreivewView()
-        .inMagicContainer()
+        
 }

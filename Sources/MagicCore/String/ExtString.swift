@@ -2,16 +2,16 @@ import Foundation
 import OSLog
 import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 #if os(macOS)
-import AppKit
+    import AppKit
 #endif
 
 extension String {
     /// 将字符串转换为UTF-8编码的Data对象
     /// - Returns: 转换后的Data对象，如果转换失败则返回nil
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let str = "Hello"
@@ -27,7 +27,7 @@ extension String {
 extension String {
     /// 将字符串转换为Base64编码
     /// - Returns: Base64编码后的字符串，如果转换失败则返回空字符串
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let str = "Hello World"
@@ -48,12 +48,12 @@ extension String {
     /// 将HTML代码中的base64图片存储到磁盘，并替换HTML代码中的图片路径
     /// - Parameter url: 基准URL，用于确定图片保存位置和生成相对路径
     /// - Returns: 替换后的HTML字符串，其中base64图片已被替换为相对路径引用
-    /// 
+    ///
     /// ## 功能说明:
     /// 1. 从HTML中提取所有base64编码的图片
     /// 2. 将图片保存到指定目录的images文件夹中
     /// 3. 替换HTML中的base64图片为相对路径引用
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let html = """
@@ -119,7 +119,7 @@ extension String {
     /// 从JSON字符串中获取指定路径的整数值
     /// - Parameter keyPath: 以点号分隔的键路径，如 "user.id"
     /// - Returns: 找到的整数值，如果未找到或类型不匹配则返回nil
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let json = """
@@ -141,7 +141,7 @@ extension String {
     /// 从JSON字符串中获取指定路径的字符串值
     /// - Parameter keyPath: 以点号分隔的键路径，如 "user.name"
     /// - Returns: 找到的字符串值，如果未找到或类型不匹配则返回nil
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let json = """
@@ -163,7 +163,7 @@ extension String {
     /// 从JSON字符串中获取指定路径的字典值
     /// - Parameter keyPath: 以点号分隔的键路径，如 "user.settings"
     /// - Returns: 找到的字典值，如果未找到或类型不匹配则返回nil
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let json = """
@@ -187,11 +187,11 @@ extension String {
     /// 从JSON字符串中获取指定路径的任意类型值
     /// - Parameter keyPath: 以点号分隔的键路径，用于访问嵌套的JSON属性
     /// - Returns: 找到的值，如果路径无效则返回nil
-    /// 
+    ///
     /// ## 功能说明:
     /// 此方法支持通过点号分隔的路径访问嵌套的JSON属性。例如，路径 "a.b.c" 将依次访问
     /// 对象a中的b属性，然后访问b中的c属性。
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let json = """
@@ -203,7 +203,7 @@ extension String {
     ///     }
     /// }
     /// """
-    /// 
+    ///
     /// if let sha = json.getValueFromJSON(for: "object.sha") as? String {
     ///     print("SHA: \(sha)")
     /// }
@@ -248,15 +248,15 @@ extension String {
 
 extension String {
     /// 将字符串复制到系统剪贴板
-    /// 
+    ///
     /// 根据不同的操作系统平台（macOS/iOS/tvOS），使用相应的API将字符串内容复制到系统剪贴板
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let text = "Hello, World!"
     /// text.copy()
     /// print("文本已复制到剪贴板")
-    /// 
+    ///
     /// // 在macOS上，会先清除剪贴板内容再复制
     /// // 在iOS/tvOS上，直接设置剪贴板内容
     /// ```
@@ -304,7 +304,7 @@ public extension String {
     /// 将字符串转换为URL对象
     /// - Returns: 转换后的URL对象
     /// - Warning: 此方法使用强制解包，如果字符串不是有效的URL格式，将导致运行时崩溃
-    /// 
+    ///
     /// ## 使用示例:
     /// ```swift
     /// let urlString = "https://example.com"
@@ -413,9 +413,9 @@ public extension String {
         if verbose {
             os_log("保存到 -> \(url.relativePath)")
         }
-        
+
         try url.deletingLastPathComponent().createIfNotExist()
-        
+
         try self.write(to: url, atomically: true, encoding: .utf8)
     }
 }
@@ -425,72 +425,71 @@ struct StringExtensionDemoView: View {
     var body: some View {
         TabView {
             // 基础功能演示
-            MagicContainer {
-                VStack(spacing: 20) {
-                    // 字符串处理
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("字符串处理")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
+            VStack(spacing: 20) {
+                // 字符串处理
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("字符串处理")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
 
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "  Hello  .noSpaces()", value: "  Hello  ".noSpaces())
-                            MagicKeyValue(key: "/path/to/file/.removingLeadingSlashes()", value: "/path/to/file/".removingLeadingSlashes())
-                            MagicKeyValue(key: "长文本.mini()", value: "这是一个很长的字符串，需要被截断显示以便于阅读".mini())
-                            MagicKeyValue(key: "长文本.max(10)", value: "这是一个很长的字符串".max(10))
-                        }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "  Hello  .noSpaces()", value: "  Hello  ".noSpaces())
+                        MagicKeyValue(key: "/path/to/file/.removingLeadingSlashes()", value: "/path/to/file/".removingLeadingSlashes())
+                        MagicKeyValue(key: "长文本.mini()", value: "这是一个很长的字符串，需要被截断显示以便于阅读".mini())
+                        MagicKeyValue(key: "长文本.max(10)", value: "这是一个很长的字符串".max(10))
                     }
-
-                    // 数字判断
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("数字判断")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "42.isEven", value: "true") {
-                                Image(systemName: "42".isEven ? .iconCheckmark : .iconClose)
-                                    .foregroundStyle(.green)
-                            }
-                            MagicKeyValue(key: "7.isOdd", value: "true") {
-                                Image(systemName: "7".isOdd ? .iconCheckmark : .iconClose)
-                                    .foregroundStyle(.green)
-                            }
-                        }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-
-                    // 图标预览按钮
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("图标预览按钮")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "\"star\".previewIconButton()", value: "") {
-                                "star".previewIconButton()
-                            }
-
-                            MagicKeyValue(key: "组合使用", value: "") {
-                                HStack(spacing: 12) {
-                                    "heart".previewIconButton()
-                                    "music.note".previewIconButton()
-                                    "photo".previewIconButton()
-                                }
-                            }
-                        }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
+
+                // 数字判断
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("数字判断")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "42.isEven", value: "true") {
+                            Image(systemName: "42".isEven ? .iconCheckmark : .iconClose)
+                                .foregroundStyle(.green)
+                        }
+                        MagicKeyValue(key: "7.isOdd", value: "true") {
+                            Image(systemName: "7".isOdd ? .iconCheckmark : .iconClose)
+                                .foregroundStyle(.green)
+                        }
+                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+
+                // 图标预览按钮
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("图标预览按钮")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "\"star\".previewIconButton()", value: "") {
+                            "star".previewIconButton()
+                        }
+
+                        MagicKeyValue(key: "组合使用", value: "") {
+                            HStack(spacing: 12) {
+                                "heart".previewIconButton()
+                                "music.note".previewIconButton()
+                                "photo".previewIconButton()
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: "1.circle.fill")
                 Text("基础")

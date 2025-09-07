@@ -23,6 +23,6 @@ enum ShellError: Error, LocalizedError {
 #Preview("Shell Demo") {
     ShellDemoView()
         .padding()
-        .inMagicContainer()
+        
 }
 #endif

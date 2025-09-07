@@ -60,5 +60,5 @@ struct AdvancedTooltipPreview: View {
 
 #Preview("Advanced") {
     AdvancedTooltipPreview()
-        .inMagicContainer()
+        
 }

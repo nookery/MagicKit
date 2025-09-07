@@ -111,5 +111,5 @@ public struct MagicLoadingView: View {
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .padding()
-    .inMagicContainer()
+    
 }

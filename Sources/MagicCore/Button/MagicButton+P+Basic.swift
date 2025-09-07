@@ -106,6 +106,5 @@ struct BasicButtonsPreview: View {
 
 #Preview("Basic") {
     BasicButtonsPreview()
-        .inMagicContainer()
 }
 #endif

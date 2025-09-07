@@ -214,5 +214,5 @@ public enum OpenAppType: String {
 
 #Preview("Open Buttons") {
     OpenPreivewView()
-        .inMagicContainer()
+        
 }

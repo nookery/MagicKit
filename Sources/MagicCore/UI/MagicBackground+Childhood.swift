@@ -189,7 +189,6 @@ extension MagicBackground {
 #Preview("Childhood Themes") {
     TabView {
         // 童年主题
-        MagicContainer {
             ScrollView {
                 VStack(spacing: 20) {
                     Text("童年主题")
@@ -230,7 +229,7 @@ extension MagicBackground {
                 }
                 .padding()
             }
-        }
+        
         .tabItem {
             Image(systemName: "face.smiling.fill")
             Text("童年")

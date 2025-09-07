@@ -37,5 +37,4 @@ struct MediaPickerButton: View {
 #Preview("MagicPlayMan") {
     MagicPlayMan
         .PreviewView()
-        .inMagicContainer(containerHeight: 1000)
 }

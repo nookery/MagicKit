@@ -79,5 +79,5 @@ public struct ActionButtonsSection: View {
 }
 
 #Preview("Media View") {
-    MediaViewPreviewContainer().inMagicContainer()
+    MediaViewPreviewContainer()
 }

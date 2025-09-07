@@ -204,5 +204,5 @@ struct CollapsibleBlockView: View {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        .inMagicContainer()
+        
 }

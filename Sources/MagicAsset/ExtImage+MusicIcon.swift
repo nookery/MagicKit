@@ -81,5 +81,4 @@ struct MusicIcon: View {
     IconPreviewHelper(title: "Music Icon") {
         Image.makeMusicIcon()
     }
-    .inMagicContainer(containerHeight: 800)
 }

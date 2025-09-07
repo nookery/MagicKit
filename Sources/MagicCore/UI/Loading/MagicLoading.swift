@@ -140,5 +140,5 @@ public struct MagicLoading<LogoView: View>: View {
         }
     }
     .padding()
-    .inMagicContainer()
+    
 }

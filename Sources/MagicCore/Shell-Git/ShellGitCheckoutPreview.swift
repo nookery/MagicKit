@@ -115,6 +115,6 @@ struct ShellGitCheckoutPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Checkout Demo") {
     ShellGitCheckoutPreview()
-        .inMagicContainer()
+        
 } 
 #endif

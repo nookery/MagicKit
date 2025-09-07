@@ -212,6 +212,6 @@ extension ShellGit {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Diff Demo") {
    ShellGitDiffPreview()
-       .inMagicContainer()
+       
 } 
 #endif

@@ -27,5 +27,5 @@ public enum MagicDiffViewMode: String, CaseIterable {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        .inMagicContainer()
+        
 }

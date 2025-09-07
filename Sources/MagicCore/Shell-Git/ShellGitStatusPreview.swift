@@ -61,6 +61,6 @@ struct ShellGitStatusPreview: View {
 #if DEBUG && os(macOS)
 #Preview("ShellGit+Staging Demo") {
     ShellGitStatusPreview()
-        .inMagicContainer()
+        
 } 
 #endif

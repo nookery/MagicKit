@@ -116,7 +116,7 @@ struct ShellNetworkPreviewView: View {
 
 #Preview("ShellNetwork Demo") {
     ShellNetworkPreviewView()
-        .inMagicContainer()
+        
 }
 
 #endif
