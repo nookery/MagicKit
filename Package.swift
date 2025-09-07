@@ -18,6 +18,7 @@ let package = Package(
         .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
 //        .library(name: "MagicContainer", targets: ["MagicContainer"]),
         .library(name: "MagicAlert", targets: ["MagicAlert"]),
+        .library(name: "MagicError", targets: ["MagicError"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -54,7 +55,11 @@ let package = Package(
 //           name: "MagicContainer"
 //       ),
        .target(
-           name: "MagicAlert"
+           name: "MagicAlert",
+           dependencies: ["MagicError"]
+       ),
+       .target(
+           name: "MagicError"
        ),
        .testTarget(
            name: "Tests",

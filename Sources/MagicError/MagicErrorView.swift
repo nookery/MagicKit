@@ -1,11 +1,3 @@
-//
-//  MagicErrorView.swift
-//  MagicKit
-//
-//  Created by Angel on 2025/9/7.
-//
-
-
 import SwiftUI
 
 /// 用于展示详细错误信息的视图组件

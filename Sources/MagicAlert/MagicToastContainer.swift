@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicError
 
 /// Toast容器视图
 struct MagicToastContainer: View {

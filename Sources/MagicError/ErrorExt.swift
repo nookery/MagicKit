@@ -1,10 +1,3 @@
-//
-//  x.swift
-//  MagicKit
-//
-//  Created by Angel on 2025/9/7.
-//
-
 import SwiftUI
 
 /// Error 类型的扩展，提供错误处理和展示相关的功能
