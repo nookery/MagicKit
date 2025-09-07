@@ -46,7 +46,6 @@ let package = Package(
        ),
        .target(
            name: "MagicDevice",
-           dependencies: ["MagicCore"],
            resources: [.process("Assets.xcassets")]
        ),
        .testTarget(

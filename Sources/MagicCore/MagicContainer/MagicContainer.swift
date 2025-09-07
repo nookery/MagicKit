@@ -35,6 +35,22 @@ struct MagicContainer<Content: View>: View {
         self.containerWidth = containerWidth
     }
     
+    /// 创建主题预览容器（使用CGSize指定尺寸）
+    /// - Parameters:
+    ///   - showsIndicators: 是否显示滚动条，默认为 true
+    ///   - containerSize: 容器尺寸，默认为 500x750
+    ///   - content: 要预览的内容视图
+    public init(
+        showsIndicators: Bool = true,
+        containerSize: CGSize = CGSize(width: 500, height: 750),
+        @ViewBuilder content: () -> Content
+    ) {
+        self.content = content()
+        self.showsIndicators = showsIndicators
+        self.containerHeight = containerSize.height
+        self.containerWidth = containerSize.width
+    }
+    
     // MARK: - Body
     public var body: some View {
         ZStack {
@@ -59,8 +75,6 @@ struct MagicContainer<Content: View>: View {
                         content: content,
                         selectedSize: selectedSize
                     )
-                    .padding(.horizontal, selectedSize == .full ? 16 : 40)
-                    .padding(.vertical, selectedSize == .full ? 12 : 20)
                 }
             }
         }
@@ -156,7 +170,13 @@ extension MagicContainer {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("MagicContainerPreview") {
+#Preview("MagicContainerPreview - CGSize") {
+    Text("Hello, World!")
+        .padding()
+        .inMagicContainer(containerSize: CGSize(width: 400, height: 600))
+}
+
+#Preview("MagicContainerPreview - Traditional") {
     Text("Hello, World!")
         .padding()
         .inMagicContainer(containerWidth: 500)
