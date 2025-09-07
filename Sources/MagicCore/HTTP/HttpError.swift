@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 public enum HttpError: Error, LocalizedError {
     case ShellError(output: String)
@@ -23,3 +24,6 @@ public enum HttpError: Error, LocalizedError {
     }
 }
 
+#Preview {
+    HttpClientPreview()
+}

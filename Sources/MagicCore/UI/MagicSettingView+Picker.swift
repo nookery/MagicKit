@@ -8,7 +8,7 @@ public struct MagicSettingPicker<T: Hashable>: View {
     let options: [T]
     let optionToString: (T) -> String
     @Binding var selection: T
-    
+
     public init(
         title: String,
         description: String? = nil,
@@ -24,7 +24,7 @@ public struct MagicSettingPicker<T: Hashable>: View {
         self._selection = selection
         self.optionToString = optionToString
     }
-    
+
     public var body: some View {
         MagicSettingRow(title: title, description: description, icon: icon) {
             Picker("", selection: $selection) {
@@ -40,27 +40,26 @@ public struct MagicSettingPicker<T: Hashable>: View {
 }
 
 // MARK: - Preview
+
 #Preview {
-    MagicThemePreview {
-        VStack(spacing: 0) {
-            MagicSettingPicker(
-                title: "Theme",
-                description: "Choose your preferred app theme",
-                icon: "paintbrush",
-                options: ["System", "Light", "Dark"],
-                selection: .constant("System")
-            ) { $0 }
-            
-            Divider()
-            
-            MagicSettingPicker(
-                title: "Quality",
-                icon: "dial.high",
-                options: ["Low", "Medium", "High"],
-                selection: .constant("High")
-            ) { $0 }
-        }
-        .frame(width: 600)
-        .padding()
+    VStack(spacing: 0) {
+        MagicSettingPicker(
+            title: "Theme",
+            description: "Choose your preferred app theme",
+            icon: "paintbrush",
+            options: ["System", "Light", "Dark"],
+            selection: .constant("System")
+        ) { $0 }
+
+        Divider()
+
+        MagicSettingPicker(
+            title: "Quality",
+            icon: "dial.high",
+            options: ["Low", "Medium", "High"],
+            selection: .constant("High")
+        ) { $0 }
     }
+    .frame(width: 600)
+    .padding()
 }

@@ -35,8 +35,7 @@ public struct MagicSettingSlider<V: BinaryFloatingPoint>: View where V.Stride: B
 
 // MARK: - Preview
 #Preview {
-    MagicThemePreview {
-        VStack(spacing: 0) {
+    VStack(spacing: 0) {
             MagicSettingSlider(
                 title: "Volume",
                 description: "Adjust the playback volume",
@@ -58,5 +57,5 @@ public struct MagicSettingSlider<V: BinaryFloatingPoint>: View where V.Stride: B
         }
         .padding()
         .frame(width: 400)
-    }
+    
 }

@@ -452,5 +452,5 @@ private struct FileStatusContent: View {
 }
 
 #Preview("Media View") {
-    MediaViewPreviewContainer().inMagicContainer()
+    MediaViewPreviewContainer()
 }

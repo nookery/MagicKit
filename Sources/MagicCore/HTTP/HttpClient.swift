@@ -1,5 +1,7 @@
 import Foundation
 import OSLog
+import CryptoKit
+import SwiftUI
 
 /// A lightweight HTTP client that supports common HTTP methods with fluent interface.
 /// Example usage:
@@ -19,9 +21,20 @@ public class HttpClient: SuperLog {
     private var body: [String:Any] = [:]
     private var timeoutInterval: TimeInterval = 30
     private var task: URLSessionDataTask?
+    private var cacheMaxAge: TimeInterval = 0
+    private let cacheStore = FileCacheStore()
     
     public init(url: URL) {
         self.url = url
+    }
+    
+    /// 初始化，支持设置缓存秒数（0 或以下为禁用缓存）
+    /// - Parameters:
+    ///   - url: 请求 URL
+    ///   - cacheMaxAge: 缓存有效期（秒）
+    public convenience init(url: URL, cacheMaxAge: TimeInterval) {
+        self.init(url: url)
+        self.cacheMaxAge = cacheMaxAge
     }
     
     /// Sets request timeout interval in seconds
@@ -29,6 +42,14 @@ public class HttpClient: SuperLog {
     /// - Returns: Self for method chaining
     public func withTimeout(_ timeout: TimeInterval) -> Self {
         self.timeoutInterval = timeout
+        return self
+    }
+    
+    /// 设置缓存有效期（秒）。0 或以下禁用缓存
+    /// - Parameter seconds: 有效期（秒）
+    /// - Returns: Self
+    public func withCache(maxAge seconds: TimeInterval) -> Self {
+        self.cacheMaxAge = seconds
         return self
     }
     
@@ -57,6 +78,12 @@ public class HttpClient: SuperLog {
     }
 
     public func get() async throws -> String {
+        // 尝试读取缓存
+        if cacheMaxAge > 0, let cached = try? cacheStore.read(url: url, headers: headers, maxAge: cacheMaxAge) {
+            if let responseString = String(data: cached, encoding: .utf8) {
+                return responseString
+            }
+        }
         var request = URLRequest(url: url)
         let session = URLSession.shared
 
@@ -83,11 +110,20 @@ public class HttpClient: SuperLog {
         guard let responseString = String(data: data, encoding: .utf8) else {
             throw HttpError.HttpNoData
         }
+        // 写入缓存
+        if cacheMaxAge > 0 {
+            try? cacheStore.write(url: url, headers: headers, data: data)
+        }
 
         return responseString
     }
 
     public func getDataAndResponse() async throws -> (Data, HTTPURLResponse) {
+        // 尝试读取缓存
+        if cacheMaxAge > 0, let cached = try? cacheStore.read(url: url, headers: headers, maxAge: cacheMaxAge) {
+            let mock = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: nil)!
+            return (cached, mock)
+        }
         var request = URLRequest(url: url)
         let session = URLSession.shared
 
@@ -102,6 +138,20 @@ public class HttpClient: SuperLog {
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw HttpError.HttpNoResponse
+        }
+        // 写入缓存（仅在 2xx 且内容长度完整时）
+        if cacheMaxAge > 0 {
+            let isStatusOK = httpResponse.statusCode.isHttpOkCode()
+            let expectedLength = response.expectedContentLength
+            let isUnknownLength = expectedLength < 0
+            let isLengthOK = isUnknownLength || Int64(data.count) == expectedLength
+            // 若是 JSON，则校验 JSON 合法性后再缓存，避免将截断数据写入缓存
+            let acceptHeader = headers["Accept"]?.lowercased() ?? ""
+            let shouldValidateJSON = acceptHeader.contains("application/json") || acceptHeader.contains("text/json")
+            let isValidJSON = !shouldValidateJSON || (try? JSONSerialization.jsonObject(with: data)) != nil
+            if isStatusOK && isLengthOK && isValidJSON {
+                try? cacheStore.write(url: url, headers: headers, data: data)
+            }
         }
 
         return (data, httpResponse)
@@ -265,4 +315,80 @@ public class HttpClient: SuperLog {
         
         return (data, httpResponse)
     }
+
+    // MARK: - Cache Directory Utilities
+    /// 返回 HttpClient 使用的缓存目录 URL。若目录不存在会自动创建。
+    public static func cacheDirectoryURL() -> URL {
+        FileCacheStore.cacheDirectoryURL()
+    }
+
+    /// 打开缓存目录（macOS 在访达中打开；iOS 尝试通过系统打开该目录）
+    public static func openCacheDirectory() {
+        let dir = cacheDirectoryURL()
+        dir.openFolder()
+    }
+}
+
+// MARK: - 简单文件缓存实现
+private final class FileCacheStore {
+    private let directory: URL
+    private let fm = FileManager.default
+    
+    init() {
+        let dir = Self.cacheDirectoryURL()
+        self.directory = dir
+    }
+
+    /// 计算并确保缓存目录存在
+    static func cacheDirectoryURL() -> URL {
+        let fm = FileManager.default
+        let base = fm.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let dir = base.appendingPathComponent("HttpClientCache", isDirectory: true)
+        if !fm.fileExists(atPath: dir.path) {
+            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        return dir
+    }
+    
+    func read(url: URL, headers: [String:String], maxAge: TimeInterval) throws -> Data? {
+        let path = fileURL(url: url, headers: headers)
+        guard let attrs = try? fm.attributesOfItem(atPath: path.path),
+              let modified = attrs[.modificationDate] as? Date else {
+            return nil
+        }
+        let age = Date().timeIntervalSince(modified)
+        guard age <= maxAge else {
+            // 过期自动清理
+            try? fm.removeItem(at: path)
+            return nil
+        }
+        return try Data(contentsOf: path)
+    }
+    
+    func write(url: URL, headers: [String:String], data: Data) throws {
+        let path = fileURL(url: url, headers: headers)
+        try data.write(to: path, options: .atomic)
+    }
+    
+    private func fileURL(url: URL, headers: [String:String]) -> URL {
+        let key = cacheKey(url: url, headers: headers)
+        return directory.appendingPathComponent(key)
+    }
+    
+    private func cacheKey(url: URL, headers: [String:String]) -> String {
+        var input = url.absoluteString
+        if !headers.isEmpty {
+            let headerString = headers
+                .sorted { $0.key < $1.key }
+                .map { "\($0.key):\($0.value)" }
+                .joined(separator: "|")
+            input += "::" + headerString
+        }
+        let digest = SHA256.hash(data: Data(input.utf8))
+        return digest.map { String(format: "%02x", $0) }.joined()
+    }
+}
+
+#Preview {
+    HttpClientPreview()
 }

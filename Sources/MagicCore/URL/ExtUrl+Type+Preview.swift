@@ -200,5 +200,5 @@ private struct FileTypeRow: View {
 }
 
 #Preview("File Types") {
-    FileTypePreviewContainer().inMagicContainer()
+    FileTypePreviewContainer()
 }

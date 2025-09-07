@@ -9,40 +9,35 @@ public extension MagicPlayMan {
     ///   - url: 要播放的媒体 URL
     ///   - title: 可选的标题，如果不提供则使用文件名
     ///   - autoPlay: 是否自动开始播放，默认为 true
-    /// - Returns: 如果成功加载返回 true，否则返回 false
-    @MainActor @discardableResult
-    func play(url: URL, autoPlay: Bool = true) async -> Bool {
+    @MainActor
+    func play(_ url: URL, autoPlay: Bool = true) async {
+        log("Play: \(url.title), AutoPlay: \(autoPlay)")
+        self.setCurrentURL(url)
+
         // 检查 URL 是否有效
         guard url.isFileURL || url.isNetworkURL else {
             log("Invalid URL scheme: \(url.scheme ?? "nil")", level: .error)
-            return false
+            await stop()
+            setState(.failed(.playbackError("Invalid URL scheme")))
+            return
         }
 
         // 判断媒体类型
         if url.isVideo == false && url.isAudio == false {
             log("Unsupported media type: \(url.pathExtension)", level: .error)
-            return false
+            await stop()
+            setState(.failed(.unsupportedFormat(url.pathExtension)))
+            return
         }
 
-        self.currentURL = url
-
         // 加载资源
+        log("Load: \(url.title), AutoPlay: \(autoPlay)")
         await loadFromURL(url, autoPlay: autoPlay)
 
         if isPlaylistEnabled {
             append(url)
-            log("▶️ Added URL to playlist: \(url.absoluteString)")
-        } else {
-            log("▶️ Not added URL to playlist, playlist is disabled, just play it: \(url.absoluteString)")
+            log("Added URL to playlist: \(url.absoluteString)")
         }
-
-        return true
-    }
-
-    /// 手动刷新当前资源的缩略图
-    func reloadThumbnail() {
-        guard let url = currentURL else { return }
-        loadThumbnail(for: url, reason: "reloadThumbnail")
     }
 
     /// 添加资源到播放列表
@@ -130,7 +125,7 @@ public extension MagicPlayMan {
     /// 开始播放
     func play() {
         guard hasAsset else {
-            log("⚠️ Cannot play: no asset loaded", level: .warning)
+            log("Cannot play: no asset loaded", level: .warning)
             return
         }
 
@@ -139,7 +134,7 @@ public extension MagicPlayMan {
         }
 
         _player.play()
-        log("▶️ Started playback: \(currentURL?.title ?? "Unknown")")
+        log("Started playback: \(currentURL?.title ?? "Unknown")")
         updateNowPlayingInfo()
 
         Task {
@@ -152,25 +147,24 @@ public extension MagicPlayMan {
         guard hasAsset else { return }
 
         _player.pause()
-        log("⏸️ Paused playback")
+        log("Paused playback")
         updateNowPlayingInfo()
 
         Task {
-            await self.setState(.playing)
+            await self.setState(.paused)
         }
     }
 
     /// 停止播放
-    func stop() {
+    @MainActor
+    func stop() async {
         _player.pause()
-        _player.seek(to: .zero)
+        await _player.seek(to: .zero)
 
         log("⏹️ Stopped playback")
         updateNowPlayingInfo()
 
-        Task {
-            await self.setState(.stopped)
-        }
+        await self.setState(.stopped)
     }
 
     /// 切换播放状态
@@ -237,7 +231,7 @@ public extension MagicPlayMan {
 
     internal func updateState(_ newState: PlaybackState) {
         Task { @MainActor in
-            state = newState
+            self.setState(newState)
         }
     }
 
@@ -246,12 +240,7 @@ public extension MagicPlayMan {
         guard !isPlaylistEnabled else { return }
 
         await setPlaylistEnabled(true)
-        log("📑 Playlist enabled")
-        showToast(
-            "Playlist enabled",
-            icon: "list.bullet.circle.fill",
-            style: .info
-        )
+        log("Playlist enabled")
     }
 
     /// 禁用播放列表功能
@@ -260,44 +249,22 @@ public extension MagicPlayMan {
         guard isPlaylistEnabled else { return }
 
         await setPlaylistEnabled(false)
-        log("📑 Playlist disabled")
+        log("Playlist disabled")
 
         // 如果禁用播放列表，保留当前播放的资源
         if let currentAsset = currentURL {
-            items = [currentAsset]
-            currentIndex = 0
+            await setItems([currentAsset])
+            await setCurrentIndex(0)
         } else {
-            items.removeAll()
-            currentIndex = -1
+            await setItems([])
+            await setCurrentIndex(-1)
         }
-
-        showToast(
-            "Playlist disabled",
-            icon: "list.bullet.circle",
-            style: .info
-        )
     }
 
     /// 切换当前资源的喜欢状态
     func toggleLike() {
         guard let asset = currentURL else { return }
-        Task {
-            await setLike(!likedAssets.contains(asset))
-        }
-    }
-
-    func showToast(_ message: String, icon: String, style: MagicToast.Style) {
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(
-                name: .showToast,
-                object: nil,
-                userInfo: [
-                    "message": message,
-                    "icon": icon,
-                    "style": style,
-                ]
-            )
-        }
+        setLike(!likedAssets.contains(asset))
     }
 
     func log(_ message: String, level: MagicLogEntry.Level = .info) {
@@ -311,10 +278,8 @@ public extension MagicPlayMan {
         do {
             try cache?.clear()
             log("🗑️ Cache cleared")
-            showToast("Cache cleared successfully", icon: "trash", style: .info)
         } catch {
             log("❌ Failed to clear cache: \(error.localizedDescription)", level: .error)
-            showToast("Failed to clear cache", icon: "exclamationmark.triangle", style: .error)
         }
     }
 
@@ -330,11 +295,9 @@ public extension MagicPlayMan {
         if isLiked {
             newLikedAssets.insert(asset)
             log("❤️ Added to liked: \(asset.title)")
-            showToast("Added to liked", icon: .iconHeartFill, style: .info)
         } else {
             newLikedAssets.remove(asset)
             log("💔 Removed from liked: \(asset.title)")
-            showToast("Removed from liked", icon: .iconHeart, style: .info)
         }
 
         Task {
@@ -350,11 +313,6 @@ public extension MagicPlayMan {
     func setVerboseMode(_ enabled: Bool) {
         self.verbose = enabled
         log("🔍 Verbose mode \(enabled ? "enabled" : "disabled")")
-        showToast(
-            "Verbose mode \(enabled ? "enabled" : "disabled")",
-            icon: enabled ? "text.bubble.fill" : "text.bubble",
-            style: .info
-        )
     }
 
     /// 设置播放模式
@@ -364,10 +322,10 @@ public extension MagicPlayMan {
             await setPlayMode(mode)
         }
         log("Playback mode set to: \(mode.displayName)")
-        showToast("Playback mode: \(mode.displayName)", icon: mode.icon, style: .info)
     }
 }
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicPlayMan
+        .PreviewView()
 }

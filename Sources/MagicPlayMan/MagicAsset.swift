@@ -72,3 +72,8 @@ extension MagicAsset {
         )
     }
 }
+
+// MARK: - Preview
+#Preview("MagicPlayMan") {
+    MagicPlayMan.PreviewView()
+}

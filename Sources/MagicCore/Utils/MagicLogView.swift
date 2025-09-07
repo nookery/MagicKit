@@ -29,7 +29,9 @@ public struct MagicLogView: View {
                         style: .secondary,
                         size: .small,
                         shape: .circle,
-                        action: onClose
+                        action: { _ in
+                            onClose()
+                        }
                     )
 
                     Spacer()
@@ -38,7 +40,7 @@ public struct MagicLogView: View {
                 Text(title)
                     .font(.headline)
                     .foregroundStyle(.secondary)
-                
+
                 Text("(\(logger.app))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -49,9 +51,9 @@ public struct MagicLogView: View {
                     Button("全部") {
                         selectedCaller = nil
                     }
-                    
+
                     Divider()
-                    
+
                     ForEach(Array(Set(logger.logs.map(\.caller))).sorted(), id: \.self) { caller in
                         Button(caller) {
                             selectedCaller = caller
@@ -74,7 +76,9 @@ public struct MagicLogView: View {
                     style: .secondary,
                     size: .small,
                     shape: .circle,
-                    action: copyAllLogs
+                    action: { _ in
+                        copyAllLogs()
+                    }
                 )
 
                 MagicButton(
@@ -82,7 +86,9 @@ public struct MagicLogView: View {
                     style: .secondary,
                     size: .small,
                     shape: .circle,
-                    action: { logger.clearLogs() }
+                    action: { _ in
+                        logger.clearLogs()
+                    }
                 )
             }
             .frame(height: 40)
@@ -108,7 +114,7 @@ public struct MagicLogView: View {
                         .foregroundStyle(.secondary)
                 }
                 .width(50)
-                
+
                 TableColumn("Line") { log in
                     if let line = log.line {
                         Text("\(line)")
@@ -117,7 +123,7 @@ public struct MagicLogView: View {
                     }
                 }
                 .width(28)
-                
+
                 TableColumn("Caller") { log in
                     Text(log.caller)
                         .font(.caption.monospaced())
@@ -227,15 +233,13 @@ public struct MagicLogView: View {
 }
 
 #Preview("With Logs") {
-    MagicThemePreview {
-        let logger = MagicLogger.shared
-        logger.logView()
-            .frame(height: 500)
-            .onAppear {
-                logger.clearLogs()
-                logger.info("This is an info message")
-                logger.warning("This is a warning message")
-                logger.error("This is an error message")
-            }
-    }
+    let logger = MagicLogger.shared
+    logger.logView()
+        .frame(height: 500)
+        .onAppear {
+            logger.clearLogs()
+            logger.info("This is an info message")
+            logger.warning("This is a warning message")
+            logger.error("This is an error message")
+        }
 }

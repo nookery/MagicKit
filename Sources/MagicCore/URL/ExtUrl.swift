@@ -1,7 +1,13 @@
-import Foundation
 import CryptoKit
+import Foundation
 import OSLog
 import SwiftUI
+#if os(iOS)
+    import UIKit
+#endif
+#if os(macOS)
+    import AppKit
+#endif
 
 /// URL 类型的扩展，提供常用的工具方法
 extension URL: SuperLog {
@@ -10,8 +16,48 @@ extension URL: SuperLog {
 
 /// URL 类型的扩展，提供文件操作和路径处理功能
 public extension URL {
+    /// 统计当前 URL 下的文件数量（包含所有子孙文件夹）
+    ///
+    /// - Note: 会跳过隐藏文件与隐藏文件夹（以系统属性识别）。
+    /// - Returns: 文件总数；若路径不存在则为 0
+    func filesCountRecursively() -> Int {
+        let fm = FileManager.default
+        var isDirectory: ObjCBool = false
+        guard fm.fileExists(atPath: self.path, isDirectory: &isDirectory) else { return 0 }
+
+        // 若是文件，直接返回 1
+        if isDirectory.boolValue == false {
+            return 1
+        }
+
+        // 若是目录，递归统计所有非目录条目
+        let keys: [URLResourceKey] = [.isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey]
+        let options: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles]
+        guard let enumerator = fm.enumerator(
+            at: self,
+            includingPropertiesForKeys: keys,
+            options: options
+        ) else { return 0 }
+
+        var count = 0
+        for case let itemURL as URL in enumerator {
+            do {
+                let values = try itemURL.resourceValues(forKeys: Set(keys))
+                // 仅统计常规文件与符号链接（不计目录本身）
+                if values.isDirectory == true { continue }
+                if values.isRegularFile == true || values.isSymbolicLink == true {
+                    count += 1
+                }
+            } catch {
+                // 读取属性失败时跳过该条目
+                continue
+            }
+        }
+        return count
+    }
+
     /// 计算文件的 MD5 哈希值
-    /// 
+    ///
     /// 用于获取文件的唯一标识或验证文件完整性
     /// ```swift
     /// let fileURL = URL(fileURLWithPath: "/path/to/file.txt")
@@ -45,7 +91,7 @@ public extension URL {
     }
 
     /// 获取文件内容的 Base64 编码或文本内容
-    /// 
+    ///
     /// 如果是图片文件，返回 Base64 编码；如果是文本文件，返回文本内容
     /// ```swift
     /// let imageURL = URL(fileURLWithPath: "/path/to/image.jpg")
@@ -68,7 +114,7 @@ public extension URL {
     }
 
     /// 读取文件文本内容
-    /// 
+    ///
     /// ```swift
     /// let fileURL = URL(fileURLWithPath: "/path/to/file.txt")
     /// let content = try fileURL.getContent() // "文件内容..."
@@ -85,7 +131,7 @@ public extension URL {
     }
 
     /// 获取父目录路径
-    /// 
+    ///
     /// ```swift
     /// let fileURL = URL(fileURLWithPath: "/path/to/file.txt")
     /// let parent = fileURL.getParent() // "/path/to"
@@ -110,7 +156,7 @@ public extension URL {
     }
 
     /// 获取最近的文件夹路径
-    /// 
+    ///
     /// 如果当前路径是文件夹，返回自身；如果是文件，返回父目录
     /// ```swift
     /// let fileURL = URL(fileURLWithPath: "/path/to/file.txt")
@@ -127,7 +173,7 @@ public extension URL {
     }
 
     /// 读取文件头部字节
-    /// 
+    ///
     /// 用于判断文件类型
     /// ```swift
     /// let fileURL = URL(fileURLWithPath: "/path/to/image.jpg")
@@ -146,7 +192,7 @@ public extension URL {
     }
 
     /// 移除路径开头的斜杠
-    /// 
+    ///
     /// ```swift
     /// let url = URL(string: "/path/to/file")!
     /// let path = url.removingLeadingSlashes() // "path/to/file"
@@ -206,7 +252,7 @@ public extension URL {
     }
 
     /// 获取路径的最后三个组件
-    /// 
+    ///
     /// 用于显示较长路径的简短版本
     /// ```swift
     /// let url = URL(string: "file:///path/to/folder/documents/report.pdf")!
@@ -218,7 +264,7 @@ public extension URL {
     }
 
     /// 获取路径的最后三个组件
-    /// 
+    ///
     /// ```swift
     /// let url = URL(string: "file:///path/to/folder/a/b/c.png")!
     /// print(url.lastThreeComponents()) // "a/b/c.png"
@@ -231,7 +277,7 @@ public extension URL {
     }
 
     /// 添加文件夹到路径末尾
-    /// 
+    ///
     /// ```swift
     /// let url = URL(string: "file:///path/to")!
     /// let newUrl = url.appendingFolder("documents")
@@ -245,7 +291,7 @@ public extension URL {
     }
 
     /// 添加文件到路径末尾
-    /// 
+    ///
     /// ```swift
     /// let url = URL(string: "file:///path/to")!
     /// let newUrl = url.appendingFile("document.txt")
@@ -259,7 +305,7 @@ public extension URL {
     }
 
     /// 打开系统目录选择器，让用户选择一个目录
-    /// 
+    ///
     /// ```swift
     /// do {
     ///     let fileUrl = try URL.selectDirectory.appendingPathComponent("example.txt")
@@ -272,19 +318,23 @@ public extension URL {
     /// - Throws: 如果用户取消选择，抛出 URLError.userCancelledAuthentication
     static var selectDirectory: URL {
         get throws {
-            let panel = NSOpenPanel()
-            panel.canChooseFiles = false
-            panel.canChooseDirectories = true
-            panel.allowsMultipleSelection = false
-            panel.canCreateDirectories = true
-            panel.prompt = "选择保存目录"
-            
-            guard panel.runModal() == .OK,
-                  let directoryUrl = panel.url else {
-                throw URLError(.userCancelledAuthentication)
-            }
-            
-            return directoryUrl
+            #if os(macOS)
+                let panel = NSOpenPanel()
+                panel.canChooseFiles = false
+                panel.canChooseDirectories = true
+                panel.allowsMultipleSelection = false
+                panel.canCreateDirectories = true
+                panel.prompt = "选择保存目录"
+
+                guard panel.runModal() == .OK,
+                      let directoryUrl = panel.url else {
+                    throw URLError(.userCancelledAuthentication)
+                }
+
+                return directoryUrl
+            #else
+                throw URLError(.unsupportedURL)
+            #endif
         }
     }
 }
@@ -294,91 +344,94 @@ struct URLExtensionDemoView: View {
     var body: some View {
         TabView {
             // 路径操作演示
-            MagicThemePreview {
-                VStack(spacing: 20) {
-                    // 基础路径操作
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("基础路径操作")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            let url = URL(string: "/path/to/folder/file.txt")!
-                            MagicKeyValue(key: "url.name", value: url.name) {
-                                Image(systemName: .iconDocument)
-                            }
-                            MagicKeyValue(key: "url.shortPath()", value: url.shortPath()) {
-                                Image(systemName: .iconFolder)
-                            }
-                            MagicKeyValue(key: "url.isFolder", value: url.isFolder.description) {
-                                Image(systemName: .iconFolderFill)
-                            }
+            VStack(spacing: 20) {
+                // 基础路径操作
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("基础路径操作")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        let url = URL(string: "/path/to/folder/file.txt")!
+                        MagicKeyValue(key: "url.name", value: url.name) {
+                            Image(systemName: .iconDocument)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    
-                    // 路径组合
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("路径组合")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            let baseURL = URL(string: "/base/path")!
-                            MagicKeyValue(
-                                key: "appendingFolder(\"docs\")",
-                                value: baseURL.appendingFolder("docs").path
-                            ) {
-                                Image(systemName: .iconFolderFill)
-                            }
-                            MagicKeyValue(
-                                key: "appendingFile(\"note.txt\")",
-                                value: baseURL.appendingFile("note.txt").path
-                            ) {
-                                Image(systemName: .iconDocument)
-                            }
+                        MagicKeyValue(key: "url.shortPath()", value: url.shortPath()) {
+                            Image(systemName: .iconFolder)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        MagicKeyValue(key: "url.isFolder", value: url.isFolder.description) {
+                            Image(systemName: .iconFolderFill)
+                        }
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
+
+                // 路径组合
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("路径组合")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        let baseURL = URL(string: "/base/path")!
+                        MagicKeyValue(
+                            key: "appendingFolder(\"docs\")",
+                            value: baseURL.appendingFolder("docs").path
+                        ) {
+                            Image(systemName: .iconFolderFill)
+                        }
+                        MagicKeyValue(
+                            key: "appendingFile(\"note.txt\")",
+                            value: baseURL.appendingFile("note.txt").path
+                        ) {
+                            Image(systemName: .iconDocument)
+                        }
+                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: .iconFolder)
                 Text("路径")
             }
-            
+
             // 文件操作演示
-            MagicThemePreview {
-                VStack(spacing: 20) {
-                    // 文件操作
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("文件操作")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "getHash()", value: "计算文件MD5哈希值") {
-                                Image(systemName: .iconFingerprint)
-                            }
-                            MagicKeyValue(key: "getContent()", value: "读取文件内容") {
-                                Image(systemName: .iconDoc)
-                            }
-                            MagicKeyValue(key: "getBlob()", value: "获取Base64编码") {
-                                Image(systemName: .iconDocBinary)
-                            }
+            VStack(spacing: 20) {
+                // 文件操作
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("文件操作")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "getHash()", value: "计算文件MD5哈希值") {
+                            Image(systemName: .iconFingerprint)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        MagicKeyValue(key: "getContent()", value: "读取文件内容") {
+                            Image(systemName: .iconDoc)
+                        }
+                        MagicKeyValue(key: "getBlob()", value: "获取Base64编码") {
+                            Image(systemName: .iconDocBinary)
+                        }
+                        // 演示：统计临时目录下的文件总数（包含子孙目录）
+                        let tmp = FileManager.default.temporaryDirectory
+                        MagicKeyValue(key: "filesCountRecursively()", value: tmp.filesCountRecursively().description) {
+                            Image(systemName: .iconFolder)
+                        }
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: .iconDoc)
                 Text("文件")

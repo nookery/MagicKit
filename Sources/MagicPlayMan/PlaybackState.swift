@@ -21,6 +21,7 @@ public enum PlaybackState: Equatable {
         case invalidAsset
         case networkError(String)
         case playbackError(String)
+        case unsupportedFormat(String)
         
         public var errorDescription: String? {
             switch self {
@@ -32,6 +33,8 @@ public enum PlaybackState: Equatable {
                 return "Network error: \(message)"
             case .playbackError(let message):
                 return "Playback error: \(message)"
+            case .unsupportedFormat(let ext):
+                return "Unsupported format: \(ext)"
             }
         }
         
@@ -45,6 +48,8 @@ public enum PlaybackState: Equatable {
                 return "There was a problem with the network connection"
             case .playbackError:
                 return "There was a problem during playback"
+            case .unsupportedFormat:
+                return "The selected media type is not supported"
             }
         }
         
@@ -58,17 +63,50 @@ public enum PlaybackState: Equatable {
                 return "Check your internet connection and try again"
             case .playbackError:
                 return "Try reloading the media file"
+            case .unsupportedFormat:
+                return "Choose a supported audio or video format"
             }
         }
     }
+
+    // MARK: - Is
+
+    public var isPlaying: Bool {
+        if case .playing = self {
+            return true
+        }
+        return false
+    }
     
+    /// 是否是加载中
     public var isLoading: Bool {
         if case .loading = self {
             return true
         }
         return false
     }
+
+    /// 是否是下载中
+    public var isDownloading: Bool {
+        if case .loading(let loadingState) = self {
+            if case .downloading = loadingState {
+                return true
+            }
+        }
+        return false
+    }
+
+    /// 是否是未支持的格式
+    public var isUnsupportedFormat: Bool {
+        if case .failed(let error) = self {
+            if case .unsupportedFormat = error {
+                return true
+            }
+        }
+        return false
+    }
     
+    /// 是否可以 seek
     public var canSeek: Bool {
         switch self {
         case .idle, .loading, .failed:
@@ -78,6 +116,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 状态图标名称
     public var iconName: String {
         switch self {
         case .idle:
@@ -95,6 +134,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 状态图标颜色
     public var iconColor: Color {
         switch self {
         case .idle:
@@ -110,6 +150,7 @@ public enum PlaybackState: Equatable {
         }
     }
     
+    /// 状态文本
     public var stateText: String {
         switch self {
         case .idle:
@@ -145,6 +186,8 @@ public enum PlaybackState: Equatable {
 }
 
 // MARK: - State View
+
+/// 状态视图
 public struct StateView: View {
     let state: PlaybackState
     let assetTitle: String?

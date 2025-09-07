@@ -244,5 +244,5 @@ private struct ErrorHandlingPreview: View {
 }
 
 #Preview("Copy View") {
-    CopyViewPreviewContainer().inMagicContainer()
+    CopyViewPreviewContainer()
 }

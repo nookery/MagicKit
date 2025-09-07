@@ -106,7 +106,7 @@ public class MagicImage {
     /// - Parameter view: 需要测量的 SwiftUI 视图
     /// - Returns: 视图的高度（像素）
     /// - Note: 此方法必须在主线程上调用
-    @MainActor static public func getViewHeigth(_ view: some View) -> Int {
+    @MainActor static public func getViewHeight(_ view: some View) -> Int {
         makeCGImage(view).height
     }
     
@@ -115,9 +115,18 @@ public class MagicImage {
     /// - Parameter view: 需要转换的 SwiftUI 视图
     /// - Returns: 转换后的 CGImage 对象
     /// - Note: 此方法必须在主线程上调用
-    ///        该方法假设转换总是会成功，如果转换失败会触发运行时错误
+    ///        如果转换失败，会创建一个1x1的透明图片作为fallback
     @MainActor static public func makeCGImage(_ view: some View) -> CGImage {
-        ImageRenderer(content: view).cgImage!
+        let renderer = ImageRenderer(content: view)
+        if let cgImage = renderer.cgImage {
+            return cgImage
+        } else {
+            // 如果渲染失败，创建一个1x1的透明图片作为fallback
+            let size = CGSize(width: 1, height: 1)
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let context = CGContext(data: nil, width: Int(size.width), height: Int(size.height), bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)!
+            return context.makeImage()!
+        }
     }
 
     /// 将 SwiftUI 视图转换为 SwiftUI Image 对象
@@ -144,13 +153,13 @@ public class MagicImage {
         }
 
         let width = getViewWidth(view)
-        let heigth = getViewHeigth(view)
-        let fileName = title != nil ? "\(title!).png" : "\(getTimeString())-\(width)x\(heigth).png"
+        let height = getViewHeight(view)
+        let fileName = title != nil ? "\(title!).png" : "\(getTimeString())-\(width)x\(height).png"
         let defaultPath = downloadsURL.appendingPathComponent(fileName)
         let path = path == nil ? defaultPath : path!
 
         guard let destination = CGImageDestinationCreateWithURL(path as CFURL, UTType.png.identifier as CFString, 1, nil) else {
-            return "创建图像目标失败"
+            return "创建图像目标失败，请确保应用有下载目录的写入权限"
         }
 
         CGImageDestinationAddImage(destination, makeCGImage(view), nil)

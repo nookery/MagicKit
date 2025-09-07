@@ -34,7 +34,7 @@ struct DownloadButtonPreview: View {
     }
 
     private var basicPreview: some View {
-        MagicThemePreview {
+        
             VStack(spacing: 20) {
                 Group {
                     Text("基本按钮").font(.headline)
@@ -52,12 +52,11 @@ struct DownloadButtonPreview: View {
                 }
             }
             .padding()
-        }
+        
     }
 
     private var shapesPreview: some View {
-        MagicThemePreview {
-            VStack(spacing: 20) {
+        VStack(spacing: 20) {
                 Group {
                     Text("圆形").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(shape: .circle)
@@ -89,12 +88,11 @@ struct DownloadButtonPreview: View {
                 }
             }
             .padding()
-        }
+        
     }
 
     private var fileTypesPreview: some View {
-        MagicThemePreview {
-            VStack(spacing: 20) {
+        VStack(spacing: 20) {
                 Group {
                     Text("iCloud 文件").font(.headline)
                     URL(string: "file:///iCloud/test.pdf")!.makeDownloadButton()
@@ -120,19 +118,18 @@ struct DownloadButtonPreview: View {
                 }
             }
             .padding()
-        }
+        
     }
 
     private var statesPreview: some View {
-        MagicThemePreview {
-            VStack(spacing: 20) {
+        VStack(spacing: 20) {
                 Group {
                     Text("未下载").font(.headline)
                     URL.sample_web_mp3_kennedy.makeDownloadButton(showLabel: true)
                 }
             }
             .padding()
-        }
+        
     }
 }
 

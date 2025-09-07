@@ -3,7 +3,7 @@ import SwiftUI
 /// Image 的扩展，提供常用的系统图标
 public extension Image {
     // MARK: - 文档相关
-    
+
     /// 复制图标 (doc.on.doc)
     ///
     /// 用于表示复制操作或文档复制功能
@@ -15,7 +15,7 @@ public extension Image {
     static var doc: Image {
         Image(systemName: .iconDoc)
     }
-    
+
     /// 文档图标 (doc)
     ///
     /// 用于表示单个文档或文件
@@ -25,7 +25,7 @@ public extension Image {
     static var document: Image {
         Image(systemName: .iconDocument)
     }
-    
+
     /// 文件夹图标 (folder)
     ///
     /// 用于表示文件夹或目录
@@ -589,121 +589,117 @@ struct SystemIconsDemoView: View {
     var body: some View {
         TabView {
             // 文档图标演示
-            MagicThemePreview {
-                VStack(spacing: 20) {
-                    // 文档相关图标
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("文档相关")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "文档", value: "doc") {
-                                Image.document
-                            }
-                            MagicKeyValue(key: "文件夹", value: "folder") {
-                                Image.folder
-                            }
-                            MagicKeyValue(key: "文本文档", value: "doc.text") {
-                                Image.textDocument
-                            }
-                            MagicKeyValue(key: "PDF文档", value: "doc.text.fill") {
-                                Image.pdfDocument
-                            }
-                            MagicKeyValue(key: "图片文档", value: "photo") {
-                                Image.imageDocument
-                            }
-                            MagicKeyValue(key: "音频文档", value: "music.note") {
-                                Image.audioDocument
-                            }
+            VStack(spacing: 20) {
+                // 文档相关图标
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("文档相关")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "文档", value: "doc") {
+                            Image.document
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        MagicKeyValue(key: "文件夹", value: "folder") {
+                            Image.folder
+                        }
+                        MagicKeyValue(key: "文本文档", value: "doc.text") {
+                            Image.textDocument
+                        }
+                        MagicKeyValue(key: "PDF文档", value: "doc.text.fill") {
+                            Image.pdfDocument
+                        }
+                        MagicKeyValue(key: "图片文档", value: "photo") {
+                            Image.imageDocument
+                        }
+                        MagicKeyValue(key: "音频文档", value: "music.note") {
+                            Image.audioDocument
+                        }
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
             }
-            .tabItem {
-                Image(systemName: "1.circle.fill")
-                Text("文档")
-            }
-            
+            .padding()
+        }
+        .tabItem {
+            Image(systemName: "1.circle.fill")
+            Text("文档")
+
             // 操作图标演示
-            MagicThemePreview {
-                VStack(spacing: 20) {
-                    // 基础操作图标
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("基础操作")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "添加", value: "plus.circle") {
-                                Image.add
-                            }
-                            MagicKeyValue(key: "删除", value: "trash") {
-                                Image.trash
-                            }
-                            MagicKeyValue(key: "编辑", value: "pencil") {
-                                Image.edit
-                            }
-                            MagicKeyValue(key: "搜索", value: "magnifyingglass") {
-                                Image.search
-                            }
-                            MagicKeyValue(key: "刷新", value: "arrow.clockwise") {
-                                Image.refresh
-                            }
+            VStack(spacing: 20) {
+                // 基础操作图标
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("基础操作")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "添加", value: "plus.circle") {
+                            Image.add
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    
-                    // 媒体控制图标
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("媒体控制")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "播放", value: "play.circle") {
-                                Image.play
-                            }
-                            MagicKeyValue(key: "暂停", value: "pause.circle") {
-                                Image.pause
-                            }
-                            MagicKeyValue(key: "停止", value: "stop.circle") {
-                                Image.stop
-                            }
-                            MagicKeyValue(key: "音量", value: "speaker.wave.2") {
-                                Image.volume
-                            }
-                            MagicKeyValue(key: "静音", value: "speaker.slash") {
-                                Image.mute
-                            }
+                        MagicKeyValue(key: "删除", value: "trash") {
+                            Image.trash
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        MagicKeyValue(key: "编辑", value: "pencil") {
+                            Image.edit
+                        }
+                        MagicKeyValue(key: "搜索", value: "magnifyingglass") {
+                            Image.search
+                        }
+                        MagicKeyValue(key: "刷新", value: "arrow.clockwise") {
+                            Image.refresh
+                        }
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
+
+                // 媒体控制图标
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("媒体控制")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "播放", value: "play.circle") {
+                            Image.play
+                        }
+                        MagicKeyValue(key: "暂停", value: "pause.circle") {
+                            Image.pause
+                        }
+                        MagicKeyValue(key: "停止", value: "stop.circle") {
+                            Image.stop
+                        }
+                        MagicKeyValue(key: "音量", value: "speaker.wave.2") {
+                            Image.volume
+                        }
+                        MagicKeyValue(key: "静音", value: "speaker.slash") {
+                            Image.mute
+                        }
+                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: "2.circle.fill")
                 Text("操作")
             }
-            
+
             // 状态图标演示
-            MagicThemePreview {
                 VStack(spacing: 20) {
                     // 状态图标
                     VStack(alignment: .leading, spacing: 12) {
                         Text("状态指示")
                             .font(.headline)
                             .foregroundStyle(.secondary)
-                        
+
                         VStack(spacing: 8) {
                             MagicKeyValue(key: "成功", value: "checkmark.circle.fill") {
                                 Image.checkmark
@@ -724,7 +720,7 @@ struct SystemIconsDemoView: View {
                     }
                 }
                 .padding()
-            }
+            
             .tabItem {
                 Image(systemName: "3.circle.fill")
                 Text("状态")

@@ -39,7 +39,7 @@ public struct PlaylistContentView: View {
                 .contentShape(Rectangle())
                 .onTapGesture {
                     Task {
-                        await playMan.play(url: asset)
+                        await playMan.play(asset)
                     }
                 }
             }
@@ -93,6 +93,5 @@ private struct PlaylistItemRow: View {
 #Preview("MagicPlayMan") {
     
         MagicPlayMan.PreviewView()
-        .inMagicContainer()
 }
 
