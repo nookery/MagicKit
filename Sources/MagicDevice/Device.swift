@@ -7,7 +7,7 @@ public enum DeviceType: Equatable {
     case iPad
 }
 
-public enum Device: String, Equatable, CaseIterable {
+public enum AppleDevice: String, Equatable, CaseIterable {
     case iMac = "iMac 27\""
     case MacBook = "MacBook Pro 16\""
     case iPhoneBig = "iPhone 14 Pro Max"

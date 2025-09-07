@@ -37,6 +37,9 @@ let package = Package(
            ]
        ),
        .target(
+            name: "MagicDevice"
+       ),
+       .target(
            name: "MagicPlayMan",
            dependencies: ["MagicCore"]
        ),
@@ -46,7 +49,7 @@ let package = Package(
        ),
        .target(
            name: "MagicScreen",
-           dependencies: ["MagicCore"],
+           dependencies: ["MagicCore", "MagicDevice"],
            resources: [.process("Assets.xcassets")]
        ),
        .testTarget(
