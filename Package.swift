@@ -16,7 +16,7 @@ let package = Package(
         .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
         .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
         .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
-//        .library(name: "MagicContainer", targets: ["MagicContainer"]),
+        .library(name: "MagicContainer", targets: ["MagicContainer"]),
         .library(name: "MagicAlert", targets: ["MagicAlert"]),
         .library(name: "MagicError", targets: ["MagicError"]),
     ],
@@ -51,9 +51,10 @@ let package = Package(
            name: "MagicDevice",
            resources: [.process("Assets.xcassets")]
        ),
-//       .target(
-//           name: "MagicContainer"
-//       ),
+       .target(
+           name: "MagicContainer",
+           dependencies: ["MagicAlert"]
+       ),
        .target(
            name: "MagicAlert",
            dependencies: ["MagicError"]
