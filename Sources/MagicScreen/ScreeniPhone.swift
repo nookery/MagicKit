@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct iPhoneDevice: ScreenDevice {
+public struct iPhoneDevice: SuperScreen {
     public var horizon: Bool = false
     
     public init(horizon: Bool = false) {
@@ -8,19 +8,27 @@ public struct iPhoneDevice: ScreenDevice {
     }
     
     public var screenWidth: CGFloat {
-        horizon ? 2275 : 1165
+        horizon ? 2600 : 1165
     }
     
     public var screenHeight: CGFloat {
-        horizon ? 1500 : 2528
+        horizon ? 1200 : 2528
     }
     
     public var deviceImageName: String {
         "iPhone 14 - Midnight - Portrait"
     }
     
-    public var landscapeImageName: String {
-        "iPad mini - Starlight - Landscape"
+    public var landscapeImageName: String? {
+        "iPhone 14 - Midnight - Landscape"
+    }
+    
+    public var screenOffsetX: CGFloat {
+        0
+    }
+    
+    public var screenOffsetY: CGFloat {
+        0
     }
 }
 
@@ -28,13 +36,79 @@ public struct ScreeniPhone<Content>: View where Content: View {
     private let content: Content
     public var horizon = false
 
-    public init(@ViewBuilder content: () -> Content) {
+    public init(horizon: Bool = false, @ViewBuilder content: () -> Content) {
+        self.horizon = horizon
         self.content = content()
     }
 
     public var body: some View {
-        ScreenBase(device: iPhoneDevice(horizon: horizon)) {
+        ScreenBase(device: iPhoneDevice(horizon: horizon), horizon: horizon) {
             content
         }
     }
+}
+
+// MARK: - View Extensions
+
+public extension View {
+    /// 将当前视图包装在 iPhone 屏幕中
+    /// - Parameter horizon: 是否使用横屏模式，默认为 false
+    /// - Returns: 包装在 iPhone 屏幕中的视图
+    func inIPhoneScreen(horizon: Bool = false) -> some View {
+        ScreeniPhone(horizon: horizon) {
+            self
+        }
+    }
+}
+
+// MARK: - Preview
+
+#Preview("iPhone - Portrait") {
+    HStack{
+        Spacer()
+        VStack {
+            Spacer()
+            Image(systemName: "iphone")
+                .font(.system(size: 200))
+                .foregroundColor(.blue)
+            
+            Text("iPhone 预览")
+                .font(.system(size: 100))
+                .fontWeight(.bold)
+            
+            Text("竖屏模式")
+                .font(.system(size: 50))
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        Spacer()
+    }
+    .padding(20)
+    .background(.orange.opacity(0.2))
+    .inIPhoneScreen()
+}
+
+#Preview("iPhone - Landscape") {
+    HStack {
+        Spacer()
+        Image(systemName: "iphone")
+            .font(.system(size: 150))
+            .foregroundColor(.green)
+        
+        VStack(alignment: .leading) {
+            Spacer()
+            Text("iPhone 横屏")
+                .font(.system(size: 80))
+                .fontWeight(.bold)
+            
+            Text("横屏模式")
+                .font(.system(size: 40))
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        Spacer()
+    }
+    .padding(15)
+    .background(.green.opacity(0.2))
+    .inIPhoneScreen(horizon: true)
 }

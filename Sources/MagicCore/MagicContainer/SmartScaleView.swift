@@ -4,30 +4,41 @@ import SwiftUI
 /// 如果内容比容器小很多，则不缩放；如果内容比容器大很多，则按比例缩放
 struct SmartScaleView<Content: View>: View {
     private let content: Content
-    private let containerWidth: CGFloat
-    private let containerHeight: CGFloat
+    private let selectedSize: PreviewSize
     private let minScaleThreshold: CGFloat
     private let maxScaleThreshold: CGFloat
     
     @State private var contentSize: CGSize = .zero
     
+    /// 动态容器尺寸
+    private var containerSize: CGSize {
+        selectedSize.size
+    }
+    
+    /// 容器宽度
+    private var containerWidth: CGFloat {
+        containerSize.width == .infinity ? 500 : containerSize.width
+    }
+    
+    /// 容器高度
+    private var containerHeight: CGFloat {
+        containerSize.height == .infinity ? 750 : containerSize.height
+    }
+    
     /// 创建智能缩放视图
     /// - Parameters:
     ///   - content: 要显示的内容视图
-    ///   - containerWidth: 目标容器宽度
-    ///   - containerHeight: 目标容器高度
+    ///   - selectedSize: 选中的预览尺寸
     ///   - minScaleThreshold: 最小缩放阈值，内容小于容器的此比例时不缩放（默认 0.8）
     ///   - maxScaleThreshold: 最大缩放阈值，内容大于容器的此比例时开始缩放（默认 1.2）
     init(
         content: Content,
-        containerWidth: CGFloat,
-        containerHeight: CGFloat,
+        selectedSize: PreviewSize,
         minScaleThreshold: CGFloat = 0.8,
         maxScaleThreshold: CGFloat = 1.2
     ) {
         self.content = content
-        self.containerWidth = containerWidth
-        self.containerHeight = containerHeight
+        self.selectedSize = selectedSize
         self.minScaleThreshold = minScaleThreshold
         self.maxScaleThreshold = maxScaleThreshold
     }
@@ -148,8 +159,7 @@ extension SmartScaleView {
         content: Rectangle()
             .fill(Color.blue)
             .frame(width: 800, height: 600),
-        containerWidth: 400,
-        containerHeight: 300
+        selectedSize: .iPhone
     )
 }
 
@@ -158,8 +168,7 @@ extension SmartScaleView {
         content: Rectangle()
             .fill(Color.green)
             .frame(width: 200, height: 150),
-        containerWidth: 400,
-        containerHeight: 300
+        selectedSize: .iPhone
     )
 }
 
@@ -168,8 +177,7 @@ extension SmartScaleView {
         content: Rectangle()
             .fill(Color.orange)
             .frame(width: 380, height: 280),
-        containerWidth: 400,
-        containerHeight: 300
+        selectedSize: .iPhone
     )
 }
 
@@ -194,8 +202,7 @@ extension SmartScaleView {
         .padding()
         .background(Color.yellow.opacity(0.3))
         .frame(width: 600, height: 400),
-        containerWidth: 300,
-        containerHeight: 200
+        selectedSize: .iPhoneSE
     )
 }
 
@@ -218,7 +225,52 @@ extension SmartScaleView {
         .background(.background)
         .cornerRadius(20)
         .frame(width: 375, height: 812),
-        containerWidth: 200,
-        containerHeight: 400
+        selectedSize: .iPhoneSE
+    )
+}
+
+#Preview("SmartScaleView - iPad Size") {
+    SmartScaleView(
+        content: VStack {
+            Image(systemName: "ipad")
+                .font(.system(size: 120))
+                .foregroundColor(.purple)
+            
+            Text("iPad 预览")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+            
+            Text("这是一个iPad尺寸的预览")
+                .font(.title3)
+                .foregroundColor(.secondary)
+        }
+        .padding(60)
+        .background(.background)
+        .cornerRadius(30)
+        .frame(width: 600, height: 800),
+        selectedSize: .iPad
+    )
+}
+
+#Preview("SmartScaleView - Full Size") {
+    SmartScaleView(
+        content: VStack {
+            Image(systemName: "rectangle")
+                .font(.system(size: 80))
+                .foregroundColor(.green)
+            
+            Text("全屏预览")
+                .font(.title)
+                .fontWeight(.semibold)
+            
+            Text("这是一个全屏尺寸的预览")
+                .font(.body)
+                .foregroundColor(.secondary)
+        }
+        .padding(30)
+        .background(.background)
+        .cornerRadius(15)
+        .frame(width: 400, height: 300),
+        selectedSize: .full
     )
 }

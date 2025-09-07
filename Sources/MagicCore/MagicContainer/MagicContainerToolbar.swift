@@ -23,17 +23,6 @@ struct MagicContainerToolbar: View {
             .pickerStyle(.menu)
             .frame(width: 120)
             
-            // MARK: Size Dimensions Label
-            if selectedSize != .full {
-                Text(selectedSize.dimensions)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.secondary.opacity(0.1))
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-            }
-            
             Spacer()
             
             // MARK: macOS App Store Screenshot Button

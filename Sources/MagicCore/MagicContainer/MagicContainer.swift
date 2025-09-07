@@ -54,11 +54,10 @@ struct MagicContainer<Content: View>: View {
                 Divider().padding(.bottom, 10)
                 
                 // MARK: Content Area
-                ScrollView(.vertical, showsIndicators: showsIndicators) {
+                ScrollView([.horizontal, .vertical], showsIndicators: showsIndicators) {
                     SmartScaleView(
                         content: content,
-                        containerWidth: containerWidth,
-                        containerHeight: containerHeight
+                        selectedSize: selectedSize
                     )
                     .padding(.horizontal, selectedSize == .full ? 16 : 40)
                     .padding(.vertical, selectedSize == .full ? 12 : 20)
