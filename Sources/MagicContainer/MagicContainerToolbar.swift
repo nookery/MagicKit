@@ -83,7 +83,7 @@ struct MagicContainerToolbar: View {
                         Spacer()
                         if scale != 1.0 {
                             // 显示缩放后的实际尺寸和缩放比例
-                            Label("原始尺寸: \(Int(self.containerSize.width * scale)) x \(Int(self.containerSize.height * scale))", systemImage: "ruler")
+                            Label("原始尺寸: \(Int(self.containerSize.width)) x \(Int(self.containerSize.height))", systemImage: "ruler")
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
 
