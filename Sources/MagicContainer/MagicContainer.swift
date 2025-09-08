@@ -12,7 +12,8 @@ struct MagicContainer<Content: View>: View {
     private let content: Content
     private let containerHeight: CGFloat
     private let containerWidth: CGFloat
-    private let toolBarHeight: CGFloat = 80
+    private let scale: CGFloat
+    private let toolBarHeight: CGFloat = 100
     private let bottomPadding: CGFloat = 10
 
     @Environment(\.colorScheme) private var systemColorScheme
@@ -23,14 +24,17 @@ struct MagicContainer<Content: View>: View {
     /// 创建容器
     /// - Parameters:
     ///   - containerSize: 容器尺寸，默认为 500x750
+    ///   - scale: 缩放比例，默认为 1.0
     ///   - content: 要预览的内容视图
     public init(
         _ containerSize: CGSize = CGSize(width: 500, height: 750),
+        scale: CGFloat = 1.0,
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
         self.containerHeight = containerSize.height
         self.containerWidth = containerSize.width
+        self.scale = scale
     }
 
     // MARK: - Body
@@ -46,7 +50,8 @@ struct MagicContainer<Content: View>: View {
                 captureAction: captureView,
                 appStoreCaptureAction: captureAppStoreView,
                 macAppStoreCaptureAction: captureMacAppStoreView,
-                containerSize: CGSize(width: containerWidth, height: containerHeight)
+                containerSize: CGSize(width: containerWidth, height: containerHeight),
+                scale: scale
             )
             .frame(height: toolBarHeight)
             .frame(maxWidth: .infinity)
@@ -55,12 +60,14 @@ struct MagicContainer<Content: View>: View {
 
             content.frame(width: containerWidth, height: containerHeight)
                 .dashedBorder()
+                .scaleEffect(scale)
+                .frame(width: containerWidth * scale, height: containerHeight * scale)
 
             Spacer(minLength: bottomPadding)
         }
         .background(.background)
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
-        .frame(width: containerWidth, height: containerHeight + toolBarHeight + bottomPadding)
+        .frame(width: containerWidth * scale, height: toolBarHeight + bottomPadding + containerHeight * scale)
         .onAppear {
             // 初始化时跟随系统主题
             isDarkMode = systemColorScheme == .dark
@@ -109,7 +116,7 @@ extension MagicContainer {
             // 为每种尺寸生成截图
             for (name, size) in iPhoneSizes + iPadSizes {
                 let scaledContent = content
-                    .frame(width: size.width / 2, height: size.height / 2) // 按比例缩小以适应视图
+                    .frame(width: size.width, height: size.height)
 
                 let title = "\(name)_\(MagicImage.getTimeString())_\(Int(size.width))x\(Int(size.height))"
                 let result = MagicImage.snapshot(scaledContent, title: title)
@@ -137,7 +144,7 @@ extension MagicContainer {
             // 为每种尺寸生成截图
             for (name, size) in macOSSizes {
                 let scaledContent = content
-                    .frame(width: size.width / 2, height: size.height / 2) // 按比例缩小以适应视图
+                    .frame(width: size.width, height: size.height)
 
                 let title = "\(name)_\(MagicImage.getTimeString())_\(Int(size.width))x\(Int(size.height))"
                 let result = MagicImage.snapshot(scaledContent, title: title)
@@ -198,7 +205,7 @@ extension MagicContainer {
             Spacer()
         }
         .background(.indigo.opacity(0.3))
-        .inMagicContainer(.macBook13)
+        .inMagicContainer(.macBook13, scale: 0.2)
     }
 
     #Preview("MacBook 13 - 20%") {
@@ -259,5 +266,37 @@ extension MagicContainer {
         Text("Hello, World!")
             .padding()
             .inMagicContainer(.iMac27_10Percent)
+    }
+    
+    #Preview("iMac 27 - 缩放示例") {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Text("Hello, World!")
+                    .font(.system(size: 400))
+                    .padding()
+                Spacer()
+            }
+            Spacer()
+        }
+        .background(.indigo.opacity(0.3))
+        .inMagicContainer(.iMac27, scale: 0.1)
+    }
+    
+    #Preview("MacBook 13 - 缩放示例") {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Text("Hello, World!")
+                    .font(.system(size: 200))
+                    .padding()
+                Spacer()
+            }
+            Spacer()
+        }
+        .background(.green.opacity(0.3))
+        .inMagicContainer(.macBook13, scale: 0.3)
     }
 #endif

@@ -7,7 +7,8 @@ struct MagicContainerToolbar: View {
     var appStoreCaptureAction: () -> Void
     var macAppStoreCaptureAction: () -> Void
     var containerSize: CGSize
-    
+    var scale: CGFloat = 1.0
+
     var body: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
@@ -17,6 +18,7 @@ struct MagicContainerToolbar: View {
                     Spacer()
 
                     // MARK: macOS App Store Screenshot Button
+
                     if self.containerSize.isWidthGreaterThanHeight {
                         Button(action: {
                             macAppStoreCaptureAction()
@@ -31,6 +33,7 @@ struct MagicContainerToolbar: View {
                     }
 
                     // MARK: App Store Screenshot Button
+
                     if self.containerSize.isWidthLessThanHeight {
                         Button(action: {
                             appStoreCaptureAction()
@@ -45,6 +48,7 @@ struct MagicContainerToolbar: View {
                     }
 
                     // MARK: Screenshot Button
+
                     Button(action: {
                         captureAction()
                     }) {
@@ -57,6 +61,7 @@ struct MagicContainerToolbar: View {
                     .buttonStyle(.bordered)
 
                     // MARK: Theme Toggle Button
+
                     Button(action: {
                         isDarkMode.toggle()
                     }) {
@@ -65,24 +70,42 @@ struct MagicContainerToolbar: View {
                     }
                     .buttonStyle(.bordered)
                     .clipShape(Circle())
-                    
+
                     Spacer()
                 }
                 .padding(.horizontal)
-                .frame(height: height * 0.7)
+                .frame(height: height * 0.5)
                 .frame(maxWidth: .infinity)
 
                 // Bottom row: 30%
-                HStack {
-                    Spacer()
-                    Label("\(Int(self.containerSize.width)) x \(Int(self.containerSize.height))", systemImage: "ruler")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    
-                    Spacer()
+                VStack(spacing: 4) {
+                    HStack {
+                        Spacer()
+                        if scale != 1.0 {
+                            // 显示缩放后的实际尺寸和缩放比例
+                            Label("原始尺寸: \(Int(self.containerSize.width * scale)) x \(Int(self.containerSize.height * scale))", systemImage: "ruler")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+
+                            Text("已缩放到: \(String(format: "%.1f", scale))x")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        } else {
+                            // 原始尺寸，无缩放
+                            Label("\(Int(self.containerSize.width)) x \(Int(self.containerSize.height))", systemImage: "ruler")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+
+                    Label("请按原始尺寸设计你的视图", systemImage: "info")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal)
-                .frame(height: height * 0.3)
+                .frame(height: height * 0.5)
                 .frame(maxWidth: .infinity)
                 .background(Color.primary.opacity(0.03))
             }
@@ -95,9 +118,41 @@ struct MagicContainerToolbar: View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("MacBook 13 - 20%") {
-    Text("Hello, World!")
-        .padding()
-        .inMagicContainer(.macBook13_20Percent)
-}
+    #Preview("MacBook 13 - 20%") {
+        Text("Hello, World!")
+            .padding()
+            .inMagicContainer(.macBook13_20Percent)
+    }
+
+    #Preview("iMac 27 - 缩放示例") {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Text("Hello, World!")
+                    .font(.system(size: 400))
+                    .padding()
+                Spacer()
+            }
+            Spacer()
+        }
+        .background(.indigo.opacity(0.3))
+        .inMagicContainer(.iMac27, scale: 0.1)
+    }
+
+    #Preview("MacBook 13 - 缩放示例") {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Text("Hello, World!")
+                    .font(.system(size: 200))
+                    .padding()
+                Spacer()
+            }
+            Spacer()
+        }
+        .background(.green.opacity(0.3))
+        .inMagicContainer(.macBook13, scale: 0.3)
+    }
 #endif
