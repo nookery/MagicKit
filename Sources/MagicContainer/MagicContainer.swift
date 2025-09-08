@@ -53,12 +53,8 @@ struct MagicContainer<Content: View>: View {
 
             // MARK: Content Area
 
-            ZStack {
-                SmartScaleView(
-                    content: content,
-                    selectedSize: CGSize(width: containerWidth, height: containerHeight)
-                )
-            }
+            content.frame(width: containerWidth, height: containerHeight)
+                .dashedBorder()
 
             Spacer(minLength: bottomPadding)
         }
@@ -82,10 +78,7 @@ extension MagicContainer {
             let widthInt = Int(containerWidth)
             let heightInt = Int(containerHeight)
             let title = "MagicContainer_\(MagicImage.getTimeString())_\(widthInt)x\(heightInt)"
-            let result = MagicImage.snapshot(SmartScaleView(
-                content: content,
-                selectedSize: CGSize(width: containerWidth, height: containerHeight)
-            ), title: title)
+            let result = MagicImage.snapshot(content.frame(width: containerWidth, height: containerHeight), title: title)
             if result.contains("失败") {
                 MagicMessageProvider.shared.error(result)
             } else {
