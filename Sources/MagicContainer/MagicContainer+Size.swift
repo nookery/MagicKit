@@ -62,4 +62,19 @@ public extension CGSize {
     var description: String {
         "\(width)x\(height)"
     }
+
+    /// 是否宽度大于高度
+    var isWidthGreaterThanHeight: Bool {
+        width > height
+    }
+
+    /// 是否宽度小于高度
+    var isWidthLessThanHeight: Bool {
+        width < height
+    }
+
+    /// 是否宽度等于高度
+    var isWidthEqualHeight: Bool {
+        width == height
+    }
 }

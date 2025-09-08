@@ -6,7 +6,7 @@ struct MagicContainerToolbar: View {
     var captureAction: () -> Void
     var appStoreCaptureAction: () -> Void
     var macAppStoreCaptureAction: () -> Void
-    var containerSize: CGSize?
+    var containerSize: CGSize
     
     var body: some View {
         GeometryReader { proxy in
@@ -17,28 +17,32 @@ struct MagicContainerToolbar: View {
                     Spacer()
 
                     // MARK: macOS App Store Screenshot Button
-                    Button(action: {
-                        macAppStoreCaptureAction()
-                    }) {
-                        HStack {
-                            Image(systemName: "laptopcomputer")
-                            Text("macOS App Store")
+                    if self.containerSize.isWidthGreaterThanHeight {
+                        Button(action: {
+                            macAppStoreCaptureAction()
+                        }) {
+                            HStack {
+                                Image(systemName: "laptopcomputer")
+                                Text("macOS App Store")
+                            }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
+                        .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.bordered)
 
                     // MARK: App Store Screenshot Button
-                    Button(action: {
-                        appStoreCaptureAction()
-                    }) {
-                        HStack {
-                            Image(systemName: "camera.aperture")
-                            Text("iOS App Store")
+                    if self.containerSize.isWidthLessThanHeight {
+                        Button(action: {
+                            appStoreCaptureAction()
+                        }) {
+                            HStack {
+                                Image(systemName: "camera.aperture")
+                                Text("iOS App Store")
+                            }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
+                        .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.bordered)
 
                     // MARK: Screenshot Button
                     Button(action: {
@@ -71,13 +75,10 @@ struct MagicContainerToolbar: View {
                 // Bottom row: 30%
                 HStack {
                     Spacer()
-                    if let size = containerSize {
-                        Label("\(Int(size.width)) x \(Int(size.height))", systemImage: "ruler")
+                    Label("\(Int(self.containerSize.width)) x \(Int(self.containerSize.height))", systemImage: "ruler")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
-                    } else {
-                        EmptyView()
-                    }
+                    
                     Spacer()
                 }
                 .padding(.horizontal)
@@ -94,15 +95,6 @@ struct MagicContainerToolbar: View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview {
-    MagicContainerToolbar(
-        isDarkMode: .constant(false),
-        captureAction: {},
-        appStoreCaptureAction: {},
-        macAppStoreCaptureAction: {}
-    )
-}
-
 #Preview("MacBook 13 - 20%") {
     Text("Hello, World!")
         .padding()
