@@ -193,3 +193,21 @@ private struct IceCrystal: View {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用雪峰背景效果
+    public func inMagicBackgroundSnowPeak() -> some View {
+        self.background(MagicBackground.snowPeak)
+    }
+    
+    /// 应用冰川背景效果
+    public func inMagicBackgroundGlacierIce() -> some View {
+        self.background(MagicBackground.glacierIce)
+    }
+    
+    /// 应用霜山背景效果
+    public func inMagicBackgroundFrostMountain() -> some View {
+        self.background(MagicBackground.frostMountain)
+    }
+}

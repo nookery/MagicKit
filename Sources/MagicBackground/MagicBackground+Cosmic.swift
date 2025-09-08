@@ -288,3 +288,31 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用宇宙尘埃背景效果
+    public func inMagicBackgroundCosmicDust() -> some View {
+        self.background(MagicBackground.cosmicDust)
+    }
+    
+    /// 应用银河螺旋背景效果
+    public func inMagicBackgroundGalaxySpiral() -> some View {
+        self.background(MagicBackground.galaxySpiral)
+    }
+    
+    /// 应用星云迷雾背景效果
+    public func inMagicBackgroundNebulaMist() -> some View {
+        self.background(MagicBackground.nebulaMist)
+    }
+    
+    /// 应用暗物质背景效果
+    public func inMagicBackgroundDarkMatter() -> some View {
+        self.background(MagicBackground.darkMatter)
+    }
+    
+    /// 应用宇宙传送门背景效果
+    public func inMagicBackgroundCosmicPortal() -> some View {
+        self.background(MagicBackground.cosmicPortal)
+    }
+}

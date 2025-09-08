@@ -207,3 +207,56 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用红色背景效果
+    public func inMagicBackgroundColorRed() -> some View {
+        self.background(MagicBackground.colorRed)
+    }
+    
+    /// 应用蓝色背景效果
+    public func inMagicBackgroundColorBlue() -> some View {
+        self.background(MagicBackground.colorBlue)
+    }
+    
+    /// 应用绿色背景效果
+    public func inMagicBackgroundColorGreen() -> some View {
+        self.background(MagicBackground.colorGreen)
+    }
+    
+    /// 应用黄色背景效果
+    public func inMagicBackgroundColorYellow() -> some View {
+        self.background(MagicBackground.colorYellow)
+    }
+    
+    /// 应用紫色背景效果
+    public func inMagicBackgroundColorPurple() -> some View {
+        self.background(MagicBackground.colorPurple)
+    }
+    
+    /// 应用橙色背景效果
+    public func inMagicBackgroundColorOrange() -> some View {
+        self.background(MagicBackground.colorOrange)
+    }
+    
+    /// 应用粉色背景效果
+    public func inMagicBackgroundColorPink() -> some View {
+        self.background(MagicBackground.colorPink)
+    }
+    
+    /// 应用棕色背景效果
+    public func inMagicBackgroundColorBrown() -> some View {
+        self.background(MagicBackground.colorBrown)
+    }
+    
+    /// 应用灰色背景效果
+    public func inMagicBackgroundColorGray() -> some View {
+        self.background(MagicBackground.colorGray)
+    }
+    
+    /// 应用青色背景效果
+    public func inMagicBackgroundColorTeal() -> some View {
+        self.background(MagicBackground.colorTeal)
+    }
+}

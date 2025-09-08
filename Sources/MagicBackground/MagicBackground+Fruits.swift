@@ -189,3 +189,31 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用西瓜背景效果
+    public func inMagicBackgroundWatermelon() -> some View {
+        self.background(MagicBackground.watermelon)
+    }
+    
+    /// 应用橙子背景效果
+    public func inMagicBackgroundOrange() -> some View {
+        self.background(MagicBackground.orange)
+    }
+    
+    /// 应用蓝莓背景效果
+    public func inMagicBackgroundBlueberry() -> some View {
+        self.background(MagicBackground.blueberry)
+    }
+    
+    /// 应用草莓背景效果
+    public func inMagicBackgroundStrawberry() -> some View {
+        self.background(MagicBackground.strawberry)
+    }
+    
+    /// 应用猕猴桃背景效果
+    public func inMagicBackgroundKiwi() -> some View {
+        self.background(MagicBackground.kiwi)
+    }
+}

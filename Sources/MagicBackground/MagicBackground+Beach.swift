@@ -193,3 +193,21 @@ private struct PalmTree: View {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用阳光海滩背景效果
+    public func inMagicBackgroundSunnyBeach() -> some View {
+        self.background(MagicBackground.sunnyBeach)
+    }
+    
+    /// 应用热带日落背景效果
+    public func inMagicBackgroundTropicalSunset() -> some View {
+        self.background(MagicBackground.tropicalSunset)
+    }
+    
+    /// 应用棕榈海滩背景效果
+    public func inMagicBackgroundPalmBeach() -> some View {
+        self.background(MagicBackground.palmBeach)
+    }
+}

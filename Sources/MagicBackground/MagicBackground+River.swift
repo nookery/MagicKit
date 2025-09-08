@@ -183,3 +183,21 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用山间溪流背景效果
+    public func inMagicBackgroundMountainStream() -> some View {
+        self.background(MagicBackground.mountainStream)
+    }
+    
+    /// 应用平静河流背景效果
+    public func inMagicBackgroundCalmRiver() -> some View {
+        self.background(MagicBackground.calmRiver)
+    }
+    
+    /// 应用瀑布河流背景效果
+    public func inMagicBackgroundCascadingRiver() -> some View {
+        self.background(MagicBackground.cascadingRiver)
+    }
+}

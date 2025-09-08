@@ -148,4 +148,22 @@ extension MagicBackground {
             Text("森林")
         }
     }
-} 
+}
+
+// MARK: - View Extensions
+extension View {
+    /// 应用神秘森林背景效果
+    public func inMagicBackgroundMysticalForest() -> some View {
+        self.background(MagicBackground.mysticalForest)
+    }
+    
+    /// 应用魔法森林背景效果
+    public func inMagicBackgroundEnchantedGrove() -> some View {
+        self.background(MagicBackground.enchantedGrove)
+    }
+    
+    /// 应用深林背景效果
+    public func inMagicBackgroundDeepForest() -> some View {
+        self.background(MagicBackground.deepForest)
+    }
+}

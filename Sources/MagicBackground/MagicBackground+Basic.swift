@@ -483,3 +483,106 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用霜花背景效果
+    public func inMagicBackgroundFrost() -> some View {
+        self.background(MagicBackground.frost)
+    }
+    
+    /// 应用渐变背景效果
+    public func inMagicBackgroundGradient() -> some View {
+        self.background(MagicBackground.gradient)
+    }
+    
+    /// 应用极光背景效果
+    public func inMagicBackgroundAurora() -> some View {
+        self.background(MagicBackground.aurora)
+    }
+    
+    /// 应用海洋背景效果
+    public func inMagicBackgroundOcean() -> some View {
+        self.background(MagicBackground.ocean)
+    }
+    
+    /// 应用日落背景效果
+    public func inMagicBackgroundSunset() -> some View {
+        self.background(MagicBackground.sunset)
+    }
+    
+    /// 应用森林背景效果
+    public func inMagicBackgroundForest() -> some View {
+        self.background(MagicBackground.forest)
+    }
+    
+    /// 应用薰衣草背景效果
+    public func inMagicBackgroundLavender() -> some View {
+        self.background(MagicBackground.lavender)
+    }
+    
+    /// 应用沙漠背景效果
+    public func inMagicBackgroundDesert() -> some View {
+        self.background(MagicBackground.desert)
+    }
+    
+    /// 应用午夜背景效果
+    public func inMagicBackgroundMidnight() -> some View {
+        self.background(MagicBackground.midnight)
+    }
+    
+    /// 应用樱花背景效果
+    public func inMagicBackgroundCherry() -> some View {
+        self.background(MagicBackground.cherry)
+    }
+    
+    /// 应用薄荷背景效果
+    public func inMagicBackgroundMint() -> some View {
+        self.background(MagicBackground.mint)
+    }
+    
+    /// 应用黄昏背景效果
+    public func inMagicBackgroundTwilight() -> some View {
+        self.background(MagicBackground.twilight)
+    }
+    
+    /// 应用玫瑰背景效果
+    public func inMagicBackgroundRose() -> some View {
+        self.background(MagicBackground.rose)
+    }
+    
+    /// 应用翡翠背景效果
+    public func inMagicBackgroundEmerald() -> some View {
+        self.background(MagicBackground.emerald)
+    }
+    
+    /// 应用紫水晶背景效果
+    public func inMagicBackgroundAmethyst() -> some View {
+        self.background(MagicBackground.amethyst)
+    }
+    
+    /// 应用珊瑚背景效果
+    public func inMagicBackgroundCoral() -> some View {
+        self.background(MagicBackground.coral)
+    }
+    
+    /// 应用石板背景效果
+    public func inMagicBackgroundSlate() -> some View {
+        self.background(MagicBackground.slate)
+    }
+    
+    /// 应用鼠尾草背景效果
+    public func inMagicBackgroundSage() -> some View {
+        self.background(MagicBackground.sage)
+    }
+    
+    /// 应用黄昏背景效果
+    public func inMagicBackgroundDusk() -> some View {
+        self.background(MagicBackground.dusk)
+    }
+    
+    /// 应用宁静背景效果
+    public func inMagicBackgroundSerenity() -> some View {
+        self.background(MagicBackground.serenity)
+    }
+}

@@ -174,3 +174,21 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用深海洋流背景效果
+    public func inMagicBackgroundDeepOceanCurrent() -> some View {
+        self.background(MagicBackground.deepOceanCurrent)
+    }
+    
+    /// 应用热带水域背景效果
+    public func inMagicBackgroundTropicalWaters() -> some View {
+        self.background(MagicBackground.tropicalWaters)
+    }
+    
+    /// 应用珊瑚礁背景效果
+    public func inMagicBackgroundCoralReef() -> some View {
+        self.background(MagicBackground.coralReef)
+    }
+}

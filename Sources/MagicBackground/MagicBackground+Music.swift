@@ -178,3 +178,31 @@ extension MagicBackground {
         }
     }
 }
+
+// MARK: - View Extensions
+extension View {
+    /// 应用爵士之夜背景效果
+    public func inMagicBackgroundJazzNight() -> some View {
+        self.background(MagicBackground.jazzNight)
+    }
+    
+    /// 应用古典和谐背景效果
+    public func inMagicBackgroundClassicalHarmony() -> some View {
+        self.background(MagicBackground.classicalHarmony)
+    }
+    
+    /// 应用摇滚舞台背景效果
+    public func inMagicBackgroundRockStage() -> some View {
+        self.background(MagicBackground.rockStage)
+    }
+    
+    /// 应用电子节拍背景效果
+    public func inMagicBackgroundElectronicBeats() -> some View {
+        self.background(MagicBackground.electronicBeats)
+    }
+    
+    /// 应用原声清晨背景效果
+    public func inMagicBackgroundAcousticMorning() -> some View {
+        self.background(MagicBackground.acousticMorning)
+    }
+}
