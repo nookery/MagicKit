@@ -40,7 +40,8 @@ let package = Package(
            name: "MagicCore",
            dependencies: [
                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
-               "ID3TagEditor", 
+               "ID3TagEditor",
+               "MagicUI",
                "ZIPFoundation",
            ]
        ),
