@@ -181,28 +181,28 @@ extension MagicBackground {
 
 // MARK: - View Extensions
 extension View {
-    /// 应用爵士之夜背景效果
-    public func inMagicBackgroundJazzNight() -> some View {
-        self.background(MagicBackground.jazzNight)
+/// 应用爵士之夜背景效果
+    public func inMagicBackgroundJazzNight(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.jazzNight.opacity(opacity))
     }
     
-    /// 应用古典和谐背景效果
-    public func inMagicBackgroundClassicalHarmony() -> some View {
-        self.background(MagicBackground.classicalHarmony)
+/// 应用古典和谐背景效果
+    public func inMagicBackgroundClassicalHarmony(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.classicalHarmony.opacity(opacity))
     }
     
-    /// 应用摇滚舞台背景效果
-    public func inMagicBackgroundRockStage() -> some View {
-        self.background(MagicBackground.rockStage)
+/// 应用摇滚舞台背景效果
+    public func inMagicBackgroundRockStage(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.rockStage.opacity(opacity))
     }
     
-    /// 应用电子节拍背景效果
-    public func inMagicBackgroundElectronicBeats() -> some View {
-        self.background(MagicBackground.electronicBeats)
+/// 应用电子节拍背景效果
+    public func inMagicBackgroundElectronicBeats(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.electronicBeats.opacity(opacity))
     }
     
-    /// 应用原声清晨背景效果
-    public func inMagicBackgroundAcousticMorning() -> some View {
-        self.background(MagicBackground.acousticMorning)
+/// 应用原声清晨背景效果
+    public func inMagicBackgroundAcousticMorning(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.acousticMorning.opacity(opacity))
     }
 }

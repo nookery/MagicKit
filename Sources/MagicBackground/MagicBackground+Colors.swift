@@ -210,53 +210,53 @@ extension MagicBackground {
 
 // MARK: - View Extensions
 extension View {
-    /// 应用红色背景效果
-    public func inMagicBackgroundColorRed() -> some View {
-        self.background(MagicBackground.colorRed)
+/// 应用红色背景效果
+    public func inMagicBackgroundColorRed(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorRed.opacity(opacity))
     }
     
-    /// 应用蓝色背景效果
-    public func inMagicBackgroundColorBlue() -> some View {
-        self.background(MagicBackground.colorBlue)
+/// 应用蓝色背景效果
+    public func inMagicBackgroundColorBlue(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorBlue.opacity(opacity))
     }
     
-    /// 应用绿色背景效果
-    public func inMagicBackgroundColorGreen() -> some View {
-        self.background(MagicBackground.colorGreen)
+/// 应用绿色背景效果
+    public func inMagicBackgroundColorGreen(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorGreen.opacity(opacity))
     }
     
-    /// 应用黄色背景效果
-    public func inMagicBackgroundColorYellow() -> some View {
-        self.background(MagicBackground.colorYellow)
+/// 应用黄色背景效果
+    public func inMagicBackgroundColorYellow(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorYellow.opacity(opacity))
     }
     
-    /// 应用紫色背景效果
-    public func inMagicBackgroundColorPurple() -> some View {
-        self.background(MagicBackground.colorPurple)
+/// 应用紫色背景效果
+    public func inMagicBackgroundColorPurple(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorPurple.opacity(opacity))
     }
     
-    /// 应用橙色背景效果
-    public func inMagicBackgroundColorOrange() -> some View {
-        self.background(MagicBackground.colorOrange)
+/// 应用橙色背景效果
+    public func inMagicBackgroundColorOrange(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorOrange.opacity(opacity))
     }
     
-    /// 应用粉色背景效果
-    public func inMagicBackgroundColorPink() -> some View {
-        self.background(MagicBackground.colorPink)
+/// 应用粉色背景效果
+    public func inMagicBackgroundColorPink(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorPink.opacity(opacity))
     }
     
-    /// 应用棕色背景效果
-    public func inMagicBackgroundColorBrown() -> some View {
-        self.background(MagicBackground.colorBrown)
+/// 应用棕色背景效果
+    public func inMagicBackgroundColorBrown(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorBrown.opacity(opacity))
     }
     
-    /// 应用灰色背景效果
-    public func inMagicBackgroundColorGray() -> some View {
-        self.background(MagicBackground.colorGray)
+/// 应用灰色背景效果
+    public func inMagicBackgroundColorGray(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorGray.opacity(opacity))
     }
     
-    /// 应用青色背景效果
-    public func inMagicBackgroundColorTeal() -> some View {
-        self.background(MagicBackground.colorTeal)
+/// 应用青色背景效果
+    public func inMagicBackgroundColorTeal(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.colorTeal.opacity(opacity))
     }
 }

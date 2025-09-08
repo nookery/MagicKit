@@ -180,18 +180,18 @@ extension MagicBackground {
 
 // MARK: - View Extensions
 extension View {
-    /// 应用黎明天空背景效果
-    public func inMagicBackgroundDawnSky() -> some View {
-        self.background(MagicBackground.dawnSky)
+/// 应用黎明天空背景效果
+    public func inMagicBackgroundDawnSky(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.dawnSky.opacity(opacity))
     }
     
-    /// 应用暴风雨天空背景效果
-    public func inMagicBackgroundStormyHeaven() -> some View {
-        self.background(MagicBackground.stormyHeaven)
+/// 应用暴风雨天空背景效果
+    public func inMagicBackgroundStormyHeaven(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.stormyHeaven.opacity(opacity))
     }
     
-    /// 应用日落光辉背景效果
-    public func inMagicBackgroundSunsetGlow() -> some View {
-        self.background(MagicBackground.sunsetGlow)
+/// 应用日落光辉背景效果
+    public func inMagicBackgroundSunsetGlow(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.sunsetGlow.opacity(opacity))
     }
 }

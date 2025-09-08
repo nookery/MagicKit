@@ -192,28 +192,28 @@ extension MagicBackground {
 
 // MARK: - View Extensions
 extension View {
-    /// 应用西瓜背景效果
-    public func inMagicBackgroundWatermelon() -> some View {
-        self.background(MagicBackground.watermelon)
+/// 应用西瓜背景效果
+    public func inMagicBackgroundWatermelon(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.watermelon.opacity(opacity))
     }
     
-    /// 应用橙子背景效果
-    public func inMagicBackgroundOrange() -> some View {
-        self.background(MagicBackground.orange)
+/// 应用橙子背景效果
+    public func inMagicBackgroundOrange(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.orange.opacity(opacity))
     }
     
-    /// 应用蓝莓背景效果
-    public func inMagicBackgroundBlueberry() -> some View {
-        self.background(MagicBackground.blueberry)
+/// 应用蓝莓背景效果
+    public func inMagicBackgroundBlueberry(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.blueberry.opacity(opacity))
     }
     
-    /// 应用草莓背景效果
-    public func inMagicBackgroundStrawberry() -> some View {
-        self.background(MagicBackground.strawberry)
+/// 应用草莓背景效果
+    public func inMagicBackgroundStrawberry(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.strawberry.opacity(opacity))
     }
     
-    /// 应用猕猴桃背景效果
-    public func inMagicBackgroundKiwi() -> some View {
-        self.background(MagicBackground.kiwi)
+/// 应用猕猴桃背景效果
+    public func inMagicBackgroundKiwi(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.kiwi.opacity(opacity))
     }
 }

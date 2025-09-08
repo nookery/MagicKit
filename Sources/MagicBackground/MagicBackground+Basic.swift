@@ -481,108 +481,132 @@ extension MagicBackground {
             Image(systemName: "2.circle.fill")
             Text("自然")
         }
+        
+        // 透明度效果展示
+        ScrollView {
+            VStack(spacing: 20) {
+                Text("透明度效果展示")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .padding()
+                
+                Group {
+                    BackgroundPreviewItem(background: AnyView(MagicBackground.frost.opacity(0.3)), title: "Frost 30%", textColor: .primary)
+                    BackgroundPreviewItem(background: AnyView(MagicBackground.gradient.opacity(0.5)), title: "Gradient 50%")
+                    BackgroundPreviewItem(background: AnyView(MagicBackground.aurora.opacity(0.7)), title: "Aurora 70%")
+                    BackgroundPreviewItem(background: AnyView(MagicBackground.ocean.opacity(0.4)), title: "Ocean 40%")
+                    BackgroundPreviewItem(background: AnyView(MagicBackground.sunset.opacity(0.6)), title: "Sunset 60%", textColor: .primary)
+                }
+            }
+            .padding()
+        }
+
+        .tabItem {
+            Image(systemName: "3.circle.fill")
+            Text("透明度")
+        }
     }
 }
 
 // MARK: - View Extensions
 extension View {
     /// 应用霜花背景效果
-    public func inMagicBackgroundFrost() -> some View {
-        self.background(MagicBackground.frost)
+    public func inMagicBackgroundFrost(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.frost.opacity(opacity))
     }
     
     /// 应用渐变背景效果
-    public func inMagicBackgroundGradient() -> some View {
-        self.background(MagicBackground.gradient)
+    public func inMagicBackgroundGradient(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.gradient.opacity(opacity))
     }
     
     /// 应用极光背景效果
-    public func inMagicBackgroundAurora() -> some View {
-        self.background(MagicBackground.aurora)
+    public func inMagicBackgroundAurora(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.aurora.opacity(opacity))
     }
     
     /// 应用海洋背景效果
-    public func inMagicBackgroundOcean() -> some View {
-        self.background(MagicBackground.ocean)
+    public func inMagicBackgroundOcean(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.ocean.opacity(opacity))
     }
     
     /// 应用日落背景效果
-    public func inMagicBackgroundSunset() -> some View {
-        self.background(MagicBackground.sunset)
+    public func inMagicBackgroundSunset(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.sunset.opacity(opacity))
     }
     
     /// 应用森林背景效果
-    public func inMagicBackgroundForest() -> some View {
-        self.background(MagicBackground.forest)
+    public func inMagicBackgroundForest(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.forest.opacity(opacity))
     }
     
     /// 应用薰衣草背景效果
-    public func inMagicBackgroundLavender() -> some View {
-        self.background(MagicBackground.lavender)
+    public func inMagicBackgroundLavender(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.lavender.opacity(opacity))
     }
     
     /// 应用沙漠背景效果
-    public func inMagicBackgroundDesert() -> some View {
-        self.background(MagicBackground.desert)
+    public func inMagicBackgroundDesert(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.desert.opacity(opacity))
     }
     
     /// 应用午夜背景效果
-    public func inMagicBackgroundMidnight() -> some View {
-        self.background(MagicBackground.midnight)
+    public func inMagicBackgroundMidnight(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.midnight.opacity(opacity))
     }
     
     /// 应用樱花背景效果
-    public func inMagicBackgroundCherry() -> some View {
-        self.background(MagicBackground.cherry)
+    public func inMagicBackgroundCherry(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.cherry.opacity(opacity))
     }
     
     /// 应用薄荷背景效果
-    public func inMagicBackgroundMint() -> some View {
-        self.background(MagicBackground.mint)
+    public func inMagicBackgroundMint(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.mint.opacity(opacity))
     }
     
     /// 应用黄昏背景效果
-    public func inMagicBackgroundTwilight() -> some View {
-        self.background(MagicBackground.twilight)
+    public func inMagicBackgroundTwilight(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.twilight.opacity(opacity))
     }
     
     /// 应用玫瑰背景效果
-    public func inMagicBackgroundRose() -> some View {
-        self.background(MagicBackground.rose)
+    public func inMagicBackgroundRose(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.rose.opacity(opacity))
     }
     
     /// 应用翡翠背景效果
-    public func inMagicBackgroundEmerald() -> some View {
-        self.background(MagicBackground.emerald)
+    public func inMagicBackgroundEmerald(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.emerald.opacity(opacity))
     }
     
     /// 应用紫水晶背景效果
-    public func inMagicBackgroundAmethyst() -> some View {
-        self.background(MagicBackground.amethyst)
+    public func inMagicBackgroundAmethyst(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.amethyst.opacity(opacity))
     }
     
     /// 应用珊瑚背景效果
-    public func inMagicBackgroundCoral() -> some View {
-        self.background(MagicBackground.coral)
+    public func inMagicBackgroundCoral(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.coral.opacity(opacity))
     }
     
     /// 应用石板背景效果
-    public func inMagicBackgroundSlate() -> some View {
-        self.background(MagicBackground.slate)
+    public func inMagicBackgroundSlate(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.slate.opacity(opacity))
     }
     
     /// 应用鼠尾草背景效果
-    public func inMagicBackgroundSage() -> some View {
-        self.background(MagicBackground.sage)
+    public func inMagicBackgroundSage(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.sage.opacity(opacity))
     }
     
     /// 应用黄昏背景效果
-    public func inMagicBackgroundDusk() -> some View {
-        self.background(MagicBackground.dusk)
+    public func inMagicBackgroundDusk(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.dusk.opacity(opacity))
     }
     
     /// 应用宁静背景效果
-    public func inMagicBackgroundSerenity() -> some View {
-        self.background(MagicBackground.serenity)
+    public func inMagicBackgroundSerenity(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.serenity.opacity(opacity))
     }
 }

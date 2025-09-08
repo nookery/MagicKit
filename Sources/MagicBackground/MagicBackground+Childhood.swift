@@ -239,28 +239,28 @@ extension MagicBackground {
 
 // MARK: - View Extensions
 extension View {
-    /// 应用糖果乐园背景效果
-    public func inMagicBackgroundCandyLand() -> some View {
-        self.background(MagicBackground.candyLand)
+/// 应用糖果乐园背景效果
+    public func inMagicBackgroundCandyLand(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.candyLand.opacity(opacity))
     }
     
-    /// 应用蜡笔盒背景效果
-    public func inMagicBackgroundCrayonBox() -> some View {
-        self.background(MagicBackground.crayonBox)
+/// 应用蜡笔盒背景效果
+    public func inMagicBackgroundCrayonBox(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.crayonBox.opacity(opacity))
     }
     
-    /// 应用积木玩具背景效果
-    public func inMagicBackgroundToyBlocks() -> some View {
-        self.background(MagicBackground.toyBlocks)
+/// 应用积木玩具背景效果
+    public func inMagicBackgroundToyBlocks(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.toyBlocks.opacity(opacity))
     }
     
-    /// 应用气球派对背景效果
-    public func inMagicBackgroundBalloonParty() -> some View {
-        self.background(MagicBackground.balloonParty)
+/// 应用气球派对背景效果
+    public func inMagicBackgroundBalloonParty(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.balloonParty.opacity(opacity))
     }
     
-    /// 应用纸飞机背景效果
-    public func inMagicBackgroundPaperPlanes() -> some View {
-        self.background(MagicBackground.paperPlanes)
+/// 应用纸飞机背景效果
+    public func inMagicBackgroundPaperPlanes(_ opacity: Double = 1.0) -> some View {
+        self.background(MagicBackground.paperPlanes.opacity(opacity))
     }
 }
