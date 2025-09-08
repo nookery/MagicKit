@@ -1,5 +1,5 @@
 import SwiftUI
-
+import MagicBackground
 
 // MARK: - Preview Container
 private struct PreviewContainer<Content: View>: View {

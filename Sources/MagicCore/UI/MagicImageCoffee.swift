@@ -1,4 +1,6 @@
 import SwiftUI
+import MagicUI
+import MagicBackground
 
 public struct MagicImageCoffee: View {
     @State private var rotationAngle: Double = 0
