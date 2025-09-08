@@ -1,5 +1,6 @@
 import MagicCore
 import SwiftUI
+import MagicUI
 
 struct ErrorOverlay: View {
     let error: PlaybackState.PlaybackError

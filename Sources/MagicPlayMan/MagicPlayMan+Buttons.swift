@@ -1,6 +1,7 @@
 import MagicCore
 import OSLog
 import SwiftUI
+import MagicUI
 
 public extension MagicPlayMan {
     /// 自观察版本：播放/暂停按钮视图（推荐外部调用，零负担自动刷新）

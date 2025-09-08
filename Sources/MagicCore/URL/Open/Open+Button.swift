@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 
 public extension URL {
     /// 创建打开按钮

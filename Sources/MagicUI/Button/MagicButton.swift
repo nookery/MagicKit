@@ -213,7 +213,7 @@ public struct MagicButton: View {
         case customCapsule(leftRadius: CGFloat, rightRadius: CGFloat)
 
         /// 获取形状的圆角半径
-        var cornerRadius: CGFloat {
+        public var cornerRadius: CGFloat {
             switch self {
             case .circle:
                 return .infinity

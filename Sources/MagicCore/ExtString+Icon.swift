@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import MagicUI
 
 public extension String {
     /// 创建一个带有图标预览的按钮

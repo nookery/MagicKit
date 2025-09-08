@@ -43,7 +43,7 @@ let package = Package(
        ),
        .target(
            name: "MagicPlayMan",
-           dependencies: ["MagicCore"]
+           dependencies: ["MagicCore", "MagicUI"]
        ),
        .target(
            name: "MagicSync",

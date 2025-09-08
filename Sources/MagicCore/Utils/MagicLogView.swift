@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 
 /// 通用日志视图组件
 public struct MagicLogView: View {
