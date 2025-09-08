@@ -11,7 +11,7 @@ import SwiftUI
 ///     .withBody(["key": "value"])
 /// let response = try await client.post()
 /// ```
-public class HttpClient: SuperLog {
+public class HttpClient {
     public static let emoji = "🛞"
     private var url: URL
     private var headers: [String: String] = [
@@ -101,8 +101,8 @@ public class HttpClient: SuperLog {
         }
 
         guard httpResponse.statusCode == 200 else {
-            os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
-            os_log(.error, "\(self.t)Http URL -> \(self.url.absoluteString)")
+            os_log(.error, "Http Error -> \(httpResponse.statusCode)")
+            os_log(.error, "Http URL -> \(self.url.absoluteString)")
             printHttpError(data, httpResponse: httpResponse)
             throw HttpError.HttpStatusError(httpResponse.statusCode)
         }
@@ -173,8 +173,8 @@ public class HttpClient: SuperLog {
 
         if let httpResponse = response as? HTTPURLResponse {
             if httpResponse.statusCode != 200 {
-                os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
-                os_log(.error, "\(self.t)Http Error -> DELETE \(self.url)")
+                os_log(.error, "Http Error -> \(httpResponse.statusCode)")
+                os_log(.error, "Http Error -> DELETE \(self.url)")
                 printHttpError(data, httpResponse: httpResponse)
                 throw HttpError.HttpStatusError(httpResponse.statusCode)
             }
@@ -203,9 +203,9 @@ public class HttpClient: SuperLog {
         }
 
         guard httpResponse.statusCode.isHttpOkCode() else {
-            os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
-            os_log(.error, "\(self.t)Post -> \(self.url)")
-            os_log(.error, "\(self.t)Headers -> \(self.headers)")
+            os_log(.error, "Http Error -> \(httpResponse.statusCode)")
+            os_log(.error, "Post -> \(self.url)")
+            os_log(.error, "Headers -> \(self.headers)")
             printHttpError(data, httpResponse: httpResponse)
             throw HttpError.HttpStatusError(httpResponse.statusCode)
         }
@@ -237,9 +237,9 @@ public class HttpClient: SuperLog {
         }
 
         guard httpResponse.statusCode.isHttpOkCode() else {
-            os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
-            os_log(.error, "\(self.t)Patch -> \(self.url)")
-            os_log(.error, "\(self.t)Headers -> \(self.headers)")
+            os_log(.error, "Http Error -> \(httpResponse.statusCode)")
+            os_log(.error, "Patch -> \(self.url)")
+            os_log(.error, "Headers -> \(self.headers)")
             printHttpError(data, httpResponse: httpResponse)
             throw HttpError.HttpStatusError(httpResponse.statusCode)
         }
@@ -271,9 +271,9 @@ public class HttpClient: SuperLog {
         }
         
         guard httpResponse.statusCode.isHttpOkCode() else {
-            os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
-            os_log(.error, "\(self.t)Put -> \(self.url)")
-            os_log(.error, "\(self.t)Headers -> \(self.headers)")
+            os_log(.error, "Http Error -> \(httpResponse.statusCode)")
+            os_log(.error, "Put -> \(self.url)")
+            os_log(.error, "Headers -> \(self.headers)")
             printHttpError(data, httpResponse: httpResponse)
             throw HttpError.HttpStatusError(httpResponse.statusCode)
         }
@@ -288,9 +288,9 @@ public class HttpClient: SuperLog {
     func printHttpError(_ data: Data?, httpResponse: HTTPURLResponse) {
         if let data = data {
             let str = String(data: data, encoding: .utf8)
-            os_log(.error, "\(self.t)\(str!)")
+            os_log(.error, "\(str!)")
         } else {
-            os_log("\(self.t)返回内容为空")
+            os_log("返回内容为空")
         }
     }
 
@@ -306,9 +306,9 @@ public class HttpClient: SuperLog {
         }
         
         if !httpResponse.statusCode.isHttpOkCode() {
-            os_log(.error, "\(self.t)Http Error -> \(httpResponse.statusCode)")
-            os_log(.error, "\(self.t)URL -> \(self.url.absoluteString)")
-            os_log(.error, "\(self.t)Headers -> \(self.headers)")
+            os_log(.error, "Http Error -> \(httpResponse.statusCode)")
+            os_log(.error, "URL -> \(self.url.absoluteString)")
+            os_log(.error, "Headers -> \(self.headers)")
             printHttpError(data, httpResponse: httpResponse)
             throw HttpError.HttpStatusError(httpResponse.statusCode)
         }
