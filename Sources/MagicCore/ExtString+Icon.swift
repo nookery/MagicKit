@@ -2,6 +2,24 @@ import Foundation
 import SwiftUI
 
 public extension String {
+    /// 创建一个带有图标预览的按钮
+    /// ```swift
+    /// let button = "star".previewIconButton()
+    /// ```
+    /// - Returns: 一个 MagicButton，点击后会显示所有图标的预览
+    func previewIconButton() -> MagicButton {
+        MagicButton(
+            icon: self,
+            style: .secondary,
+            size: .regular,
+            shape: .roundedRectangle,
+            popoverContent: AnyView(
+                StringIconExtensionDemoView()
+                    .frame(width: 500)
+            )
+        )
+    }
+    
     // MARK: - 文档相关
     /// 复制图标名称 (doc.on.doc)
     static let iconDoc = "doc.on.doc"

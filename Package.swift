@@ -68,7 +68,8 @@ let package = Package(
            name: "MagicBackground"
        ),
        .target(
-           name: "MagicUI"
+           name: "MagicUI",
+           dependencies: ["MagicBackground"]
        ),
        .testTarget(
            name: "Tests",
