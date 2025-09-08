@@ -8,7 +8,7 @@ import AppKit
 #endif
 
 /// 差异视图中的单行视图
-struct DiffLineView: View, SuperLog {
+struct DiffLineView: View {
     public nonisolated static let emoji = "📄"
 
     let line: DiffLine
@@ -177,7 +177,7 @@ struct DiffLineView: View, SuperLog {
             #endif
 
             if verbose {
-                os_log("\(Self.t)复制行: \(line.content)")
+                os_log("复制行: \(line.content)")
             }
         }
     }
@@ -192,7 +192,7 @@ struct DiffLineView: View, SuperLog {
         #endif
 
         if verbose {
-            os_log("\(Self.t)复制内容: \(content)")
+            os_log("复制内容: \(content)")
         }
     }
 

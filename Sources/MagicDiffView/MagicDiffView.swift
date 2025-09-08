@@ -13,7 +13,7 @@ import SwiftUI
 ///     newText: "Hello Swift\nThis is line 2\nNew line 3"
 /// )
 /// ```
-public struct MagicDiffView: View, SuperLog {
+public struct MagicDiffView: View {
     public nonisolated static let emoji = "🖥️"
 
     // 配置属性
@@ -53,7 +53,7 @@ public struct MagicDiffView: View, SuperLog {
         verbose: Bool = false
     ) {
         if verbose {
-            os_log("\(Self.onInit) oldText: \(oldText.count) newText: \(newText.count)")
+            os_log("oldText: \(oldText.count) newText: \(newText.count)")
         }
 
         self.oldText = oldText
@@ -66,7 +66,7 @@ public struct MagicDiffView: View, SuperLog {
         self.language = SyntaxHighlighter.detectLanguage(newText)
 
         if verbose {
-            os_log("\(Self.t)🔍 初始化完成")
+            os_log("🔍 初始化完成")
         }
     }
 
@@ -142,7 +142,7 @@ public struct MagicDiffView: View, SuperLog {
     /// - Parameter text: 要复制的文本内容
     private func copyToClipboard(text: String) {
         if verbose {
-            os_log("\(Self.t)开始复制文本到剪贴板")
+            os_log("开始复制文本到剪贴板")
         }
 
         // 设置复制中状态
@@ -155,7 +155,7 @@ public struct MagicDiffView: View, SuperLog {
             text.copy()
 
             if verbose {
-                os_log("\(Self.t)文本已复制到剪贴板")
+                os_log("文本已复制到剪贴板")
             }
 
             // 复制成功
@@ -171,7 +171,7 @@ public struct MagicDiffView: View, SuperLog {
                     copyMessage = ""
                 }
                 if verbose {
-                    os_log("\(Self.t)复制状态已重置")
+                    os_log("复制状态已重置")
                 }
             }
         }
@@ -181,7 +181,7 @@ public struct MagicDiffView: View, SuperLog {
     private func createDiffItemsFromText(_ text: String) -> [DiffItem] {
         let lines = text.isEmpty ? [] : text.components(separatedBy: .newlines)
         if verbose {
-            os_log("\(Self.t)创建纯文本差异项目，行数: \(lines.count)")
+            os_log("创建纯文本差异项目，行数: \(lines.count)")
         }
         return lines.enumerated().map { index, content in
             let diffLine = DiffLine(

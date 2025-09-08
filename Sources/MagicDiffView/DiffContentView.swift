@@ -2,7 +2,7 @@ import SwiftUI
 import OSLog
 
 /// 差异视图的主要内容组件
-struct DiffContentView: View, SuperLog {
+struct DiffContentView: View {
     public nonisolated static let emoji = "📋"
     
     let diffItems: [DiffItem]

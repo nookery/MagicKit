@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 /// 差异视图的工具栏组件
-struct MagicDiffToolbar: View, SuperLog {
+struct MagicDiffToolbar: View {
     public nonisolated static let emoji = "🔧"
     
     @Binding var selectedView: MagicDiffViewMode
