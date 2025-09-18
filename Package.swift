@@ -24,6 +24,7 @@ let package = Package(
         .library(name: "MagicDiffView", targets: ["MagicDiffView"]),
         .library(name: "MagicData", targets: ["MagicData"]),
         .library(name: "MagicHTTP", targets: ["MagicHTTP"]),
+        .library(name: "MagicDesktop", targets: ["MagicDesktop"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -84,6 +85,11 @@ let package = Package(
        .target(
            name: "MagicHTTP",
            dependencies: ["MagicUI"]
+       ),
+       .target(
+           name: "MagicDesktop",
+           dependencies: ["MagicBackground"],
+           resources: [.process("Icons.xcassets")]
        ),
        .testTarget(
            name: "Tests",
