@@ -156,7 +156,7 @@ struct MacDesktop<Content: View>: View {
 
 // MARK: - View Extension
 
-extension View {
+public extension View {
     /// 将视图包装在 MacDesktop 中
     func inDesktop() -> some View {
         MacDesktop {
