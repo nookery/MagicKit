@@ -12,7 +12,7 @@ import SwiftUI
 /// print(device.size) // "1179 x 2556"
 /// print(device.category) // .iPhone
 /// ```
-public enum MagicDevice: String, Equatable {
+public enum MagicDevice: String, Equatable, CaseIterable {
     case iMac
     case MacBook
     case iPhone_15
