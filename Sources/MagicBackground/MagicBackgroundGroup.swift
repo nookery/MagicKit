@@ -165,43 +165,8 @@ public struct MagicBackgroundGroup {
 // 使 BackgroundGroup 符合 View 协议
 extension MagicBackgroundGroup: View {}
 
-// 使用示例
-struct ExampleView: View {
-    var body: some View {
-        VStack {
-            MagicBackgroundGroup(for: "green2blue_tl2br")
-            MagicBackgroundGroup(for: "invalidGradient") // 将使用默认的 .blue2cyan
-            MagicBackgroundGroup(for: .red2yellow_tl2br) // 仍然可以使用枚举
-        }
-    }
-}
-
-struct BackgroundGroupPreview: View {
-    var body: some View {
-        ScrollView {
-            HStack {
-                ForEach(1 ... 10, id: \.self) { i in
-                    let opacity = Double(i) / 10.0
-                    VStack {
-                        ForEach(MagicBackgroundGroup.GradientName.allCases, id: \.self) { gradientName in
-                            ZStack {
-                                MagicBackgroundGroup(for: gradientName).opacity(opacity)
-                                VStack {
-                                    Text(gradientName.rawValue).padding(.vertical)
-                                    Text("\(String(format: "%.1f", opacity))")
-                                    Spacer()
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .frame(width: 1200)
-        .frame(height: 800)
-    }
-}
-
 #Preview {
     BackgroundGroupPreview()
+        .frame(width: 600)
+        .frame(height: 800)
 }
