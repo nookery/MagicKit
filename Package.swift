@@ -76,7 +76,7 @@ let package = Package(
        ),
        .target(
            name: "MagicContainer",
-           dependencies: ["MagicAlert"]
+           dependencies: ["MagicAlert", "MagicCore"]
        ),
        .target(
            name: "MagicAlert",

@@ -1,5 +1,6 @@
 import Foundation
 import MagicAlert
+import MagicCore
 import SwiftUI
 #if os(macOS)
     import AppKit
