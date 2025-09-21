@@ -13,63 +13,23 @@ struct MagicContainerToolbar: View {
         GeometryReader { proxy in
             let height = proxy.size.height
             VStack(spacing: 0) {
-                // Top row: 70%
+                // Top row: 50%
                 HStack(spacing: 4) {
                     Spacer()
 
-                    // MARK: macOS App Store Screenshot Button
+                    MacAppStoreButton(
+                        action: macAppStoreCaptureAction,
+                        containerSize: containerSize
+                    )
 
-                    if self.containerSize.isWidthGreaterThanHeight {
-                        Button(action: {
-                            macAppStoreCaptureAction()
-                        }) {
-                            HStack {
-                                Image(systemName: "laptopcomputer")
-                                Text("macOS App Store")
-                            }
-                            .padding(.vertical, 4)
-                        }
-                        .buttonStyle(.bordered)
-                    }
+                    iOSAppStoreButton(
+                        action: appStoreCaptureAction,
+                        containerSize: containerSize
+                    )
 
-                    // MARK: App Store Screenshot Button
+                    ScreenshotButton(action: captureAction)
 
-                    if self.containerSize.isWidthLessThanHeight {
-                        Button(action: {
-                            appStoreCaptureAction()
-                        }) {
-                            HStack {
-                                Image(systemName: "camera.aperture")
-                                Text("iOS App Store")
-                            }
-                            .padding(.vertical, 4)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-
-                    // MARK: Screenshot Button
-
-                    Button(action: {
-                        captureAction()
-                    }) {
-                        HStack {
-                            Image(systemName: "camera")
-                            Text("截图")
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .buttonStyle(.bordered)
-
-                    // MARK: Theme Toggle Button
-
-                    Button(action: {
-                        isDarkMode.toggle()
-                    }) {
-                        Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
-                            .padding(4)
-                    }
-                    .buttonStyle(.bordered)
-                    .clipShape(Circle())
+                    ThemeToggleButton(isDarkMode: $isDarkMode)
 
                     Spacer()
                 }
@@ -77,37 +37,13 @@ struct MagicContainerToolbar: View {
                 .frame(height: height * 0.5)
                 .frame(maxWidth: .infinity)
 
-                // Bottom row: 30%
-                VStack(spacing: 4) {
-                    HStack {
-                        Spacer()
-                        if scale != 1.0 {
-                            // 显示缩放后的实际尺寸和缩放比例
-                            Label("原始尺寸: \(Int(self.containerSize.width)) x \(Int(self.containerSize.height))", systemImage: "ruler")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-
-                            Text("已缩放到: \(String(format: "%.1f", scale))x")
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                        } else {
-                            // 原始尺寸，无缩放
-                            Label("\(Int(self.containerSize.width)) x \(Int(self.containerSize.height))", systemImage: "ruler")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                        
-                        Spacer()
-                    }
-
-                    Label("请按原始尺寸设计你的视图；截图不支持 ScrollView、Button", systemImage: "info")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal)
+                // Bottom row: 50%
+                SizeInfoView(
+                    containerSize: containerSize,
+                    scale: scale
+                )
                 .frame(height: height * 0.5)
                 .frame(maxWidth: .infinity)
-                .background(Color.primary.opacity(0.03))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
