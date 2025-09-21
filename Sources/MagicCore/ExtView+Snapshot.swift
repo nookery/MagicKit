@@ -37,77 +37,67 @@ public extension View {
     @MainActor func toCGImage() -> CGImage {
         Image.makeCGImage(from: self)
     }
-    
-    /// 将视图保存为 PNG 图像文件
-    /// 
+
+    /// 将视图快照保存为 PNG 图像文件。
+    ///
+    /// 此方法通过 `ImageRenderer` 将 SwiftUI 视图转换为图像，并允许通过 `scale` 参数控制输出的分辨率。
+    ///
     /// - Parameters:
-    ///   - path: 保存文件的目标 URL，如果为 nil 则保存到下载目录
-    ///   - title: 文件名，如果为 nil 则使用时间戳和尺寸信息命名
-    /// - Returns: 操作结果的描述信息，成功时返回"已存储到下载文件夹"，失败时返回错误信息
-    /// - Note: 此方法必须在主线程上调用
-    @discardableResult
-    @MainActor func snapshot(path: URL? = nil, title: String? = nil) -> String {
+    ///   - path: 保存文件的目标 URL。如果为 `nil`，将自动生成文件名并保存到用户的“下载”文件夹。
+    ///   - title: 文件名（不含扩展名）。如果为 `nil`，将使用时间戳和尺寸信息自动命名。
+    ///   - scale: 渲染的缩放因子。
+    ///     - `0.0` (默认值): 使用当前显示器的原生缩放因子，能匹配屏幕上的显示效果。
+    ///     - `1.0`: 标准分辨率，1 点 = 1 像素。
+    ///     - `> 1.0`: 高分辨率。对于矢量图形（如 SVG），应使用高值（如 4.0 或 8.0）以确保导出图像的清晰度。
+    /// - Throws: `SnapshotError` 如果在任何步骤中失败。
+    @MainActor func snapshot(path: URL? = nil, title: String? = nil, scale: CGFloat = 0.0) throws {
         guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
-            return "Failed to access downloads folder."
+            throw SnapshotError.failedToAccessDownloads
         }
 
-        let width = getWidth()
-        let height = getHeight()
-        let fileName = title != nil ? "\(title!).png" : "\(Image.getTimeString())-\(width)x\(height).png"
-        let defaultPath = downloadsURL.appendingPathComponent(fileName)
-        let finalPath = path == nil ? defaultPath : path!
-
-        guard let destination = CGImageDestinationCreateWithURL(finalPath as CFURL, UTType.png.identifier as CFString, 1, nil) else {
-            return "创建图像目标失败，请确保应用有下载目录的写入权限"
-        }
-
-        CGImageDestinationAddImage(destination, toCGImage(), nil)
-
-        guard CGImageDestinationFinalize(destination) else {
-            return "图像保存失败"
-        }
-
-        return "已存储到下载文件夹"
-    }
-    
-    /// 将视图保存为超高清 PNG 图像文件（专为 SVG 等矢量图形优化）
-    /// 
-    /// - Parameters:
-    ///   - path: 保存文件的目标 URL，如果为 nil 则保存到下载目录
-    ///   - title: 文件名，如果为 nil 则使用时间戳和尺寸信息命名
-    ///   - scale: 渲染比例因子，默认为 4.0 确保矢量图形清晰度
-    /// - Returns: 操作结果的描述信息，成功时返回"已存储到下载文件夹"，失败时返回错误信息
-    /// - Note: 此方法专为 SVG 等矢量图形设计，使用超高分辨率渲染确保清晰度
-    @discardableResult
-    @MainActor func ultraHighResolutionSnapshot(path: URL? = nil, title: String? = nil, scale: CGFloat = 4.0) -> String {
-        guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
-            return "Failed to access downloads folder."
-        }
-
-        // 使用超高分辨率渲染器，专为矢量图形优化
+        // 使用 ImageRenderer 以支持缩放渲染
         let renderer = ImageRenderer(content: self)
         renderer.scale = scale
-        
+
         guard let cgImage = renderer.cgImage else {
-            return "图像渲染失败"
+            throw SnapshotError.imageRenderFailed
         }
 
         let width = cgImage.width
         let height = cgImage.height
         let fileName = title != nil ? "\(title!).png" : "\(Image.getTimeString())-\(width)x\(height).png"
         let defaultPath = downloadsURL.appendingPathComponent(fileName)
-        let finalPath = path == nil ? defaultPath : path!
+        let finalPath = path ?? defaultPath
 
         guard let destination = CGImageDestinationCreateWithURL(finalPath as CFURL, UTType.png.identifier as CFString, 1, nil) else {
-            return "创建图像目标失败，请确保应用有下载目录的写入权限"
+            throw SnapshotError.destinationCreateFailed
         }
 
         CGImageDestinationAddImage(destination, cgImage, nil)
 
         guard CGImageDestinationFinalize(destination) else {
-            return "图像保存失败"
+            throw SnapshotError.saveFailed
         }
+    }
+}
 
-        return "已存储到下载文件夹"
+/// 快照过程中可能发生的错误
+public enum SnapshotError: Error, LocalizedError {
+    case failedToAccessDownloads
+    case imageRenderFailed
+    case destinationCreateFailed
+    case saveFailed
+
+    public var errorDescription: String? {
+        switch self {
+        case .failedToAccessDownloads:
+            return "无法访问下载文件夹。"
+        case .imageRenderFailed:
+            return "图像渲染失败。"
+        case .destinationCreateFailed:
+            return "创建图像目标失败，请确保应用有下载目录的写入权限。"
+        case .saveFailed:
+            return "图像保存失败。"
+        }
     }
 }
