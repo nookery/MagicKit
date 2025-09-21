@@ -278,11 +278,3 @@ public extension CGSize {
         width == height
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
-#endif

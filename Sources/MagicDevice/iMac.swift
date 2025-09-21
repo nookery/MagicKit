@@ -43,9 +43,6 @@ public struct iMacScreen<Content>: View where Content: View {
 // MARK: - CGSize Extensions
 
 public extension CGSize {
-    /// iMac 27" 屏幕尺寸 (5120 x 2890)
-    static let iMac27: CGSize = CGSize(width: 5120, height: 2890)
-    
     /// iMac 27" 屏幕尺寸 (按比例缩放，适合预览)
     static let iMac27Preview: CGSize = CGSize(width: 512, height: 289)
     

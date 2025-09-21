@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicDevice
 
 /// MagicContainer 预览视图
 struct MagicContainerPreview: View {
