@@ -118,41 +118,7 @@ struct MagicContainerToolbar: View {
 // MARK: - Preview
 
 #if DEBUG
-    #Preview("MacBook 13 - 20%") {
-        Text("Hello, World!")
-            .padding()
-            .inMagicContainer(.macBook13_20Percent)
-    }
-
-    #Preview("iMac 27 - 缩放示例") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 400))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.indigo.opacity(0.3))
-        .inMagicContainer(.iMac27, scale: 0.1)
-    }
-
-    #Preview("MacBook 13 - 缩放示例") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 200))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.green.opacity(0.3))
-        .inMagicContainer(.macBook13, scale: 0.3)
-    }
+#Preview("iPhone") {
+    MagicContainerPreview.iPhonePreview
+}
 #endif
