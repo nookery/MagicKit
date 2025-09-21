@@ -85,14 +85,13 @@ extension MagicContainer {
         #if os(macOS)
             let widthInt = Int(containerWidth)
             let heightInt = Int(containerHeight)
-            let title = "MagicContainer_\(MagicImage.getTimeString())_\(widthInt)x\(heightInt)"
-            let result = MagicImage.snapshot(content.frame(width: containerWidth, height: containerHeight), title: title)
-            if result.contains("失败") {
-                MagicMessageProvider.shared.error(result)
-            } else {
-                MagicMessageProvider.shared.info(result)
-            }
-        #endif
+        let title = "MagicContainer_\(Date().compactDateTime)_\(widthInt)x\(heightInt)"
+            do {
+                try content.frame(width: containerWidth, height: containerHeight).snapshot(title: title, scale: 2.0)
+                MagicMessageProvider.shared.success("截图已保存到下载文件夹")
+            } catch {
+                MagicMessageProvider.shared.error(error)
+            } #endif
     }
 
     /// App Store截图功能实现 (生成多种分辨率的图片)
@@ -119,10 +118,11 @@ extension MagicContainer {
                 let scaledContent = content
                     .frame(width: size.width, height: size.height)
 
-                let title = "\(name)_\(MagicImage.getTimeString())_\(Int(size.width))x\(Int(size.height))"
-                let result = MagicImage.snapshot(scaledContent, title: title)
-                if result.contains("失败") {
-                    MagicMessageProvider.shared.error("生成 \(name) 截图失败")
+                let title = "\(name)_\(Date().compactDateTime)_\(Int(size.width))x\(Int(size.height))"
+                do {
+                    try scaledContent.snapshot(title: title, scale: 1.0)
+                } catch {
+                    MagicMessageProvider.shared.error(error)
                     return
                 }
             }
@@ -147,10 +147,11 @@ extension MagicContainer {
                 let scaledContent = content
                     .frame(width: size.width, height: size.height)
 
-                let title = "\(name)_\(MagicImage.getTimeString())_\(Int(size.width))x\(Int(size.height))"
-                let result = MagicImage.snapshot(scaledContent, title: title)
-                if result.contains("失败") {
-                    MagicMessageProvider.shared.error("生成 \(name) 截图失败")
+                let title = "\(name)_\(Date().compactDateTime)_\(Int(size.width))x\(Int(size.height))"
+                do {
+                    try scaledContent.snapshot(title: title, scale: 1.0)
+                } catch {
+                    MagicMessageProvider.shared.error("生成 \(name) 截图失败: \(error.localizedDescription)")
                     return
                 }
             }
@@ -164,140 +165,6 @@ extension MagicContainer {
 
 #if DEBUG
     #Preview("iPhone") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.orange.opacity(0.3))
-        .inMagicContainer(.iPhone)
-    }
-
-    #Preview("iPhoneSE") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.red.opacity(0.3))
-        .inMagicContainer(.iPhoneSE)
-    }
-
-    #Preview("MacBook 13 - 100%") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 400))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.indigo.opacity(0.3))
-        .inMagicContainer(.macBook13, scale: 0.2)
-    }
-
-    #Preview("MacBook 13 - 20%") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 40))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.indigo.opacity(0.3))
-        .inMagicContainer(.macBook13_20Percent)
-    }
-
-    #Preview("MacBook 13 - 10%") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 20))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.indigo.opacity(0.3))
-            .inMagicContainer(.macBook13_10Percent)
-    }
-
-    #Preview("iMac 27 - 100%") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 400))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.indigo.opacity(0.3))
-            .inMagicContainer(.iMac27)
-    }
-
-    #Preview("iMac 27 - 20%") {
-        Text("Hello, World!")
-            .padding()
-            .inMagicContainer(.iMac27_20Percent)
-    }
-
-    #Preview("iMac 27 - 10%") {
-        Text("Hello, World!")
-            .padding()
-            .inMagicContainer(.iMac27_10Percent)
-    }
-    
-    #Preview("iMac 27 - 缩放示例") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 400))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.indigo.opacity(0.3))
-        .inMagicContainer(.iMac27, scale: 0.1)
-    }
-    
-    #Preview("MacBook 13 - 缩放示例") {
-        VStack {
-            Spacer()
-            HStack {
-                Spacer()
-                Text("Hello, World!")
-                    .font(.system(size: 200))
-                    .padding()
-                Spacer()
-            }
-            Spacer()
-        }
-        .background(.green.opacity(0.3))
-        .inMagicContainer(.macBook13, scale: 0.3)
+        MagicContainerPreview.iPhonePreview
     }
 #endif
