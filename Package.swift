@@ -11,6 +11,7 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
+        .library(name: "MagicKit", targets: ["MagicAll"]),        // 主库 - MagicAll 的别名
         .library(name: "MagicAll", targets: ["MagicAll"]),        // 完整库 - 重新导出所有模块
         .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
