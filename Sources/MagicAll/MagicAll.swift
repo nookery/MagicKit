@@ -7,3 +7,10 @@
 @_exported import MagicError
 @_exported import MagicBackground
 @_exported import MagicDevice
+@_exported import MagicPlayMan
+@_exported import MagicSync
+@_exported import MagicAsset
+@_exported import MagicContainer
+@_exported import MagicDiffView
+@_exported import MagicData
+@_exported import MagicDesktop

@@ -105,7 +105,14 @@ let package = Package(
                "MagicUI",
                "MagicError",
                "MagicBackground",
-               "MagicDevice"
+               "MagicDevice",
+               "MagicPlayMan",
+               "MagicSync",
+               "MagicAsset",
+               "MagicContainer",
+               "MagicDiffView",
+               "MagicData",
+               "MagicDesktop"
            ]
        ),
        .testTarget(
