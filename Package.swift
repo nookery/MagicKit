@@ -58,6 +58,7 @@ let package = Package(
            dependencies: [
                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
                "ID3TagEditor",
+               "MagicUI",
                "ZIPFoundation",
            ]
        ),
