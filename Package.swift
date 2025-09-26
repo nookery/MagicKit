@@ -24,7 +24,7 @@ let package = Package(
             "MagicUI", 
             "MagicDiffView", 
             "MagicData", 
-            "MagicHTTP", 
+            "MagicHttp", 
             "MagicDesktop"
         ]),
         .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
@@ -39,7 +39,7 @@ let package = Package(
         .library(name: "MagicUI", targets: ["MagicUI"]),
         .library(name: "MagicDiffView", targets: ["MagicDiffView"]),
         .library(name: "MagicData", targets: ["MagicData"]),
-        .library(name: "MagicHTTP", targets: ["MagicHTTP"]),
+        .library(name: "MagicHttp", targets: ["MagicHttp"]),
         .library(name: "MagicDesktop", targets: ["MagicDesktop"]),
     ],
     dependencies: [
@@ -103,7 +103,7 @@ let package = Package(
            name: "MagicData"
        ),
        .target(
-           name: "MagicHTTP",
+           name: "MagicHttp",
            dependencies: ["MagicUI"]
        ),
        .target(
