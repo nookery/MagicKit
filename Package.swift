@@ -11,11 +11,7 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
-        .library(name: "MagicAll", targets: [                    // 完整库 - 包含核心模块
-            "MagicCore", 
-            "MagicAlert", 
-            "MagicUI"
-        ]),
+        .library(name: "MagicAll", targets: ["MagicAll"]),        // 完整库 - 重新导出所有模块
         .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
         .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
@@ -99,6 +95,16 @@ let package = Package(
            name: "MagicDesktop",
            dependencies: ["MagicBackground"],
            resources: [.process("Icons.xcassets")]
+       ),
+       .target(
+           name: "MagicAll",
+           dependencies: [
+               "MagicCore",
+               "MagicAlert", 
+               "MagicUI",
+               "MagicError",
+               "MagicBackground"
+           ]
        ),
        .testTarget(
            name: "Tests",
