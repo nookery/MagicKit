@@ -11,21 +11,10 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
-        .library(name: "MagicAll", targets: [                    // 完整库 - 包含所有模块
+        .library(name: "MagicAll", targets: [                    // 完整库 - 包含核心模块
             "MagicCore", 
-            "MagicPlayMan", 
-            "MagicSync", 
-            "MagicAsset", 
-            "MagicDevice", 
-            "MagicContainer", 
             "MagicAlert", 
-            "MagicError", 
-            "MagicBackground", 
-            "MagicUI", 
-            "MagicDiffView", 
-            "MagicData", 
-            "MagicHttp", 
-            "MagicDesktop"
+            "MagicUI"
         ]),
         .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
