@@ -11,7 +11,7 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
-        .library(name: "MagicKit", targets: [                    // 完整库 - 包含所有模块
+        .library(name: "MagicAll", targets: [                    // 完整库 - 包含所有模块
             "MagicCore", 
             "MagicPlayMan", 
             "MagicSync", 
