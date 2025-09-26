@@ -27,20 +27,20 @@ let package = Package(
             "MagicHTTP", 
             "MagicDesktop"
         ]),
-        .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
-        .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
-        .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
-        .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
-        .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
-        .library(name: "MagicContainer", targets: ["MagicContainer"]),
-        .library(name: "MagicAlert", targets: ["MagicAlert"]),
-        .library(name: "MagicError", targets: ["MagicError"]),
-        .library(name: "MagicBackground", targets: ["MagicBackground"]),
-        .library(name: "MagicUI", targets: ["MagicUI"]),
-        .library(name: "MagicDiffView", targets: ["MagicDiffView"]),
-        .library(name: "MagicData", targets: ["MagicData"]),
-        .library(name: "MagicHTTP", targets: ["MagicHTTP"]),
-        .library(name: "MagicDesktop", targets: ["MagicDesktop"]),
+//        .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
+//        .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
+//        .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
+//        .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
+//        .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
+//        .library(name: "MagicContainer", targets: ["MagicContainer"]),
+//        .library(name: "MagicAlert", targets: ["MagicAlert"]),
+//        .library(name: "MagicError", targets: ["MagicError"]),
+//        .library(name: "MagicBackground", targets: ["MagicBackground"]),
+//        .library(name: "MagicUI", targets: ["MagicUI"]),
+//        .library(name: "MagicDiffView", targets: ["MagicDiffView"]),
+//        .library(name: "MagicData", targets: ["MagicData"]),
+//        .library(name: "MagicHTTP", targets: ["MagicHTTP"]),
+//        .library(name: "MagicDesktop", targets: ["MagicDesktop"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
