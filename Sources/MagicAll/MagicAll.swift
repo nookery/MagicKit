@@ -6,3 +6,4 @@
 @_exported import MagicUI
 @_exported import MagicError
 @_exported import MagicBackground
+@_exported import MagicDevice

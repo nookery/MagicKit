@@ -104,7 +104,8 @@ let package = Package(
                "MagicAlert", 
                "MagicUI",
                "MagicError",
-               "MagicBackground"
+               "MagicBackground",
+               "MagicDevice"
            ]
        ),
        .testTarget(
