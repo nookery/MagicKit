@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 
 /// 文件操作按钮视图组件
 ///

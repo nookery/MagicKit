@@ -1,5 +1,6 @@
 import MagicCore
 import SwiftUI
+import MagicUI
 
 /// 喜欢按钮视图
 /// 

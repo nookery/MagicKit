@@ -1,6 +1,7 @@
 import Foundation
 import OSLog
 import SwiftUI
+import MagicUI
 
 public extension URL {
     /// 获取文件的状态信息

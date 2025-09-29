@@ -1,5 +1,6 @@
 import MagicCore
 import SwiftUI
+import MagicUI
 
 /// 上一曲按钮视图
 /// 

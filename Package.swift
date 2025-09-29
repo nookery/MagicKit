@@ -11,6 +11,8 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
+        .library(name: "MagicKit", targets: ["MagicAll"]),        // 主库 - MagicAll 的别名
+        .library(name: "MagicAll", targets: ["MagicAll"]),        // 完整库 - 重新导出所有模块
         .library(name: "MagicCore", targets: ["MagicCore"]),             // 核心库
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
         .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
@@ -19,6 +21,12 @@ let package = Package(
         .library(name: "MagicContainer", targets: ["MagicContainer"]),
         .library(name: "MagicAlert", targets: ["MagicAlert"]),
         .library(name: "MagicError", targets: ["MagicError"]),
+        .library(name: "MagicBackground", targets: ["MagicBackground"]),
+        .library(name: "MagicUI", targets: ["MagicUI"]),
+        .library(name: "MagicDiffView", targets: ["MagicDiffView"]),
+        .library(name: "MagicData", targets: ["MagicData"]),
+        .library(name: "MagicHttp", targets: ["MagicHttp"]),
+        .library(name: "MagicDesktop", targets: ["MagicDesktop"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -35,13 +43,14 @@ let package = Package(
            name: "MagicCore",
            dependencies: [
                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
-               "ID3TagEditor", 
+               "ID3TagEditor",
+               "MagicUI",
                "ZIPFoundation",
            ]
        ),
        .target(
            name: "MagicPlayMan",
-           dependencies: ["MagicCore"]
+           dependencies: ["MagicCore", "MagicUI"]
        ),
        .target(
            name: "MagicSync",
@@ -53,7 +62,11 @@ let package = Package(
        ),
        .target(
            name: "MagicContainer",
-           dependencies: ["MagicAlert"]
+           dependencies: [
+            "MagicAlert",
+            "MagicCore",
+            "MagicDevice"
+           ]
        ),
        .target(
            name: "MagicAlert",
@@ -61,6 +74,46 @@ let package = Package(
        ),
        .target(
            name: "MagicError"
+       ),
+       .target(
+           name: "MagicBackground"
+       ),
+       .target(
+           name: "MagicDiffView"
+       ),
+       .target(
+           name: "MagicUI",
+           dependencies: ["MagicBackground"]
+       ),
+       .target(
+           name: "MagicData"
+       ),
+       .target(
+           name: "MagicHttp",
+           dependencies: ["MagicUI"]
+       ),
+       .target(
+           name: "MagicDesktop",
+           dependencies: ["MagicBackground"],
+           resources: [.process("Icons.xcassets")]
+       ),
+       .target(
+           name: "MagicAll",
+           dependencies: [
+               "MagicCore",
+               "MagicAlert", 
+               "MagicUI",
+               "MagicError",
+               "MagicBackground",
+               "MagicDevice",
+               "MagicPlayMan",
+               "MagicSync",
+               "MagicAsset",
+               "MagicContainer",
+               "MagicDiffView",
+               "MagicData",
+               "MagicDesktop"
+           ]
        ),
        .testTarget(
            name: "Tests",

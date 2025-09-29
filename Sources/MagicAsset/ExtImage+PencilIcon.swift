@@ -1,5 +1,6 @@
 import MagicCore
 import SwiftUI
+import MagicBackground
 
 public extension Image {
     static func makePencilIcon(

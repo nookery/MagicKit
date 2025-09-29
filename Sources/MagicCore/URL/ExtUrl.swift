@@ -205,20 +205,6 @@ public extension URL {
     /// 获取简短标题
     var title: String { self.lastPathComponent.mini() }
 
-    /// 添加请求体
-    /// - Parameter body: 请求体参数
-    /// - Returns: HTTP 客户端实例
-    func withBody(_ body: [String: Any]) -> HttpClient {
-        HttpClient(url: self).withBody(body)
-    }
-
-    /// 添加认证令牌
-    /// - Parameter token: 认证令牌
-    /// - Returns: HTTP 客户端实例
-    func withToken(_ token: String) -> HttpClient {
-        HttpClient(url: self).withToken(token)
-    }
-
     // MARK: - 文件类型判断
 
     /// 文件类型签名字典

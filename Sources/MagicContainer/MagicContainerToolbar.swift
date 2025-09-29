@@ -6,84 +6,44 @@ struct MagicContainerToolbar: View {
     var captureAction: () -> Void
     var appStoreCaptureAction: () -> Void
     var macAppStoreCaptureAction: () -> Void
-    var containerSize: CGSize?
-    
+    var containerSize: CGSize
+    var scale: CGFloat = 1.0
+
     var body: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
             VStack(spacing: 0) {
-                // Top row: 70%
+                // Top row: 50%
                 HStack(spacing: 4) {
                     Spacer()
 
-                    // MARK: macOS App Store Screenshot Button
-                    Button(action: {
-                        macAppStoreCaptureAction()
-                    }) {
-                        HStack {
-                            Image(systemName: "laptopcomputer")
-                            Text("macOS App Store")
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .buttonStyle(.bordered)
+                    MacAppStoreButton(
+                        action: macAppStoreCaptureAction,
+                        containerSize: containerSize
+                    )
 
-                    // MARK: App Store Screenshot Button
-                    Button(action: {
-                        appStoreCaptureAction()
-                    }) {
-                        HStack {
-                            Image(systemName: "camera.aperture")
-                            Text("iOS App Store")
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .buttonStyle(.bordered)
+                    iOSAppStoreButton(
+                        action: appStoreCaptureAction,
+                        containerSize: containerSize
+                    )
 
-                    // MARK: Screenshot Button
-                    Button(action: {
-                        captureAction()
-                    }) {
-                        HStack {
-                            Image(systemName: "camera")
-                            Text("截图")
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .buttonStyle(.bordered)
+                    ScreenshotButton(action: captureAction)
 
-                    // MARK: Theme Toggle Button
-                    Button(action: {
-                        isDarkMode.toggle()
-                    }) {
-                        Image(systemName: isDarkMode ? "sun.max.fill" : "moon.fill")
-                            .padding(4)
-                    }
-                    .buttonStyle(.bordered)
-                    .clipShape(Circle())
-                    
+                    ThemeToggleButton(isDarkMode: $isDarkMode)
+
                     Spacer()
                 }
                 .padding(.horizontal)
-                .frame(height: height * 0.7)
+                .frame(height: height * 0.5)
                 .frame(maxWidth: .infinity)
 
-                // Bottom row: 30%
-                HStack {
-                    Spacer()
-                    if let size = containerSize {
-                        Label("\(Int(size.width)) x \(Int(size.height))", systemImage: "ruler")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        EmptyView()
-                    }
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .frame(height: height * 0.3)
+                // Bottom row: 50%
+                SizeInfoView(
+                    containerSize: containerSize,
+                    scale: scale
+                )
+                .frame(height: height * 0.5)
                 .frame(maxWidth: .infinity)
-                .background(Color.primary.opacity(0.03))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -94,18 +54,7 @@ struct MagicContainerToolbar: View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview {
-    MagicContainerToolbar(
-        isDarkMode: .constant(false),
-        captureAction: {},
-        appStoreCaptureAction: {},
-        macAppStoreCaptureAction: {}
-    )
-}
-
-#Preview("MacBook 13 - 20%") {
-    Text("Hello, World!")
-        .padding()
-        .inMagicContainer(.macBook13_20Percent)
+#Preview("iPhone") {
+    MagicContainerPreview.iPhonePreview
 }
 #endif

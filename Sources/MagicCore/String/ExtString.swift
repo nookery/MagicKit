@@ -391,23 +391,6 @@ public extension String {
         !isEven
     }
 
-    /// 创建一个带有图标预览的按钮
-    /// ```swift
-    /// let button = "star".previewIconButton()
-    /// ```
-    /// - Returns: 一个 MagicButton，点击后会显示所有图标的预览
-    func previewIconButton() -> MagicButton {
-        MagicButton(
-            icon: self,
-            style: .secondary,
-            size: .regular,
-            shape: .roundedRectangle,
-            popoverContent: AnyView(
-                StringIconExtensionDemoView()
-                    .frame(width: 500)
-            )
-        )
-    }
 
     func saveToFile(_ url: URL, verbose: Bool = true) throws {
         if verbose {

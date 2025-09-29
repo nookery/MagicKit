@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 
 /// 应用程序打开类型
 public enum OpenAppType: String {
