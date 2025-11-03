@@ -117,7 +117,9 @@ public struct AvatarView: View, SuperLog {
         if url.isFileURL {
             // 检查本地文件是否存在
             if url.isNotFileExist {
-                os_log("\(Self.t)文件不存在: \(url.path)")
+                if verbose {
+                    os_log("\(Self.t)文件不存在: \(url.path)")
+                }
                 _state = StateObject(wrappedValue: ViewState())
                 state.setError(ViewError.fileNotFound)
             }
