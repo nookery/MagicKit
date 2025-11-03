@@ -34,7 +34,7 @@ public extension MagicPlayMan {
     /// - Returns: 返回一个显示播放器日志信息的视图
     /// 用于展示播放器的事件历史和操作记录
     func makeLogView() -> some View {
-        logger.logView()
+        logger.logView(title: "MagicPlayMan-Logs")
     }
 
     /// 创建播放列表视图
@@ -75,24 +75,13 @@ public extension MagicPlayMan {
     }
 
     /// 创建播放进度条视图
-    /// - Returns: 返回一个 MagicProgressBar 进度条视图，具有以下功能：
-    /// - 显示当前播放位置
-    /// - 支持拖动进度条来调整播放位置
-    /// - 显示媒体总时长
-    /// 进度条会随播放进度自动更新，并响应用户的拖动操作
+    /// 
+    /// 这是一个自观察的进度条视图，会自动监听播放进度状态变化。
+    /// 提供播放进度显示和拖动控制功能，支持实时进度更新和用户交互。
+    /// 
+    /// - Returns: 自观察的播放进度条视图
     func makeProgressView() -> some View {
-        MagicProgressBar(
-            currentTime: .init(
-                get: { self.currentTime },
-                set: { time in
-                    self.seek(time: time)
-                }
-            ),
-            duration: duration,
-            onSeek: { time in
-                self.seek(time: time)
-            }
-        )
+        MagicPlayProgressView(man: self)
     }
 
     /// 创建支持的媒体格式视图
@@ -102,16 +91,44 @@ public extension MagicPlayMan {
         FormatInfoView(formats: SupportedFormat.allFormats)
     }
 
+    /// 创建订阅者列表视图
+    /// - Returns: 返回订阅者列表弹窗内容
+    func makeSubscribersView() -> some View {
+        SubscribersView(subscribers: events.subscribers)
+            .frame(width: 300, height: 400)
+            .padding()
+    }
+
     /// 创建主要展示视图
     /// - Returns: 返回一个根据当前媒体资源类型自动适配的主要展示视图：
     /// - 当资源为音频时，显示音频缩略图，不包括音频的标题和艺术家
     /// - 当资源为视频时，显示视频播放视图
-    func makeHeroView() -> some View {
+    func makeHeroView(verbose: Bool = false, defaultImage: Image? = nil) -> some View {
         Group {
             if currentAsset == nil {
                 makeEmptyView()
             } else if currentAsset!.isAudio {
-                ThumbnailView(url: currentAsset!)
+                ThumbnailView(
+                    url: currentAsset!,
+                    verbose: verbose,
+                    defaultImage: defaultImage
+                )
+            } else {
+                makeVideoView()
+            }
+        }
+    }
+
+    func makeHeroView<Content: View>(verbose: Bool = false, @ViewBuilder defaultView: () -> Content) -> some View {
+        Group {
+            if currentAsset == nil {
+                makeEmptyView()
+            } else if currentAsset!.isAudio {
+                ThumbnailView(
+                    url: currentAsset!,
+                    verbose: verbose,
+                    defaultView: defaultView
+                )
             } else {
                 makeVideoView()
             }
@@ -122,5 +139,6 @@ public extension MagicPlayMan {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView()
+    MagicPlayMan
+        .PreviewView()
 }

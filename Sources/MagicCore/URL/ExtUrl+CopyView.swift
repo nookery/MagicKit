@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 import Foundation
 import os
 
@@ -167,7 +168,7 @@ private struct FileCopyProgressView: View, SuperLog {
                         style: .primary,
                         size: .regular,
                         shape: .rectangle
-                    ) {
+                    ) {_ in 
                         Task { performCopyOperation() }
                     }
                 }

@@ -1,4 +1,5 @@
 import MagicCore
+import MagicUI
 import SwiftUI
 
 // MARK: - PreviewView
@@ -48,7 +49,7 @@ public extension MagicPlayMan {
                 },
                 onPlayModeChanged: { [weak playMan] newMode in
                     playMan?.log("观察到事件：播放模式变化 - \(playMan?.playMode.rawValue ?? "未知") -> \(newMode.rawValue)")
-                },
+                }
             )
         }
 
@@ -110,14 +111,14 @@ public extension MagicPlayMan {
 
         private var trailingToolbarItems: some View {
             HStack {
-                playMan.makePlayPauseButton()
-                playMan.makePlayModeButton()
-                playMan.makePlaylistButton()
-                playMan.makePlaylistToggleButton()
-                playMan.makeSubscribersButton()
-                playMan.makeSupportedFormatsButton()
-                playMan.makeLogButton()
-                playMan.makeLikeButton()
+                playMan.makePlayPauseButtonView()
+                playMan.makePlayModeButtonView()
+                playMan.makePlaylistButtonView()
+                playMan.makePlaylistToggleButtonView()
+                playMan.makeSubscribersButtonView()
+                playMan.makeSupportedFormatsButtonView()
+                playMan.makeLogButtonView()
+                playMan.makeLikeButtonView()
             }
         }
 
@@ -187,12 +188,12 @@ public extension MagicPlayMan {
 
         private var playbackControls: some View {
             HStack(spacing: 16) {
-                playMan.makePlayModeButton()
-                playMan.makePreviousButton()
-                playMan.makeRewindButton()
-                playMan.makePlayPauseButton()
-                playMan.makeForwardButton()
-                playMan.makeNextButton()
+                playMan.makePlayModeButtonView()
+                playMan.makePreviousButtonView()
+                playMan.makeRewindButtonView()
+                playMan.makePlayPauseButtonView()
+                playMan.makeForwardButtonView()
+                playMan.makeNextButtonView()
             }.frame(height: 40)
         }
 
@@ -248,7 +249,7 @@ public extension MagicPlayMan {
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
 
-                    MagicButton(
+                    MagicButton.simple(
                         icon: "arrow.clockwise",
                         title: "Try Again",
                         style: .primary,
@@ -306,6 +307,8 @@ public extension MagicPlayMan {
                 return "Network error: \(message)"
             case let .playbackError(message):
                 return "Playback error: \(message)"
+            case let .unsupportedFormat(ext):
+                return "Unsupported format: \(ext)"
             }
         }
 

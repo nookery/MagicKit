@@ -97,8 +97,3 @@ public struct MagicToast: View {
         .transition(.move(edge: .bottom).combined(with: .opacity))
     }
 }
-
-// MARK: - Preview
-#Preview("MagicToast") {
-    MagicToastPreview()
-}

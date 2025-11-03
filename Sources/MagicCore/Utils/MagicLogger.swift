@@ -1,6 +1,7 @@
 import Combine
 import OSLog
 import SwiftUI
+import MagicUI
 
 /// 日志管理器，用于收集和展示日志
 public class MagicLogger: ObservableObject, @unchecked Sendable {
@@ -263,5 +264,5 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
         MagicLogger.warning("Warning message")
         MagicLogger.error("Error message")
     }
-    .inMagicContainer()
+    
 }

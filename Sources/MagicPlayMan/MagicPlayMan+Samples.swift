@@ -52,5 +52,4 @@ public extension MagicPlayMan {
 
 #Preview("MagicPlayMan") {
     MagicPlayMan.PreviewView()
-        .inMagicContainer()
 }

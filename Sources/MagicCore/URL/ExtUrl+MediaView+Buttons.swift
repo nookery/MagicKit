@@ -1,4 +1,5 @@
 import SwiftUI
+import MagicUI
 
 /// 文件操作按钮视图组件
 ///
@@ -33,7 +34,7 @@ public struct ActionButtonsView: View {
             }
             
             if showLogButton {
-                MagicButton(icon: .iconLog, action: {
+                MagicButton(icon: .iconLog, action: {_ in
                     showLogSheet = true
                 }).magicShape(.circle).magicSize(.small)
             }
@@ -79,5 +80,5 @@ public struct ActionButtonsSection: View {
 }
 
 #Preview("Media View") {
-    MediaViewPreviewContainer().inMagicContainer()
+    MediaViewPreviewContainer()
 }

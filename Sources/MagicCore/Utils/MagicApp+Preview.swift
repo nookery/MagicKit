@@ -30,8 +30,7 @@ struct MagicAppDemoView: View {
     @State private var uptimeTimer: Timer? = nil
     
     var body: some View {
-        MagicThemePreview {
-            ScrollView {
+        ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // 应用信息
                     GroupBox(label: Text("应用信息")) {
@@ -289,7 +288,6 @@ struct MagicAppDemoView: View {
                 }
                 .padding()
             }
-        }
         .onAppear {
             // 启动定时器，每秒更新一次
             startUptimeTimer()

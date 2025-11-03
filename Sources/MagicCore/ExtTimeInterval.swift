@@ -40,7 +40,7 @@ public struct TimeFormatter {
         let hours = Int(timeInterval / 3600)
         let minutes = Int(timeInterval.truncatingRemainder(dividingBy: 3600) / 60)
         let seconds = Int(timeInterval.truncatingRemainder(dividingBy: 60))
-        
+
         if hours > 0 {
             return String(format: "%d:%02d:%02d", hours, minutes, seconds)
         } else {
@@ -54,54 +54,53 @@ struct TimeIntervalExtensionDemoView: View {
     var body: some View {
         TabView {
             // 时间格式化演示
-            MagicThemePreview {
-                VStack(spacing: 20) {
-                    // 基础格式化
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("基础格式化")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "30.displayFormat", value: TimeInterval(30).displayFormat) {
-                                Image(systemName: .iconTimer)
-                            }
-                            MagicKeyValue(key: "65.displayFormat", value: TimeInterval(65).displayFormat) {
-                                Image(systemName: .iconTimer)
-                            }
-                            MagicKeyValue(key: "3665.displayFormat", value: TimeInterval(3665).displayFormat) {
-                                Image(systemName: .iconTimer)
-                            }
+            VStack(spacing: 20) {
+                // 基础格式化
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("基础格式化")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "30.displayFormat", value: TimeInterval(30).displayFormat) {
+                            Image(systemName: .iconTimer)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                    
-                    // 特殊情况
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("特殊情况")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                        
-                        VStack(spacing: 8) {
-                            MagicKeyValue(key: "0.displayFormat", value: TimeInterval(0).displayFormat) {
-                                Image(systemName: .iconTimer)
-                            }
-                            MagicKeyValue(key: "3600.displayFormat", value: TimeInterval(3600).displayFormat) {
-                                Image(systemName: .iconTimer)
-                            }
-                            MagicKeyValue(key: "7323.displayFormat", value: TimeInterval(7323).displayFormat) {
-                                Image(systemName: .iconTimer)
-                            }
+                        MagicKeyValue(key: "65.displayFormat", value: TimeInterval(65).displayFormat) {
+                            Image(systemName: .iconTimer)
                         }
-                        .padding()
-                        .background(.background.secondary)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        MagicKeyValue(key: "3665.displayFormat", value: TimeInterval(3665).displayFormat) {
+                            Image(systemName: .iconTimer)
+                        }
                     }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .padding()
+
+                // 特殊情况
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("特殊情况")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+
+                    VStack(spacing: 8) {
+                        MagicKeyValue(key: "0.displayFormat", value: TimeInterval(0).displayFormat) {
+                            Image(systemName: .iconTimer)
+                        }
+                        MagicKeyValue(key: "3600.displayFormat", value: TimeInterval(3600).displayFormat) {
+                            Image(systemName: .iconTimer)
+                        }
+                        MagicKeyValue(key: "7323.displayFormat", value: TimeInterval(7323).displayFormat) {
+                            Image(systemName: .iconTimer)
+                        }
+                    }
+                    .padding()
+                    .background(.background.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
             }
+            .padding()
+
             .tabItem {
                 Image(systemName: .iconTimer)
                 Text("格式化")

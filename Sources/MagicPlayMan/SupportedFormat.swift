@@ -391,5 +391,4 @@ public struct SupportedFormat {
 
 #Preview("With Logs") {
     MagicPlayMan.PreviewView()
-        .inMagicContainer()
 }

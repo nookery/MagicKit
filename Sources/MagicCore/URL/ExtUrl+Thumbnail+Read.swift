@@ -81,6 +81,7 @@ extension URL {
     /// - Returns: 生成的缩略图，如果无法生成则返回 nil
     public func thumbnail(
         size: CGSize = CGSize(width: 120, height: 120),
+        useDefaultIcon: Bool = true,
         verbose: Bool,
         reason: String
     ) async throws -> Image? {
@@ -91,7 +92,7 @@ extension URL {
         }
         
         // 生成缩略图
-        if let result = try await platformThumbnail(size: size, verbose: verbose, reason: reason),
+        if let result = try await platformThumbnail(size: size, useDefaultIcon: useDefaultIcon, verbose: verbose, reason: reason),
            let image = result.image {
             // 只缓存非系统图标的缩略图
             if !result.isSystemIcon {
@@ -112,6 +113,7 @@ extension URL {
     /// - Returns: 生成的缩略图，如果无法生成则返回 nil
     public func platformThumbnail(
         size: CGSize = CGSize(width: 120, height: 120),
+        useDefaultIcon: Bool = true,
         verbose: Bool,
         reason: String
     ) async throws -> ThumbnailResult? {
@@ -143,7 +145,10 @@ extension URL {
         }
         
         if isAudio {
-            return try await platformAudioThumbnail(size: size, verbose: verbose)
+            let audioFileThumbnail = try await platformAudioThumbnail(size: size, verbose: verbose)
+            if let audioFileThumbnail = audioFileThumbnail {
+                return audioFileThumbnail
+            }
         }
         
         if isVideo {
@@ -151,9 +156,9 @@ extension URL {
         }
         
         // 如果无法识别类型，返回默认文档图标
-        if let image = Image.PlatformImage.fromSystemIcon(icon) {
-            return (image, true)
-        }
+       if useDefaultIcon, let image = Image.PlatformImage.fromSystemIcon(icon) {
+           return (image, true)
+       }
         
         return nil
     }
@@ -192,14 +197,13 @@ extension URL {
         }
     }
     
-    private func platformAudioThumbnail(size: CGSize, verbose: Bool) async throws -> ThumbnailResult {
+    private func platformAudioThumbnail(size: CGSize, verbose: Bool) async throws -> ThumbnailResult? {
         // 尝试从音频元数据中获取封面
         if let coverImage = try await getPlatformCoverFromMetadata(verbose: verbose) {
             return (coverImage.resize(to: size), false)
         }
         
-        // 如果没有找到封面，返回默认音频图标
-        return (Image.PlatformImage.defaultAudioIcon, true)
+        return nil
     }
 }
 

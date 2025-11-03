@@ -1,5 +1,6 @@
 import MagicCore
 import SwiftUI
+import MagicUI
 
 struct ErrorOverlay: View {
     let error: PlaybackState.PlaybackError
@@ -24,7 +25,7 @@ struct ErrorOverlay: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
 
-                MagicButton(
+                MagicButton.simple(
                     icon: "arrow.clockwise",
                     title: "Try Again",
                     shape: .capsule,
@@ -45,6 +46,8 @@ struct ErrorOverlay: View {
             return "Network error: \(message)"
         case let .playbackError(message):
             return "Playback error: \(message)"
+        case let .unsupportedFormat(ext):
+            return "Unsupported format: \(ext)"
         }
     }
 }

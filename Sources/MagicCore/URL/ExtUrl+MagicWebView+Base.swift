@@ -133,12 +133,12 @@ public struct MagicWebView: View {
 }
 
 internal class WebViewCoordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
-    let url: URL
-    let logger: MagicLogger
-    let onLoadComplete: ((Error?) -> Void)?
-    let onJavaScriptError: ((String, Int, String) -> Void)?
-    let onCustomMessage: ((Any) -> Void)?
-    let isVerboseMode: Bool
+    var url: URL
+    var logger: MagicLogger
+    var onLoadComplete: ((Error?) -> Void)?
+    var onJavaScriptError: ((String, Int, String) -> Void)?
+    var onCustomMessage: ((Any) -> Void)?
+    var isVerboseMode: Bool
 
     init(
         url: URL,

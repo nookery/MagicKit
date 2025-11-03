@@ -45,5 +45,6 @@ struct AudioPlayerView: View, SuperLog {
 // MARK: - Preview
 
 #Preview("MagicPlayMan") {
-    MagicPlayMan.PreviewView().inMagicContainer()
+    MagicPlayMan.PreviewView()
+       
 }

@@ -1,0 +1,16 @@
+import { LinkUtil } from '@coffic/cosy-ui';
+
+export const configApp = {
+    homeLink: LinkUtil.getBaseUrl(),
+    basePath: LinkUtil.getBaseUrl(),
+    getNavItems: (lang: string) => [
+        {
+            href: `${LinkUtil.getBaseUrl()}${lang}`,
+            title: 'Home',
+        },
+        {
+            href: `${LinkUtil.getBaseUrl()}${lang}/manuals`,
+            title: 'Docs',
+        }
+    ],
+};
