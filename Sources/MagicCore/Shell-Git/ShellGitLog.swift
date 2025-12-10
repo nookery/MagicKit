@@ -162,7 +162,7 @@ extension ShellGit {
         let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%d"
         let log = try Shell.runSync("git log \(format) -\(limit)", at: path)
         let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        dateFormatter.formatOptions = [.withInternetDateTime]
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard parts.count >= 6 else { return nil }
@@ -221,7 +221,7 @@ extension ShellGit {
         let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%D"
         let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        dateFormatter.formatOptions = [.withInternetDateTime]
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard parts.count >= 6 else { return nil }
