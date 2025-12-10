@@ -159,11 +159,10 @@ extension ShellGit {
     ///   - at: 仓库路径
     /// - Returns: [GitCommit]
     public static func commitList(limit: Int = 20, at path: String? = nil) throws -> [GitCommit] {
-        let format = "--pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%d"
+        let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%d"
         let log = try Shell.runSync("git log \(format) -\(limit)", at: path)
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-        dateFormatter.dateFormat = "E MMM d HH:mm:ss yyyy Z"
+        let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard parts.count >= 6 else { return nil }
@@ -219,9 +218,10 @@ extension ShellGit {
     /// - Returns: [GitCommit]
     public static func commitListWithPagination(page: Int = 1, size: Int = 20, at path: String? = nil) throws -> [GitCommit] {
         let skip = (page - 1) * size
-        let format = "--pretty=format:%H%x09%an%x09%ae%x09%ad%x09%s%x09%D"
+        let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%D"
         let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
+        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard parts.count >= 6 else { return nil }
