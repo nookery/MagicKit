@@ -54,30 +54,25 @@ struct DiffLineView: View {
     /// 行号视图
     private var lineNumberView: some View {
         HStack(spacing: 4) {
-            if let oldNumber = line.oldLineNumber {
-                Text("\(oldNumber)")
-                    .font(font)
-                    .foregroundColor(.primary)
-                    .frame(width: 30, alignment: .trailing)
-            } else {
-                Text("")
-                    .font(font)
-                    .frame(width: 30)
-            }
-
-            if let newNumber = line.newLineNumber {
-                Text("\(newNumber)")
-                    .font(font)
-                    .foregroundColor(.secondary)
-                    .frame(width: 30, alignment: .trailing)
-            } else {
-                Text("")
-                    .font(font)
-                    .frame(width: 30)
+            switch displayMode {
+            case .diff:
+                lineNumberText(line.oldLineNumber, color: .primary)
+                lineNumberText(line.newLineNumber, color: .secondary)
+            case .original:
+                lineNumberText(line.oldLineNumber, color: .primary)
+            case .modified:
+                lineNumberText(line.newLineNumber, color: .primary)
             }
         }
         .padding(.horizontal, 8)
         .frame(maxHeight: .infinity)
+    }
+
+    private func lineNumberText(_ number: Int?, color: Color) -> some View {
+        Text(number.map(String.init) ?? "")
+            .font(font)
+            .foregroundColor(color)
+            .frame(width: 30, alignment: .trailing)
     }
 
     /// 内容视图
@@ -222,20 +217,53 @@ struct DiffLineView: View {
     }
 
     #Preview {
-        let line = DiffLine(
-            content: "print(\"Hello World\")",
-            type: .added,
-            oldLineNumber: nil,
-            newLineNumber: 1
-        )
+        VStack(alignment: .leading, spacing: 12) {
+            let unchanged = DiffLine(
+                content: "print(\"Hello World\")",
+                type: .unchanged,
+                oldLineNumber: 1,
+                newLineNumber: 1
+            )
+            let removed = DiffLine(
+                content: "print(\"Old Only\")",
+                type: .removed,
+                oldLineNumber: 2,
+                newLineNumber: nil
+            )
+            let added = DiffLine(
+                content: "print(\"New Only\")",
+                type: .added,
+                oldLineNumber: nil,
+                newLineNumber: 3
+            )
 
-        DiffLineView(
-            line: line,
-            showLineNumbers: true,
-            font: .system(.body, design: .monospaced),
-            codeLanguage: .swift,
-            displayMode: .diff,
-            verbose: true
-        )
+            DiffLineView(
+                line: unchanged,
+                showLineNumbers: true,
+                font: .system(.body, design: .monospaced),
+                codeLanguage: .swift,
+                displayMode: .diff,
+                verbose: true
+            )
+
+            DiffLineView(
+                line: removed,
+                showLineNumbers: true,
+                font: .system(.body, design: .monospaced),
+                codeLanguage: .swift,
+                displayMode: .original,
+                verbose: true
+            )
+
+            DiffLineView(
+                line: added,
+                showLineNumbers: true,
+                font: .system(.body, design: .monospaced),
+                codeLanguage: .swift,
+                displayMode: .modified,
+                verbose: true
+            )
+        }
+        .padding()
     }
 #endif
