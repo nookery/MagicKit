@@ -194,7 +194,6 @@ extension URL {
             let cgImage = try await imageGenerator.image(at: .zero).image
             return (Image.PlatformImage.fromCGImage(cgImage, size: size), false)
         } catch {
-            os_log(.error, "\(self.lastPathComponent) 生成视频缩略图失败: \(error.localizedDescription)")
             throw error
         }
     }
