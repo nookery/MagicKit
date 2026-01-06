@@ -81,12 +81,6 @@ struct CollapsibleBlockView: View {
                     font: font,
                     displayMode: displayMode
                 )
-                .overlay(
-                    Rectangle()
-                        .frame(height: 0.5)
-                        .foregroundColor(Color.secondary.opacity(0.1)),
-                    alignment: .bottom
-                )
             }
         }
     }
@@ -148,7 +142,6 @@ struct CollapsibleBlockView: View {
             Spacer()
         }
         .padding(.vertical, 4)
-        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
     }
     
     /// 展开按钮的内容视图
@@ -171,9 +164,6 @@ struct CollapsibleBlockView: View {
     /// 切换折叠状态
     private func toggleCollapse() {
         withAnimation(.easeInOut(duration: 0.2)) {
-            // 创建新的 block 实例来更新状态
-            // 注意：这里需要确保 block 是可变的或者重新赋值
-            var newBlock = block
             // 由于 CollapsibleBlock 是 struct，我们需要创建一个新的实例
             block = CollapsibleBlock(
                 lines: block.lines,
@@ -190,5 +180,4 @@ struct CollapsibleBlockView: View {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        
 }

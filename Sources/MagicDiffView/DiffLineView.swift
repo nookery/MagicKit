@@ -1,10 +1,10 @@
 import OSLog
 import SwiftUI
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 #if os(macOS)
-import AppKit
+    import AppKit
 #endif
 
 /// 差异视图中的单行视图
@@ -17,6 +17,7 @@ struct DiffLineView: View {
     let codeLanguage: CodeLanguage
     let displayMode: MagicDiffViewMode
     let verbose: Bool
+    let showIndicator: Bool = false
 
     @State private var isHovered = false
 
@@ -26,31 +27,33 @@ struct DiffLineView: View {
                 lineNumberView
             }
 
-            indicatorView
-            
+            if showIndicator {
+                indicatorView
+            }
+
             contentView
         }
         .background(backgroundColor)
         #if os(macOS)
-        .onHover { hovering in
-            isHovered = hovering
-        }
-        #endif
-        .contextMenu {
-            Button(action: {
-                copyLine()
-            }) {
-                Label("复制行", systemImage: "doc.on.doc")
+            .onHover { hovering in
+                isHovered = hovering
             }
-
-            if !line.content.isEmpty {
+        #endif
+            .contextMenu {
                 Button(action: {
-                    copyContent(line.content)
+                    copyLine()
                 }) {
-                    Label("复制内容", systemImage: "text.cursor")
+                    Label("复制行", systemImage: "doc.on.doc")
+                }
+
+                if !line.content.isEmpty {
+                    Button(action: {
+                        copyContent(line.content)
+                    }) {
+                        Label("复制内容", systemImage: "text.cursor")
+                    }
                 }
             }
-        }
     }
 
     /// 行号视图
@@ -87,7 +90,7 @@ struct DiffLineView: View {
             .frame(width: 36, alignment: .trailing)
             .padding(.horizontal, 4)
     }
-    
+
     /// 指示器视图 (+/-)
     private var indicatorView: some View {
         Text(indicatorSymbol)
@@ -95,7 +98,7 @@ struct DiffLineView: View {
             .foregroundColor(.secondary)
             .frame(width: 16, alignment: .center)
     }
-    
+
     private var indicatorSymbol: String {
         switch line.type {
         case .added: return "+"
@@ -193,7 +196,7 @@ struct DiffLineView: View {
             return Color.orange.opacity(0.06)
         }
     }
-    
+
     /// 行号区域背景颜色
     private var gutterBackgroundColor: Color {
         switch line.type {
@@ -212,10 +215,10 @@ struct DiffLineView: View {
     private func copyLine() {
         if !line.content.isEmpty {
             #if os(macOS)
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(line.content, forType: .string)
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(line.content, forType: .string)
             #else
-            UIPasteboard.general.string = line.content
+                UIPasteboard.general.string = line.content
             #endif
 
             if verbose {
@@ -227,10 +230,10 @@ struct DiffLineView: View {
     /// 复制内容
     private func copyContent(_ content: String) {
         #if os(macOS)
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(content, forType: .string)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(content, forType: .string)
         #else
-        UIPasteboard.general.string = content
+            UIPasteboard.general.string = content
         #endif
 
         if verbose {
@@ -260,7 +263,6 @@ struct DiffLineView: View {
 #if DEBUG
     #Preview("MagicDiffPreviewView") {
         MagicDiffPreviewView()
-            
     }
 
     #Preview {
