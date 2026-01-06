@@ -77,5 +77,4 @@ struct DiffContentView: View {
 
 #Preview("MagicDiffPreviewView") {
     MagicDiffPreviewView()
-        
 }
