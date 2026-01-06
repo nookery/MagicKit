@@ -26,6 +26,8 @@ struct DiffLineView: View {
                 lineNumberView
             }
 
+            indicatorView
+            
             contentView
         }
         .background(backgroundColor)
@@ -53,26 +55,53 @@ struct DiffLineView: View {
 
     /// 行号视图
     private var lineNumberView: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 0) {
             switch displayMode {
             case .diff:
-                lineNumberText(line.oldLineNumber, color: .primary)
-                lineNumberText(line.newLineNumber, color: .secondary)
+                lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
+                Rectangle()
+                    .frame(width: 1)
+                    .foregroundColor(Color.secondary.opacity(0.5))
+                lineNumberText(line.newLineNumber, color: .secondary.opacity(0.8))
             case .original:
-                lineNumberText(line.oldLineNumber, color: .primary)
+                lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
             case .modified:
-                lineNumberText(line.newLineNumber, color: .primary)
+                lineNumberText(line.newLineNumber, color: .secondary.opacity(0.8))
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 0)
+        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
         .frame(maxHeight: .infinity)
+        .overlay(
+            Rectangle()
+                .frame(width: 1)
+                .foregroundColor(Color.secondary.opacity(0.4)),
+            alignment: .trailing
+        )
     }
 
     private func lineNumberText(_ number: Int?, color: Color) -> some View {
         Text(number.map(String.init) ?? "")
             .font(font)
             .foregroundColor(color)
-            .frame(width: 30, alignment: .trailing)
+            .frame(width: 36, alignment: .trailing)
+            .padding(.horizontal, 4)
+    }
+    
+    /// 指示器视图 (+/-)
+    private var indicatorView: some View {
+        Text(indicatorSymbol)
+            .font(font)
+            .foregroundColor(.secondary)
+            .frame(width: 16, alignment: .center)
+    }
+    
+    private var indicatorSymbol: String {
+        switch line.type {
+        case .added: return "+"
+        case .removed: return "-"
+        default: return ""
+        }
     }
 
     /// 内容视图
@@ -145,23 +174,23 @@ struct DiffLineView: View {
 
     /// 背景颜色
     private var backgroundColor: Color {
-        if isHovered {
-            #if os(macOS)
-            return Color(NSColor.controlBackgroundColor).opacity(0.5)
-            #else
-            return Color(UIColor.secondarySystemBackground).opacity(0.5)
-            #endif
-        }
+        // if isHovered {
+        //     #if os(macOS)
+        //     return Color(NSColor.controlBackgroundColor).opacity(0.5)
+        //     #else
+        //     return Color(UIColor.secondarySystemBackground).opacity(0.5)
+        //     #endif
+        // }
 
         switch line.type {
         case .added:
-            return Color.green.opacity(0.1)
+            return Color.green.opacity(0.06)
         case .removed:
-            return Color.red.opacity(0.1)
+            return Color.red.opacity(0.06)
         case .unchanged:
             return Color.clear
         case .modified:
-            return Color.orange.opacity(0.1)
+            return Color.orange.opacity(0.06)
         }
     }
 

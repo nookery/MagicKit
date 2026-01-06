@@ -149,7 +149,8 @@ struct DiffAlgorithm {
                             lines: currentUnchangedLines,
                             isCollapsed: true,
                             startLineNumber: startLine,
-                            endLineNumber: endLine
+                            endLineNumber: endLine,
+                            contextInfo: "@@ -\(startLine),\(currentUnchangedLines.count) +\(startLine),\(currentUnchangedLines.count) @@" // Placeholder context info
                         )
                         result.append(.collapsibleBlock(block))
                     } else {
@@ -175,7 +176,8 @@ struct DiffAlgorithm {
                     lines: currentUnchangedLines,
                     isCollapsed: true,
                     startLineNumber: startLine,
-                    endLineNumber: endLine
+                    endLineNumber: endLine,
+                    contextInfo: "@@ -\(startLine),\(currentUnchangedLines.count) +\(startLine),\(currentUnchangedLines.count) @@" // Placeholder context info
                 )
                 result.append(.collapsibleBlock(block))
             } else {
@@ -268,6 +270,18 @@ struct DiffAlgorithm {
         
         let newStartIndex = newLine.index(newLine.startIndex, offsetBy: prefixLength)
         let newEndIndex = newLine.index(newLine.endIndex, offsetBy: -suffixLength)
+        
+        // 计算变动比例
+        let oldChangeLength = oldLine.distance(from: oldStartIndex, to: oldEndIndex)
+        let newChangeLength = newLine.distance(from: newStartIndex, to: newEndIndex)
+        
+        let oldRatio = Double(oldChangeLength) / Double(oldLine.count)
+        let newRatio = Double(newChangeLength) / Double(newLine.count)
+        
+        // 如果变动超过 50%，则不显示行内高亮（视为整行变动）
+        if oldRatio > 0.5 || newRatio > 0.5 {
+            return ([], [])
+        }
         
         var oldRanges: [Range<String.Index>] = []
         var newRanges: [Range<String.Index>] = []

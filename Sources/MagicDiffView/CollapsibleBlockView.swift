@@ -94,107 +94,93 @@ struct CollapsibleBlockView: View {
     /// 折叠状态的行号视图
     @ViewBuilder
     private var collapsedLineNumberView: some View {
-        HStack(spacing: 0) {
-            // 根据显示模式显示行号
-            switch displayMode {
-            case .original:
-                // 原始模式只显示一列行号
-                Text("\(block.startLineNumber)")
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: 32, alignment: .trailing)
-                    .foregroundColor(.secondary.opacity(0.7))
-            case .modified:
-                // 修改模式只显示一列行号
-                Text("\(block.startLineNumber)")
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: 32, alignment: .trailing)
-                    .foregroundColor(.secondary.opacity(0.7))
-            case .diff:
-                // 差异模式显示两列行号
-                Text("\(block.startLineNumber)")
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: 32, alignment: .trailing)
-                    .foregroundColor(.secondary.opacity(0.7))
-                Text("\(block.startLineNumber)")
-                    .font(.system(.body, design: .monospaced))
-                    .frame(width: 32, alignment: .trailing)
-                    .foregroundColor(.secondary.opacity(0.7))
-            }
+        HStack(alignment: .center, spacing: 0) {
+            Image(systemName: "arrow.up.and.down")
+                .font(.system(size: 10))
+                .foregroundColor(.blue)
         }
+        // Width calculation:
+        // Diff Mode: 44 (col 1) + 1 (separator) + 44 (col 2) = 89
+        // Original/Modified Mode: 44
+        .frame(minWidth: displayMode == .diff ? 89 : 44)
         .frame(maxHeight: .infinity)
-        .font(.system(.caption, design: .monospaced))
-        .padding(.horizontal, 6)
         .padding(.vertical, 1)
-        .background(Color.secondary.opacity(0.1))
+        .background(Color.blue.opacity(0.1))
+        .overlay(
+            Rectangle()
+                .frame(width: 1)
+                .foregroundColor(Color.secondary.opacity(0.1)),
+            alignment: .trailing
+        )
     }
     
     /// 展开按钮的行号视图
     @ViewBuilder
     private var expandButtonLineNumberView: some View {
-        HStack(spacing: 0) {
-            // 根据显示模式显示空白行号区域
-            switch displayMode {
-            case .original, .modified:
-                // 单列模式显示一个32宽的空白
-                Text("")
-                    .frame(width: 32, alignment: .trailing)
-            case .diff:
-                // 差异模式显示两个16宽的空白
-                Text("")
-                    .frame(width: 32, alignment: .trailing)
-                Text("")
-                    .frame(width: 32, alignment: .trailing)
-            }
+        HStack(alignment: .center, spacing: 0) {
+            Image(systemName: "arrow.up.and.down")
+                .font(.system(size: 10))
+                .foregroundColor(.blue)
         }
+        .frame(minWidth: displayMode == .diff ? 89 : 44)
         .frame(maxHeight: .infinity)
-        .font(.system(.caption, design: .monospaced))
-        .padding(.horizontal, 6)
         .padding(.vertical, 1)
-        .background(Color.secondary.opacity(0.1))
+        .background(Color.blue.opacity(0.1))
+        .overlay(
+            Rectangle()
+                .frame(width: 1)
+                .foregroundColor(Color.secondary.opacity(0.1)),
+            alignment: .trailing
+        )
     }
     
     /// 折叠状态的内容视图
     private var collapsedContentView: some View {
-        HStack {
-            Image(systemName: "chevron.right")
-                .foregroundColor(.secondary)
-                .font(.caption)
-            
-            Text("\(block.lines.count) 行未变动")
-                .font(font)
-                .foregroundColor(.secondary)
+        HStack(spacing: 0) {
+            // 上下文信息
+            if let contextInfo = block.contextInfo {
+                Text(contextInfo)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 8)
+            }
             
             Spacer()
         }
-        .padding(.horizontal, 8)
         .padding(.vertical, 4)
+        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
     }
     
     /// 展开按钮的内容视图
     private var expandButtonContentView: some View {
-        HStack {
-            Image(systemName: "chevron.down")
-                .foregroundColor(.secondary)
-                .font(.caption)
-            
-            Text("折叠 \(block.lines.count) 行")
-                .font(font)
-                .foregroundColor(.secondary)
+        HStack(spacing: 0) {
+            // 上下文信息
+            if let contextInfo = block.contextInfo {
+                Text(contextInfo)
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 8)
+            }
             
             Spacer()
         }
-        .padding(.horizontal, 8)
         .padding(.vertical, 4)
+        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
     }
     
     /// 切换折叠状态
     private func toggleCollapse() {
         withAnimation(.easeInOut(duration: 0.2)) {
+            // 创建新的 block 实例来更新状态
+            // 注意：这里需要确保 block 是可变的或者重新赋值
+            var newBlock = block
+            // 由于 CollapsibleBlock 是 struct，我们需要创建一个新的实例
             block = CollapsibleBlock(
                 lines: block.lines,
                 isCollapsed: !block.isCollapsed,
                 startLineNumber: block.startLineNumber,
-                endLineNumber: block.endLineNumber
+                endLineNumber: block.endLineNumber,
+                contextInfo: block.contextInfo
             )
         }
     }

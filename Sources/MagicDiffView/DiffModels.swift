@@ -32,17 +32,21 @@ public struct CollapsibleBlock {
     let startLineNumber: Int
     let endLineNumber: Int
     
+    let contextInfo: String?
+    
     /// 创建折叠块
     /// - Parameters:
     ///   - lines: 包含的差异行
     ///   - isCollapsed: 是否折叠状态
     ///   - startLineNumber: 起始行号
     ///   - endLineNumber: 结束行号
-    init(lines: [DiffLine], isCollapsed: Bool = true, startLineNumber: Int, endLineNumber: Int) {
+    ///   - contextInfo: 上下文信息（如函数名）
+    init(lines: [DiffLine], isCollapsed: Bool = true, startLineNumber: Int, endLineNumber: Int, contextInfo: String? = nil) {
         self.lines = lines
         self.isCollapsed = isCollapsed
         self.startLineNumber = startLineNumber
         self.endLineNumber = endLineNumber
+        self.contextInfo = contextInfo
     }
 }
 
