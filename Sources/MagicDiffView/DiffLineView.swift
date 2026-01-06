@@ -24,11 +24,18 @@ struct DiffLineView: View {
     var body: some View {
         HStack(spacing: 0) {
             if showLineNumbers {
-                lineNumberView
+                DiffLineNumberView(
+                    line: line,
+                    displayMode: displayMode,
+                    font: font
+                )
             }
 
             if showIndicator {
-                indicatorView
+                DiffLineIndicatorView(
+                    line: line,
+                    font: font
+                )
             }
 
             contentView
@@ -55,62 +62,10 @@ struct DiffLineView: View {
                 }
             }
     }
+}
 
-    /// 创建统一的垂直分割线
-    private func separatorLine() -> some View {
-        Rectangle()
-            .frame(width: 1)
-            .foregroundColor(Color.secondary.opacity(0.15))
-    }
-
-    /// 行号视图
-    private var lineNumberView: some View {
-        HStack(spacing: 0) {
-            switch displayMode {
-            case .diff:
-                lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
-                separatorLine()
-                lineNumberText(line.newLineNumber, color: .secondary.opacity(0.8))
-            case .original:
-                lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
-            case .modified:
-                lineNumberText(line.newLineNumber, color: .secondary.opacity(0.8))
-            }
-        }
-        .padding(.horizontal, 0)
-        .background(gutterBackgroundColor)
-        .frame(maxHeight: .infinity)
-        // 在行号区域右侧添加垂直分割线，分隔行号和代码内容区域
-        .overlay(
-            separatorLine(),
-            alignment: .trailing  // 对齐到行号区域右侧
-        )
-    }
-
-    private func lineNumberText(_ number: Int?, color: Color) -> some View {
-        Text(number.map(String.init) ?? "")
-            .font(font)
-            .foregroundColor(color)
-            .frame(width: 36, alignment: .trailing)
-            .padding(.horizontal, 4)
-    }
-
-    /// 指示器视图 (+/-)
-    private var indicatorView: some View {
-        Text(indicatorSymbol)
-            .font(font)
-            .foregroundColor(.secondary)
-            .frame(width: 16, alignment: .center)
-    }
-
-    private var indicatorSymbol: String {
-        switch line.type {
-        case .added: return "+"
-        case .removed: return "-"
-        default: return ""
-        }
-    }
-
+// MARK: - Private Helpers
+extension DiffLineView {
     /// 内容视图
     private var contentView: some View {
         Group {
@@ -192,23 +147,12 @@ struct DiffLineView: View {
             return Color.orange.opacity(0.06)
         }
     }
+}
 
-    /// 行号区域背景颜色
-    private var gutterBackgroundColor: Color {
-        switch line.type {
-        case .added:
-            return Color.green.opacity(0.15)
-        case .removed:
-            return Color.red.opacity(0.15)
-        case .unchanged:
-            return Color.clear
-        case .modified:
-            return Color.orange.opacity(0.15)
-        }
-    }
-
+// MARK: - Action
+extension DiffLineView {
     /// 复制整行
-    private func copyLine() {
+    func copyLine() {
         if !line.content.isEmpty {
             #if os(macOS)
                 NSPasteboard.general.clearContents()
@@ -224,7 +168,7 @@ struct DiffLineView: View {
     }
 
     /// 复制内容
-    private func copyContent(_ content: String) {
+    func copyContent(_ content: String) {
         #if os(macOS)
             NSPasteboard.general.clearContents()
             NSPasteboard.general.setString(content, forType: .string)
@@ -236,22 +180,6 @@ struct DiffLineView: View {
             os_log("复制内容: \(content)")
         }
     }
-
-    init(
-        line: DiffLine,
-        showLineNumbers: Bool,
-        font: Font = .system(.body, design: .monospaced),
-        codeLanguage: CodeLanguage = .swift,
-        displayMode: MagicDiffViewMode = .diff,
-        verbose: Bool = false
-    ) {
-        self.line = line
-        self.showLineNumbers = showLineNumbers
-        self.font = font
-        self.codeLanguage = codeLanguage
-        self.displayMode = displayMode
-        self.verbose = verbose
-    }
 }
 
 // MARK: - Preview
@@ -261,7 +189,7 @@ struct DiffLineView: View {
         MagicDiffPreviewView()
     }
 
-    #Preview {
+    #Preview("DiffLineView Examples") {
         VStack(alignment: .leading, spacing: 12) {
             let unchanged = DiffLine(
                 content: "print(\"Hello World\")",

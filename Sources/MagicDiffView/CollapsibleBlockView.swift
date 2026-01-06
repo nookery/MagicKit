@@ -7,6 +7,8 @@ struct CollapsibleBlockView: View {
     let showLineNumbers: Bool
     let font: Font
     let displayMode: MagicDiffViewMode
+    let codeLanguage: CodeLanguage
+    let verbose: Bool
     
     /// 创建折叠块视图
     /// - Parameters:
@@ -14,16 +16,22 @@ struct CollapsibleBlockView: View {
     ///   - showLineNumbers: 是否显示行号
     ///   - font: 字体
     ///   - displayMode: 显示模式
+    ///   - codeLanguage: 代码语言，用于语法高亮
+    ///   - verbose: 是否启用详细日志
     init(
-        block: CollapsibleBlock, 
-        showLineNumbers: Bool, 
+        block: CollapsibleBlock,
+        showLineNumbers: Bool,
         font: Font,
-        displayMode: MagicDiffViewMode = .diff
+        displayMode: MagicDiffViewMode = .diff,
+        codeLanguage: CodeLanguage,
+        verbose: Bool
     ) {
         self._block = State(initialValue: block)
         self.showLineNumbers = showLineNumbers
         self.font = font
         self.displayMode = displayMode
+        self.codeLanguage = codeLanguage
+        self.verbose = verbose
     }
     
     var body: some View {
@@ -79,7 +87,9 @@ struct CollapsibleBlockView: View {
                     line: line,
                     showLineNumbers: showLineNumbers,
                     font: font,
-                    displayMode: displayMode
+                    codeLanguage: codeLanguage,
+                    displayMode: displayMode,
+                    verbose: verbose
                 )
             }
         }

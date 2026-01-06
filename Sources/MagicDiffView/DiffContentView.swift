@@ -67,7 +67,9 @@ struct DiffContentView: View {
             block: block,
             showLineNumbers: showLineNumbers,
             font: font,
-            displayMode: displayMode
+            displayMode: displayMode,
+            codeLanguage: selectedLanguage,
+            verbose: verbose
         )
     }
     
