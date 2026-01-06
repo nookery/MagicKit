@@ -14,6 +14,15 @@ public struct DiffLine {
     let type: DiffType
     let oldLineNumber: Int?
     let newLineNumber: Int?
+    let highlightRanges: [Range<String.Index>]?
+    
+    init(content: String, type: DiffType, oldLineNumber: Int?, newLineNumber: Int?, highlightRanges: [Range<String.Index>]? = nil) {
+        self.content = content
+        self.type = type
+        self.oldLineNumber = oldLineNumber
+        self.newLineNumber = newLineNumber
+        self.highlightRanges = highlightRanges
+    }
 }
 
 /// 折叠块数据

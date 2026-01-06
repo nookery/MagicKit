@@ -85,6 +85,8 @@ struct DiffLineView: View {
                         SyntaxHighlighter.highlight(
                             text: line.content,
                             rules: codeLanguage.rules,
+                            highlightRanges: line.highlightRanges,
+                            highlightColor: Color.green.opacity(0.3),
                             verbose: verbose
                         )
                         .font(font)
@@ -94,6 +96,8 @@ struct DiffLineView: View {
                         SyntaxHighlighter.highlight(
                             text: line.content,
                             rules: codeLanguage.rules,
+                            highlightRanges: line.highlightRanges,
+                            highlightColor: Color.red.opacity(0.3),
                             verbose: verbose
                         )
                         .font(font)

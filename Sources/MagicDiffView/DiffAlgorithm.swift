@@ -66,17 +66,21 @@ struct DiffAlgorithm {
                     
                     if similarity > 0.5 {
                         // 相似度高，标记为修改
+                        let (oldRanges, newRanges) = computeIntraLineDiff(oldLine: oldLine, newLine: newLine)
+                        
                         result.append(DiffLine(
                             content: oldLine,
                             type: .removed,
                             oldLineNumber: oldIndex + 1,
-                            newLineNumber: nil
+                            newLineNumber: nil,
+                            highlightRanges: oldRanges
                         ))
                         result.append(DiffLine(
                             content: newLine,
                             type: .added,
                             oldLineNumber: nil,
-                            newLineNumber: newIndex + 1
+                            newLineNumber: newIndex + 1,
+                            highlightRanges: newRanges
                         ))
                         oldIndex += 1
                         newIndex += 1
@@ -238,5 +242,44 @@ struct DiffAlgorithm {
             }
         }
         return nil
+    }
+    
+    /// 计算行内差异
+    /// 使用简单的公共前缀和后缀算法来确定差异范围
+    private static func computeIntraLineDiff(oldLine: String, newLine: String) -> (oldRanges: [Range<String.Index>], newRanges: [Range<String.Index>]) {
+        // 1. 计算公共前缀
+        let commonPrefix = oldLine.commonPrefix(with: newLine)
+        let prefixLength = commonPrefix.count
+        
+        // 2. 计算公共后缀
+        // 需要先去除前缀部分，避免重叠
+        let oldRest = String(oldLine.dropFirst(prefixLength))
+        let newRest = String(newLine.dropFirst(prefixLength))
+        
+        // 反转字符串以计算后缀
+        let oldRestReversed = String(oldRest.reversed())
+        let newRestReversed = String(newRest.reversed())
+        let commonSuffix = oldRestReversed.commonPrefix(with: newRestReversed)
+        let suffixLength = commonSuffix.count
+        
+        // 3. 计算差异范围
+        let oldStartIndex = oldLine.index(oldLine.startIndex, offsetBy: prefixLength)
+        let oldEndIndex = oldLine.index(oldLine.endIndex, offsetBy: -suffixLength)
+        
+        let newStartIndex = newLine.index(newLine.startIndex, offsetBy: prefixLength)
+        let newEndIndex = newLine.index(newLine.endIndex, offsetBy: -suffixLength)
+        
+        var oldRanges: [Range<String.Index>] = []
+        var newRanges: [Range<String.Index>] = []
+        
+        if oldStartIndex < oldEndIndex {
+            oldRanges.append(oldStartIndex..<oldEndIndex)
+        }
+        
+        if newStartIndex < newEndIndex {
+            newRanges.append(newStartIndex..<newEndIndex)
+        }
+        
+        return (oldRanges, newRanges)
     }
 }

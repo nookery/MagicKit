@@ -176,9 +176,11 @@ struct SyntaxHighlighter {
     /// - Parameters:
     ///   - text: 要高亮的文本
     ///   - rules: 高亮规则数组
+    ///   - highlightRanges: 需要额外高亮的范围（如差异部分）
+    ///   - highlightColor: 额外高亮的背景颜色
     ///   - verbose: 是否输出详细日志
     /// - Returns: 高亮后的文本视图
-    static func highlight(text: String, rules: [HighlightRule], verbose: Bool = false) -> Text {
+    static func highlight(text: String, rules: [HighlightRule], highlightRanges: [Range<String.Index>]? = nil, highlightColor: Color? = nil, verbose: Bool = false) -> Text {
         var attributedString = AttributedString(text)
         let nsRange = NSRange(location: 0, length: text.utf16.count)
         
@@ -193,6 +195,15 @@ struct SyntaxHighlighter {
                 let color = rule.color
                 if let attrRange = Range(range, in: attributedString) {
                     attributedString[attrRange].foregroundColor = color
+                }
+            }
+        }
+        
+        // 应用额外的高亮（如差异部分）
+        if let ranges = highlightRanges, let color = highlightColor {
+            for range in ranges {
+                if let attrRange = Range(range, in: attributedString) {
+                    attributedString[attrRange].backgroundColor = color
                 }
             }
         }
