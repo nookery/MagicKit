@@ -61,7 +61,7 @@ struct DiffLineView: View {
                 lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
                 Rectangle()
                     .frame(width: 1)
-                    .foregroundColor(Color.secondary.opacity(0.5))
+                    .foregroundColor(Color.secondary.opacity(0.1))
                 lineNumberText(line.newLineNumber, color: .secondary.opacity(0.8))
             case .original:
                 lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
@@ -70,12 +70,12 @@ struct DiffLineView: View {
             }
         }
         .padding(.horizontal, 0)
-        .background(Color(red: 0.96, green: 0.97, blue: 0.99))
+        .background(gutterBackgroundColor)
         .frame(maxHeight: .infinity)
         .overlay(
             Rectangle()
                 .frame(width: 1)
-                .foregroundColor(Color.secondary.opacity(0.4)),
+                .foregroundColor(Color.secondary.opacity(0.1)),
             alignment: .trailing
         )
     }
@@ -119,7 +119,7 @@ struct DiffLineView: View {
                             verbose: verbose
                         )
                         .font(font)
-                        .foregroundColor(.green)
+                        .foregroundColor(.black)
                         .padding(.leading, 4)
                     case .removed:
                         SyntaxHighlighter.highlight(
@@ -130,7 +130,7 @@ struct DiffLineView: View {
                             verbose: verbose
                         )
                         .font(font)
-                        .foregroundColor(.red)
+                        .foregroundColor(.black)
                         .padding(.leading, 4)
                     case .unchanged:
                         SyntaxHighlighter.highlight(
@@ -191,6 +191,20 @@ struct DiffLineView: View {
             return Color.clear
         case .modified:
             return Color.orange.opacity(0.06)
+        }
+    }
+    
+    /// 行号区域背景颜色
+    private var gutterBackgroundColor: Color {
+        switch line.type {
+        case .added:
+            return Color.green.opacity(0.15)
+        case .removed:
+            return Color.red.opacity(0.15)
+        case .unchanged:
+            return Color(red: 0.96, green: 0.97, blue: 0.99)
+        case .modified:
+            return Color.orange.opacity(0.15)
         }
     }
 
