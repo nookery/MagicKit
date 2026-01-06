@@ -152,7 +152,12 @@ public struct MagicDiffView: View {
 
         // 模拟复制操作的延迟
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            text.copy()
+            #if os(macOS)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(text, forType: .string)
+            #else
+            UIPasteboard.general.string = text
+            #endif
 
             if verbose {
                 os_log("文本已复制到剪贴板")
