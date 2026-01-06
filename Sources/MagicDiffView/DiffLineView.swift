@@ -56,15 +56,20 @@ struct DiffLineView: View {
             }
     }
 
+    /// 创建统一的垂直分割线
+    private func separatorLine() -> some View {
+        Rectangle()
+            .frame(width: 1)
+            .foregroundColor(Color.secondary.opacity(0.15))
+    }
+
     /// 行号视图
     private var lineNumberView: some View {
         HStack(spacing: 0) {
             switch displayMode {
             case .diff:
                 lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
-                Rectangle()
-                    .frame(width: 1)
-                    .foregroundColor(Color.secondary.opacity(0.1))
+                separatorLine()
                 lineNumberText(line.newLineNumber, color: .secondary.opacity(0.8))
             case .original:
                 lineNumberText(line.oldLineNumber, color: .secondary.opacity(0.8))
@@ -75,11 +80,10 @@ struct DiffLineView: View {
         .padding(.horizontal, 0)
         .background(gutterBackgroundColor)
         .frame(maxHeight: .infinity)
+        // 在行号区域右侧添加垂直分割线，分隔行号和代码内容区域
         .overlay(
-            Rectangle()
-                .frame(width: 1)
-                .foregroundColor(Color.secondary.opacity(0.1)),
-            alignment: .trailing
+            separatorLine(),
+            alignment: .trailing  // 对齐到行号区域右侧
         )
     }
 
@@ -177,14 +181,6 @@ struct DiffLineView: View {
 
     /// 背景颜色
     private var backgroundColor: Color {
-        // if isHovered {
-        //     #if os(macOS)
-        //     return Color(NSColor.controlBackgroundColor).opacity(0.5)
-        //     #else
-        //     return Color(UIColor.secondarySystemBackground).opacity(0.5)
-        //     #endif
-        // }
-
         switch line.type {
         case .added:
             return Color.green.opacity(0.06)
@@ -205,7 +201,7 @@ struct DiffLineView: View {
         case .removed:
             return Color.red.opacity(0.15)
         case .unchanged:
-            return Color(red: 0.96, green: 0.97, blue: 0.99)
+            return Color.clear
         case .modified:
             return Color.orange.opacity(0.15)
         }
