@@ -229,20 +229,24 @@ extension ShellGit {
         guard page >= 0 else {
             throw NSError(domain: "ShellGit", code: -1, userInfo: [NSLocalizedDescriptionKey: "Page number must be non-negative"])
         }
+
         let skip = page * size
         let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%D"
         let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime]
+
         return log.split(separator: "\n").compactMap { line in
             let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
-            guard parts.count >= 6 else { return nil }
+            guard parts.count >= 5 else { return nil }
+
+            // Handle case where refs field might be empty (no branches/tags)
             let hash = String(parts[0])
             let author = String(parts[1])
             let email = String(parts[2])
             let date = dateFormatter.date(from: String(parts[3])) ?? Date()
             let message = String(parts[4])
-            let refs = String(parts[5])
+            let refs = parts.count > 5 ? String(parts[5]) : ""
             let tags = refs.components(separatedBy: ", ").filter { $0.contains("tag:") }.map { $0.replacingOccurrences(of: "tag:", with: "").trimmingCharacters(in: .whitespaces) }
             return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refs.components(separatedBy: ", ").filter{!$0.isEmpty}, tags: tags)
         }
