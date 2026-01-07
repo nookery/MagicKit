@@ -19,7 +19,6 @@ let package = Package(
         .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
         .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
         .library(name: "MagicContainer", targets: ["MagicContainer"]),
-        .library(name: "MagicAlert", targets: ["MagicAlert"]),
         .library(name: "MagicError", targets: ["MagicError"]),
         .library(name: "MagicBackground", targets: ["MagicBackground"]),
         .library(name: "MagicUI", targets: ["MagicUI"]),
@@ -63,14 +62,9 @@ let package = Package(
        .target(
            name: "MagicContainer",
            dependencies: [
-            "MagicAlert",
             "MagicCore",
             "MagicDevice"
            ]
-       ),
-       .target(
-           name: "MagicAlert",
-           dependencies: ["MagicError"]
        ),
        .target(
            name: "MagicError"
@@ -101,7 +95,6 @@ let package = Package(
            name: "MagicAll",
            dependencies: [
                "MagicCore",
-               "MagicAlert", 
                "MagicUI",
                "MagicError",
                "MagicBackground",
