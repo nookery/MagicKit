@@ -19,6 +19,7 @@ let package = Package(
         .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
         .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
         .library(name: "MagicContainer", targets: ["MagicContainer"]),
+        .library(name: "MagicHttp", targets: ["MagicHttp"]),
         .library(name: "MagicError", targets: ["MagicError"]),
         .library(name: "MagicBackground", targets: ["MagicBackground"]),
         .library(name: "MagicUI", targets: ["MagicUI"]),
@@ -102,6 +103,7 @@ let package = Package(
                "MagicSync",
                "MagicAsset",
                "MagicContainer",
+               "MagicHttp",
                "MagicData",
                "MagicDesktop"
            ]
