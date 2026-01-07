@@ -157,14 +157,38 @@ extension ShellGit {
     ///   - verbose: 是否详细输出，默认不详细输出
     /// - Returns: [GitDiffFile]，仅包含文件名和变动类型，diff 为空
     public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) async throws -> [GitDiffFile] {
-        let output = try await Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path, verbose: verbose)
-        let files = output.split(separator: "\n").map { String($0) }
-        return files.compactMap { line in
-            let parts = line.split(separator: "\t").map { String($0) }
-            guard parts.count >= 2 else { return nil }
-            let changeType = parts[0]
-            let file = parts[1]
-            return GitDiffFile(id: file, file: file, changeType: changeType, diff: "")
+        // 检查是否为初始commit（没有父commit）
+        let hasParent: Bool
+        do {
+            _ = try await Shell.run("git rev-parse \(commit)^", at: path, verbose: false)
+            hasParent = true
+        } catch {
+            hasParent = false
+        }
+
+        if hasParent {
+            // 有父commit，使用diff-tree获取变更文件
+            let output = try await Shell.run("git diff-tree --no-commit-id --name-status -r \(commit)", at: path, verbose: verbose)
+            let files = output.split(separator: "\n").map { String($0) }
+            return files.compactMap { line in
+                let parts = line.split(separator: "\t").map { String($0) }
+                guard parts.count >= 2 else { return nil }
+                let changeType = parts[0]
+                let file = parts[1]
+                return GitDiffFile(id: file, file: file, changeType: changeType, diff: "")
+            }
+        } else {
+            // 初始commit，使用show --name-only获取所有文件
+            let output = try await Shell.run("git show --name-only --format= \(commit)", at: path, verbose: verbose)
+            let lines = output.split(separator: "\n").map { String($0) }
+            // 跳过commit信息行，获取文件列表
+            let fileLines = lines.dropFirst()
+            return fileLines.compactMap { line in
+                let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else { return nil }
+                // 对于初始commit，所有文件都是新增的（A = Added）
+                return GitDiffFile(id: trimmed, file: trimmed, changeType: "A", diff: "")
+            }
         }
     }
 
