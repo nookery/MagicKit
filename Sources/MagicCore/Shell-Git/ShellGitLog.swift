@@ -141,13 +141,16 @@ extension ShellGit {
 
     /// 分页获取提交日志
     /// - Parameters:
-    ///   - page: 页码（从 1 开始）
+    ///   - page: 页码（从 0 开始，0表示第一页）
     ///   - size: 每页条数
     ///   - oneline: 是否单行显示
     ///   - path: 仓库路径
     /// - Returns: 日志信息数组
-    public static func logsWithPagination(page: Int = 1, size: Int = 20, oneline: Bool = true, at path: String? = nil) throws -> [String] {
-        let skip = (page - 1) * size
+    public static func logsWithPagination(page: Int = 0, size: Int = 20, oneline: Bool = true, at path: String? = nil) throws -> [String] {
+        guard page >= 0 else {
+            throw NSError(domain: "ShellGit", code: -1, userInfo: [NSLocalizedDescriptionKey: "Page number must be non-negative"])
+        }
+        let skip = page * size
         let format = oneline ? "--oneline" : ""
         let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         return log.split(separator: "\n").map { String($0) }
@@ -212,12 +215,15 @@ extension ShellGit {
 
     /// 分页获取提交日志（结构体版）
     /// - Parameters:
-    ///   - page: 页码（从 1 开始）
+    ///   - page: 页码（从 0 开始，0表示第一页）
     ///   - size: 每页条数
     ///   - at: 仓库路径
     /// - Returns: [GitCommit]
-    public static func commitListWithPagination(page: Int = 1, size: Int = 20, at path: String? = nil) throws -> [GitCommit] {
-        let skip = (page - 1) * size
+    public static func commitListWithPagination(page: Int = 0, size: Int = 20, at path: String? = nil) throws -> [GitCommit] {
+        guard page >= 0 else {
+            throw NSError(domain: "ShellGit", code: -1, userInfo: [NSLocalizedDescriptionKey: "Page number must be non-negative"])
+        }
+        let skip = page * size
         let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%D"
         let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
@@ -253,7 +259,6 @@ private extension String {
 #if DEBUG
 #Preview("ShellGit+Log Demo") {
     ShellGitLogPreview()
-        
 } 
 #endif
 
