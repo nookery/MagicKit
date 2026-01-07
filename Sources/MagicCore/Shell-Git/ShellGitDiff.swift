@@ -57,24 +57,39 @@ extension ShellGit {
     /// - Returns: (修改前内容, 修改后内容)
     ///   - before: 父commit中的文件内容，如果文件在父commit中不存在则为nil
     ///   - after: 当前commit中的文件内容，如果文件在当前commit中不存在则为nil
-    /// - Note: 
+    /// - Note:
     ///   - 如果文件是新增的：before为nil，after为文件内容
     ///   - 如果文件是删除的：before为文件内容，after为nil
     ///   - 如果文件是修改的：before和after都为文件内容
     ///   - 如果文件在两个commit中都不存在：before和after都为nil
     public static func fileContentChange(at commit: String, file: String, repoPath: String) throws -> (before: String?, after: String?) {
-        // 获取 parent commit
-        let parentCommit = try Shell.runSync("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        // 先检查文件是否存在，再获取内容
-        let before: String? = fileExists(at: parentCommit, file: file, repoPath: repoPath) 
-            ? try Shell.runSync("git show \(parentCommit):\(file)", at: repoPath)
-            : nil
-            
+        // 检查是否为初始commit（没有父commit）
+        let hasParent: Bool
+        do {
+            _ = try Shell.runSync("git rev-parse \(commit)^", at: repoPath)
+            hasParent = true
+        } catch {
+            hasParent = false
+        }
+
+        let before: String?
+        if hasParent {
+            // 获取 parent commit
+            let parentCommit = try Shell.runSync("git rev-parse \(commit)^", at: repoPath).trimmingCharacters(in: .whitespacesAndNewlines)
+
+            // 先检查文件是否存在，再获取内容
+            before = fileExists(at: parentCommit, file: file, repoPath: repoPath)
+                ? try Shell.runSync("git show \(parentCommit):\(file)", at: repoPath)
+                : nil
+        } else {
+            // 初始commit没有父commit，所以before为nil
+            before = nil
+        }
+
         let after: String? = fileExists(at: commit, file: file, repoPath: repoPath)
-            ? try Shell.runSync("git show \(commit):\(file)", at: repoPath) 
+            ? try Shell.runSync("git show \(commit):\(file)", at: repoPath)
             : nil
-        
+
         return (before, after)
     }
     
