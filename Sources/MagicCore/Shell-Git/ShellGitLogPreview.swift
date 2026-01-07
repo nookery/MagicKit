@@ -108,6 +108,7 @@ import SwiftUI
                     .onAppear { loadPagedLogs(repoPath) }
                 }
             }
+            .frame(height: 800)
         }
 
         private func loadPagedLogs(_ repoPath: String) {
@@ -125,7 +126,11 @@ import SwiftUI
 // MARK: - Preview
 
 #if DEBUG && os(macOS)
-    #Preview("ShellGit+Log Demo") {
+    #Preview("ShellGitLogPreview") {
         ShellGitLogPreview()
+    }
+
+    #Preview("ShellGitLogPreview2") {
+        ShellGitLogPreview2()
     }
 #endif
