@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "magicdevice",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nookery/MagicDevice.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "60c9bf7cd59566ec64b7088fa8672a6b1c2c5cf2"
+      }
+    },
+    {
       "identity" : "swift-async-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-async-algorithms",

@@ -17,7 +17,6 @@ let package = Package(
         .library(name: "MagicPlayMan", targets: ["MagicPlayMan"]),       // 播放管理模块
         .library(name: "MagicSync", targets: ["MagicSync"]),             // 同步模块
         .library(name: "MagicAsset", targets: ["MagicAsset"]),           // Asset 模块
-        .library(name: "MagicDevice", targets: ["MagicDevice"]),         // 设备模块
         .library(name: "MagicContainer", targets: ["MagicContainer"]),
         .library(name: "MagicHttp", targets: ["MagicHttp"]),
         .library(name: "MagicError", targets: ["MagicError"]),
@@ -32,6 +31,7 @@ let package = Package(
         .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0"),  // ID3 标签编辑器
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),  // ZIP 文件处理库
         .package(url: "https://github.com/nookery/MagicAlert.git", branch: "main"),  // MagicAlert 通知库
+        .package(url: "https://github.com/nookery/MagicDevice.git", branch: "main"),  // MagicDevice 设备模块
     ],
     // 编译目标（模块）
     targets: [
@@ -57,15 +57,11 @@ let package = Package(
            dependencies: ["MagicCore"]
        ),
        .target(
-           name: "MagicDevice",
-           resources: [.process("Assets.xcassets")]
-       ),
-       .target(
            name: "MagicContainer",
            dependencies: [
                .product(name: "MagicAlert", package: "MagicAlert"),
-               "MagicCore",
-               "MagicDevice"
+               .product(name: "MagicDevice", package: "MagicDevice"),
+               "MagicCore"
            ]
        ),
        .target(
@@ -98,7 +94,6 @@ let package = Package(
                "MagicUI",
                "MagicError",
                "MagicBackground",
-               "MagicDevice",
                "MagicPlayMan",
                "MagicSync",
                "MagicAsset",
