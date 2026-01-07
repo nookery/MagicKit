@@ -158,13 +158,10 @@ extension ShellGit {
     /// - Returns: [GitDiffFile]，仅包含文件名和变动类型，diff 为空
     public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) async throws -> [GitDiffFile] {
         // 检查是否为初始commit（没有父commit）
-        let hasParent: Bool
-        do {
-            _ = try await Shell.run("git rev-parse \(commit)^", at: path, verbose: false)
-            hasParent = true
-        } catch {
-            hasParent = false
-        }
+        // 使用 rev-list --parents 获取commit及其父commit信息
+        let revListOutput = try await Shell.run("git rev-list --parents -n 1 \(commit)", at: path, verbose: false)
+        let parts = revListOutput.split(separator: " ").map { String($0) }
+        let hasParent = parts.count > 1 // 如果有父commit，parts会包含多个元素
 
         if hasParent {
             // 有父commit，使用diff-tree获取变更文件
