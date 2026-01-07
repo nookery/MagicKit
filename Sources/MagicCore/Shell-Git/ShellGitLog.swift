@@ -176,24 +176,13 @@ extension ShellGit {
             let message = String(parts[4])
             let refs = String(parts[5])
 
-            // Debug: Check if date parsing fails
-            guard let date = dateFormatter.date(from: dateStr) else {
-                print("ShellGit.commitList: Failed to parse date '\(dateStr)' for commit \(hash.prefix(8))")
-                return nil
-            }
+            // Fix: Ensure date parsing doesn't fail - use fallback to Date() but don't return nil
+            let date = dateFormatter.date(from: dateStr) ?? Date()
 
-            // Debug: Check if GitCommit creation fails
             let tags = refs.matches(for: "tag \\w+[-.\\w]*").map { $0.replacingOccurrences(of: "tag ", with: "") }
             let refArray = refs.components(separatedBy: ", ").filter{!$0.isEmpty}
 
-            do {
-                let commit = GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refArray, tags: tags)
-                print("ShellGit.commitList: Successfully created commit \(commit.hash.prefix(8)) - \(commit.message.prefix(30))")
-                return commit
-            } catch {
-                print("ShellGit.commitList: Failed to create GitCommit for \(hash.prefix(8)): \(error)")
-                return nil
-            }
+            return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refArray, tags: tags)
         }
     }
 
@@ -251,28 +240,11 @@ extension ShellGit {
             let hash = String(parts[0])
             let author = String(parts[1])
             let email = String(parts[2])
-            let dateStr = String(parts[3])
+            let date = dateFormatter.date(from: String(parts[3])) ?? Date()
             let message = String(parts[4])
             let refs = String(parts[5])
-
-            // Debug: Check if date parsing fails
-            guard let date = dateFormatter.date(from: dateStr) else {
-                print("ShellGit.commitListWithPagination: Failed to parse date '\(dateStr)' for commit \(hash.prefix(8))")
-                return nil
-            }
-
-            // Debug: Check if GitCommit creation fails
             let tags = refs.components(separatedBy: ", ").filter { $0.contains("tag:") }.map { $0.replacingOccurrences(of: "tag:", with: "").trimmingCharacters(in: .whitespaces) }
-            let refArray = refs.components(separatedBy: ", ").filter{!$0.isEmpty}
-
-            do {
-                let commit = GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refArray, tags: tags)
-                print("ShellGit.commitListWithPagination: Successfully created commit \(commit.hash.prefix(8)) - \(commit.message.prefix(30))")
-                return commit
-            } catch {
-                print("ShellGit.commitListWithPagination: Failed to create GitCommit for \(hash.prefix(8)): \(error)")
-                return nil
-            }
+            return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, refs: refs.components(separatedBy: ", ").filter{!$0.isEmpty}, tags: tags)
         }
     }
 }
