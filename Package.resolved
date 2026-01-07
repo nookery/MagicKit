@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "magicalert",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nookery/MagicAlert.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "c3563eb2adf33c928e8c95c2692e6dcd467f544d"
+      }
+    },
+    {
       "identity" : "swift-async-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-async-algorithms",
