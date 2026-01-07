@@ -11,6 +11,5 @@
 @_exported import MagicSync
 @_exported import MagicAsset
 @_exported import MagicContainer
-@_exported import MagicDiffView
 @_exported import MagicData
 @_exported import MagicDesktop

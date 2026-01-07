@@ -22,7 +22,6 @@ let package = Package(
         .library(name: "MagicError", targets: ["MagicError"]),
         .library(name: "MagicBackground", targets: ["MagicBackground"]),
         .library(name: "MagicUI", targets: ["MagicUI"]),
-        .library(name: "MagicDiffView", targets: ["MagicDiffView"]),
         .library(name: "MagicData", targets: ["MagicData"]),
         .library(name: "MagicHttp", targets: ["MagicHttp"]),
         .library(name: "MagicDesktop", targets: ["MagicDesktop"]),
@@ -31,7 +30,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
         .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0"),  // ID3 标签编辑器
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),  // ZIP 文件处理库
-        .package(url: "https://github.com/nookery/MagicAlert.git", branch: "main")  // MagicAlert 通知库
+        .package(url: "https://github.com/nookery/MagicAlert.git", branch: "main"),  // MagicAlert 通知库
     ],
     // 编译目标（模块）
     targets: [
@@ -75,9 +74,6 @@ let package = Package(
            name: "MagicBackground"
        ),
        .target(
-           name: "MagicDiffView"
-       ),
-       .target(
            name: "MagicUI",
            dependencies: ["MagicBackground"]
        ),
@@ -106,7 +102,6 @@ let package = Package(
                "MagicSync",
                "MagicAsset",
                "MagicContainer",
-               "MagicDiffView",
                "MagicData",
                "MagicDesktop"
            ]
