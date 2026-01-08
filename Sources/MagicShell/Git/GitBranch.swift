@@ -14,4 +14,14 @@ public struct GitBranch: Identifiable, Equatable, Hashable {
     public let latestCommitHash: String
     /// 最新提交信息
     public let latestCommitMessage: String
+
+    /// 初始化Git分支
+    public init(id: String, name: String, isCurrent: Bool, upstream: String? = nil, latestCommitHash: String, latestCommitMessage: String) {
+        self.id = id
+        self.name = name
+        self.isCurrent = isCurrent
+        self.upstream = upstream
+        self.latestCommitHash = latestCommitHash
+        self.latestCommitMessage = latestCommitMessage
+    }
 } 

@@ -14,4 +14,14 @@ public struct GitRemote: Identifiable, Equatable {
     public let pushURL: String?
     /// 是否为默认远程（如 origin）
     public let isDefault: Bool
+
+    /// 初始化Git远程仓库
+    public init(id: String, name: String, url: String, fetchURL: String? = nil, pushURL: String? = nil, isDefault: Bool = false) {
+        self.id = id
+        self.name = name
+        self.url = url
+        self.fetchURL = fetchURL
+        self.pushURL = pushURL
+        self.isDefault = isDefault
+    }
 } 

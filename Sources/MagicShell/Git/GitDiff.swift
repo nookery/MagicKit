@@ -10,4 +10,12 @@ public struct GitDiffFile: Identifiable, Equatable, Hashable {
     public let changeType: String
     /// 该文件的 diff 内容
     public let diff: String
+
+    /// 初始化diff文件信息
+    public init(id: String, file: String, changeType: String, diff: String) {
+        self.id = id
+        self.file = file
+        self.changeType = changeType
+        self.diff = diff
+    }
 } 

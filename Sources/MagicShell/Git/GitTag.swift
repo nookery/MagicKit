@@ -14,4 +14,14 @@ public struct GitTag: Identifiable, Equatable {
     public let date: Date?
     /// 标签信息（如有）
     public let message: String?
+
+    /// 初始化Git标签
+    public init(id: String, name: String, commitHash: String, author: String? = nil, date: Date? = nil, message: String? = nil) {
+        self.id = id
+        self.name = name
+        self.commitHash = commitHash
+        self.author = author
+        self.date = date
+        self.message = message
+    }
 } 

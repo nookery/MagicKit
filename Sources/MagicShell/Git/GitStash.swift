@@ -10,4 +10,12 @@ public struct GitStash: Identifiable, Equatable {
     public let commitHash: String
     /// 创建日期（如能解析）
     public let date: Date?
+
+    /// 初始化Git stash记录
+    public init(id: Int, description: String, commitHash: String, date: Date? = nil) {
+        self.id = id
+        self.description = description
+        self.commitHash = commitHash
+        self.date = date
+    }
 } 
