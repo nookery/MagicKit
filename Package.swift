@@ -13,6 +13,8 @@ let package = Package(
     products: [
         .library(name: "MagicKit", targets: ["MagicKit"]),
         .library(name: "MagicShell", targets: ["MagicShell"]),
+        .library(name: "MagicCore", targets: ["MagicCore"]),
+        .library(name: "MagicUI", targets: ["MagicUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -38,10 +40,6 @@ let package = Package(
        ),
        .target(
            name: "MagicShell",
-           dependencies: ["MagicCore", "MagicUI"]
-       ),
-       .target(
-           name: "MagicPlayMan",
            dependencies: ["MagicCore", "MagicUI"]
        ),
        .target(
@@ -87,7 +85,6 @@ let package = Package(
                "MagicUI",
                "MagicError",
                "MagicBackground",
-               "MagicPlayMan",
                "MagicSync",
                "MagicAsset",
                "MagicContainer",

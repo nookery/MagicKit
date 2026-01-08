@@ -7,7 +7,6 @@
 @_exported import MagicUI
 @_exported import MagicError
 @_exported import MagicBackground
-@_exported import MagicPlayMan
 @_exported import MagicSync
 @_exported import MagicAsset
 @_exported import MagicContainer
