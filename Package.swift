@@ -11,7 +11,7 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
-        .library(name: "MagicKit", targets: ["MagicAll"]),
+        .library(name: "MagicKit", targets: ["MagicKit"]),
         .library(name: "MagicShell", targets: ["MagicShell"]),
     ],
     dependencies: [
@@ -79,7 +79,7 @@ let package = Package(
            resources: [.process("Icons.xcassets")]
        ),
        .target(
-           name: "MagicAll",
+           name: "MagicKit",
            dependencies: [
                .product(name: "MagicAlert", package: "MagicAlert"),
                "MagicCore",
