@@ -36,7 +36,7 @@ class Shell: SuperLog {
 /// Shell命令执行的核心类
 /// 提供基础的Shell命令执行功能
 public class Shell: SuperLog {
-    static let emoji = "🐚"
+    public static let emoji = "🐚"
 
     /// 异步执行Shell命令
     /// - Parameters:
