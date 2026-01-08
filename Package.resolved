@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "magicui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nookery/MagicUI.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "44dcbba19fdab0a192c1e10195e669b5515e5d14"
+      }
+    },
+    {
       "identity" : "swift-async-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-async-algorithms",
