@@ -11,7 +11,8 @@ let package = Package(
     ],
     // 定义对外提供的库（可被其他项目导入）
     products: [
-        .library(name: "MagicKit", targets: ["MagicAll"]), 
+        .library(name: "MagicKit", targets: ["MagicAll"]),
+        .library(name: "MagicShell", targets: ["MagicShell"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -29,11 +30,15 @@ let package = Package(
        .target(
            name: "MagicCore",
            dependencies: [
-               .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"), 
+               .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
                "ID3TagEditor",
                "MagicUI",
                "ZIPFoundation",
            ]
+       ),
+       .target(
+           name: "MagicShell",
+           dependencies: ["MagicCore", "MagicUI"]
        ),
        .target(
            name: "MagicPlayMan",
@@ -78,6 +83,7 @@ let package = Package(
            dependencies: [
                .product(name: "MagicAlert", package: "MagicAlert"),
                "MagicCore",
+               "MagicShell",
                "MagicUI",
                "MagicError",
                "MagicBackground",

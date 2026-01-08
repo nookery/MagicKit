@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct VDemoSection<Content: View>: View {
+public struct VDemoSection<Content: View>: View {
     let title: String
     let icon: String
     let content: Content
@@ -11,7 +11,7 @@ struct VDemoSection<Content: View>: View {
         self.content = content()
     }
     
-    var body: some View {
+    public var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
                 Text(icon)

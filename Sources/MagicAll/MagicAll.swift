@@ -3,6 +3,7 @@
 
 @_exported import MagicAlert
 @_exported import MagicCore
+@_exported import MagicShell
 @_exported import MagicUI
 @_exported import MagicError
 @_exported import MagicBackground
