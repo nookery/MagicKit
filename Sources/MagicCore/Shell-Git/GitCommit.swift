@@ -18,6 +18,18 @@ public struct GitCommit: Identifiable, Equatable {
     public let refs: [String]
     /// 关联的标签名
     public let tags: [String]
+
+    /// 初始化提交记录
+    public init(id: String, hash: String, author: String, email: String, date: Date, message: String, refs: [String] = [], tags: [String] = []) {
+        self.id = id
+        self.hash = hash
+        self.author = author
+        self.email = email
+        self.date = date
+        self.message = message
+        self.refs = refs
+        self.tags = tags
+    }
 }
 
 /// 表示带标签的提交
@@ -25,6 +37,13 @@ public struct CommitWithTag {
     public let hash: String
     public let message: String
     public let tags: [String]
+
+    /// 初始化带标签的提交
+    public init(hash: String, message: String, tags: [String]) {
+        self.hash = hash
+        self.message = message
+        self.tags = tags
+    }
 }
 
 
@@ -38,4 +57,16 @@ public struct GitCommitDetail {
     public let body: String
     public let files: [GitDiffFile]
     public let diff: String
+
+    /// 初始化提交详细信息
+    public init(id: String, author: String, email: String, date: Date, message: String, body: String, files: [GitDiffFile], diff: String) {
+        self.id = id
+        self.author = author
+        self.email = email
+        self.date = date
+        self.message = message
+        self.body = body
+        self.files = files
+        self.diff = diff
+    }
 }
