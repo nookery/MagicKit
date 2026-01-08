@@ -43,6 +43,7 @@ extension ShellGit {
                 email: parts[2],
                 date: Date(timeIntervalSince1970: TimeInterval(Int(parts[3]) ?? 0)),
                 message: parts[4],
+                body: "",
                 refs: [],
                 tags: []
             )
@@ -68,6 +69,7 @@ extension ShellGit {
                 email: parts[2],
                 date: Date(timeIntervalSince1970: TimeInterval(Int(parts[3]) ?? 0)),
                 message: parts[4],
+                body: "",
                 refs: [],
                 tags: []
             )

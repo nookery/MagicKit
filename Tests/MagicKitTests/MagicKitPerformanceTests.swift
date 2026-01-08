@@ -1,5 +1,5 @@
 import XCTest
-@testable import MagicCore
+@testable import MagicKit
 
 class MagicKitPerformanceTests: XCTestCase {
     func testImageCroppingPerformance() {
