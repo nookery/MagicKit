@@ -164,13 +164,17 @@ extension ShellGit {
     ///   - at: 仓库路径
     /// - Returns: [GitCommit]
     public static func commitList(limit: Int = 20, at path: String? = nil) throws -> [GitCommit] {
-        let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%b%x09%d"
+        // 使用自定义记录分隔符来避免 body 中的换行符破坏格式
+        let format = "--pretty=format:%H%x01%an%x01%ae%x01%cI%x01%s%x01%b%x01%d"
         let log = try Shell.runSync("git log \(format) -\(limit)", at: path)
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime]
-        return log.split(separator: "\n").compactMap { line in
-            let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
+
+        return log.split(separator: "\n", omittingEmptySubsequences: false).compactMap { line in
+            // 使用 SOH (Start of Header, ASCII 0x01) 作为分隔符，这个字符不会出现在 commit 消息中
+            let parts = line.split(separator: "\u{01}", omittingEmptySubsequences: false)
             guard parts.count >= 7 else { return nil }
+
             let hash = String(parts[0])
             let author = String(parts[1])
             let email = String(parts[2])
@@ -179,7 +183,6 @@ extension ShellGit {
             let body = String(parts[5])
             let refs = String(parts[6])
 
-            // Fix: Ensure date parsing doesn't fail - use fallback to Date() but don't return nil
             let date = dateFormatter.date(from: dateStr) ?? Date()
 
             let tags = refs.matches(for: "tag \\w+[-.\\w]*").map { $0.replacingOccurrences(of: "tag ", with: "") }
@@ -234,13 +237,15 @@ extension ShellGit {
         }
 
         let skip = page * size
-        let format = "--pretty=format:%H%x09%an%x09%ae%x09%cI%x09%s%x09%b%x09%d"
+        // 使用自定义记录分隔符来避免 body 中的换行符破坏格式
+        let format = "--pretty=format:%H%x01%an%x01%ae%x01%cI%x01%s%x01%b%x01%d"
         let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime]
 
-        return log.split(separator: "\n").compactMap { line in
-            let parts = line.split(separator: "\t", omittingEmptySubsequences: false)
+        return log.split(separator: "\n", omittingEmptySubsequences: false).compactMap { line in
+            // 使用 SOH (Start of Header, ASCII 0x01) 作为分隔符，这个字符不会出现在 commit 消息中
+            let parts = line.split(separator: "\u{01}", omittingEmptySubsequences: false)
             guard parts.count >= 7 else { return nil }
 
             let hash = String(parts[0])
