@@ -30,7 +30,7 @@ import SwiftData
 /// // [UI] | 👤 UserManager           | 在主线程执行
 /// // [UI] | 👤 UserManager           | 登录失败 ➡️ 密码错误
 /// ```
-protocol SuperLog {
+public protocol SuperLog {
     /// 获取实现者的标识 emoji
     static var emoji: String { get }
     
@@ -41,7 +41,7 @@ protocol SuperLog {
     static var author: String { get }
 }
 
-extension SuperLog {
+public extension SuperLog {
     // MARK: - Static Properties
 
     /// 如果实现者没有提供 emoji，则根据 author 生成默认 emoji
@@ -112,7 +112,7 @@ extension SuperLog {
 }
 
 /// Thread 类型的扩展，提供线程服务质量相关的功能
-extension Thread {
+public extension Thread {
     /// 获取当前线程的服务质量(QoS)描述字符串
     ///
     /// 返回当前线程的服务质量级别的描述，不包含名称部分，只返回对应的标识符
