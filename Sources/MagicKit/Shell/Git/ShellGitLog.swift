@@ -164,15 +164,21 @@ extension ShellGit {
     ///   - at: 仓库路径
     /// - Returns: [GitCommit]
     public static func commitList(limit: Int = 20, at path: String? = nil) throws -> [GitCommit] {
-        // 使用自定义记录分隔符来避免 body 中的换行符破坏格式
-        let format = "--pretty=format:%H%x01%an%x01%ae%x01%cI%x01%s%x01%b%x01%d"
-        let log = try Shell.runSync("git log \(format) -\(limit)", at: path)
+        // 使用 SOH (Start of Header, ASCII 0x01) 作为字段分隔符，避免 body 中的换行符破坏格式
+        // 使用 null byte (ASCII 0x00) 作为记录分隔符，因为 git log format 不支持空字节，但我们可以用特殊字符替代
+        let format = "%H%x01%an%x01%ae%x01%cI%x01%s%x01%b%x01%d%x02"
+        // 使用 --pretty=tformat 确保每条记录后都有分隔符
+        let log = try Shell.runSync("git log --pretty=tformat:\(format) -n \(limit)", at: path)
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime]
 
-        return log.split(separator: "\n", omittingEmptySubsequences: false).compactMap { line in
-            // 使用 SOH (Start of Header, ASCII 0x01) 作为分隔符，这个字符不会出现在 commit 消息中
-            let parts = line.split(separator: "\u{01}", omittingEmptySubsequences: false)
+        // 使用 STX (Start of Text, ASCII 0x02) 作为记录分隔符
+        return log.split(separator: "\u{02}", omittingEmptySubsequences: false).compactMap { record in
+            let trimmedRecord = record.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmedRecord.isEmpty else { return nil }
+
+            // 使用 SOH 作为字段分隔符
+            let parts = trimmedRecord.split(separator: "\u{01}", omittingEmptySubsequences: false)
             guard parts.count >= 7 else { return nil }
 
             let hash = String(parts[0])
@@ -237,15 +243,20 @@ extension ShellGit {
         }
 
         let skip = page * size
-        // 使用自定义记录分隔符来避免 body 中的换行符破坏格式
-        let format = "--pretty=format:%H%x01%an%x01%ae%x01%cI%x01%s%x01%b%x01%d"
-        let log = try Shell.runSync("git log \(format) --skip=\(skip) -\(size)", at: path)
+        // 使用 SOH (Start of Header, ASCII 0x01) 作为字段分隔符，避免 body 中的换行符破坏格式
+        // 使用 STX (Start of Text, ASCII 0x02) 作为记录分隔符
+        let format = "%H%x01%an%x01%ae%x01%cI%x01%s%x01%b%x01%d%x02"
+        let log = try Shell.runSync("git log --pretty=tformat:\(format) --skip=\(skip) -n \(size)", at: path)
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime]
 
-        return log.split(separator: "\n", omittingEmptySubsequences: false).compactMap { line in
-            // 使用 SOH (Start of Header, ASCII 0x01) 作为分隔符，这个字符不会出现在 commit 消息中
-            let parts = line.split(separator: "\u{01}", omittingEmptySubsequences: false)
+        // 使用 STX (Start of Text, ASCII 0x02) 作为记录分隔符
+        return log.split(separator: "\u{02}", omittingEmptySubsequences: false).compactMap { record in
+            let trimmedRecord = record.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmedRecord.isEmpty else { return nil }
+
+            // 使用 SOH 作为字段分隔符
+            let parts = trimmedRecord.split(separator: "\u{01}", omittingEmptySubsequences: false)
             guard parts.count >= 7 else { return nil }
 
             let hash = String(parts[0])
@@ -255,7 +266,7 @@ extension ShellGit {
             let message = String(parts[4])
             let body = String(parts[5])
             let refs = String(parts[6])
-            let tags = refs.components(separatedBy: ", ").filter { $0.contains("tag:") }.map { $0.replacingOccurrences(of: "tag:", with: "").trimmingCharacters(in: .whitespaces) }
+            let tags = refs.matches(for: "tag \\w+[-.\\w]*").map { $0.replacingOccurrences(of: "tag ", with: "") }
             return GitCommit(id: hash, hash: hash, author: author, email: email, date: date, message: message, body: body, refs: refs.components(separatedBy: ", ").filter{!$0.isEmpty}, tags: tags)
         }
     }
