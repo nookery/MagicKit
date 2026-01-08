@@ -12,8 +12,6 @@ let package = Package(
     // 定义对外提供的库（可被其他项目导入）
     products: [
         .library(name: "MagicKit", targets: ["MagicKit"]),
-        .library(name: "MagicShell", targets: ["MagicShell"]),
-        .library(name: "MagicCore", targets: ["MagicCore"]),
         .library(name: "MagicUI", targets: ["MagicUI"]),
     ],
     dependencies: [
@@ -26,75 +24,21 @@ let package = Package(
     // 编译目标（模块）
     targets: [
        .target(
-           name: "MagicAsset",
-           dependencies: ["MagicCore"]
-       ),
-       .target(
-           name: "MagicCore",
+           name: "MagicKit",
            dependencies: [
                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
+               .product(name: "MagicAlert", package: "MagicAlert"),
                "ID3TagEditor",
                "MagicUI",
                "ZIPFoundation",
            ]
        ),
        .target(
-           name: "MagicShell",
-           dependencies: ["MagicCore", "MagicUI"]
-       ),
-       .target(
-           name: "MagicSync",
-           dependencies: ["MagicCore"]
-       ),
-       .target(
-           name: "MagicContainer",
-           dependencies: [
-               .product(name: "MagicAlert", package: "MagicAlert"),
-               .product(name: "MagicDevice", package: "MagicDevice"),
-               "MagicCore"
-           ]
-       ),
-       .target(
-           name: "MagicError"
-       ),
-       .target(
-           name: "MagicBackground"
-       ),
-       .target(
            name: "MagicUI",
-           dependencies: ["MagicBackground"]
-       ),
-       .target(
-           name: "MagicData"
-       ),
-       .target(
-           name: "MagicHttp",
-           dependencies: ["MagicUI"]
-       ),
-       .target(
-           name: "MagicDesktop",
-           dependencies: ["MagicBackground"],
-           resources: [.process("Icons.xcassets")]
-       ),
-       .target(
-           name: "MagicKit",
-           dependencies: [
-               .product(name: "MagicAlert", package: "MagicAlert"),
-               "MagicCore",
-               "MagicShell",
-               "MagicUI",
-               "MagicError",
-               "MagicBackground",
-               "MagicSync",
-               "MagicAsset",
-               "MagicContainer",
-               "MagicHttp",
-               "MagicData",
-               "MagicDesktop"
-           ]
+           resources: [.process("Desktop/Icons.xcassets")]
        ),
        .testTarget(
            name: "Tests",
-           dependencies: ["MagicCore"]
+           dependencies: ["MagicKit"]
        )    ]
 )

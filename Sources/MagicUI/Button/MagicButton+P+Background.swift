@@ -1,5 +1,4 @@
 import SwiftUI
-import MagicBackground
 
 #if DEBUG
     struct BackgroundColorButtonsPreview: View {
