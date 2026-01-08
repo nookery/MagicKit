@@ -45,7 +45,7 @@ public class Shell: SuperLog {
     ///   - verbose: 是否输出详细日志
     /// - Returns: 命令执行结果
     /// - Throws: 执行失败时抛出错误
-    static func run(_ command: String, at path: String? = nil, verbose: Bool = false) async throws -> String {
+    public static func run(_ command: String, at path: String? = nil, verbose: Bool = false) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             // 在后台队列执行，避免阻塞调用线程
             DispatchQueue.global(qos: .userInitiated).async {
@@ -105,7 +105,7 @@ public class Shell: SuperLog {
     /// - Returns: 命令执行结果
     /// - Throws: 执行失败时抛出错误
     @discardableResult
-    static func runSync(_ command: String, at path: String? = nil, verbose: Bool = false) throws -> String {
+    public static func runSync(_ command: String, at path: String? = nil, verbose: Bool = false) throws -> String {
         // 使用 RunLoop 来同步等待异步操作完成，避免阻塞主线程
         var result: Result<String, Error>?
         
@@ -138,7 +138,7 @@ public class Shell: SuperLog {
     ///   - verbose: 是否输出详细日志
     /// - Returns: 所有命令的执行结果数组
     /// - Throws: 任何命令执行失败时抛出错误
-    static func runMultiple(_ commands: [String], at path: String? = nil, verbose: Bool = false) throws -> [String] {
+    public static func runMultiple(_ commands: [String], at path: String? = nil, verbose: Bool = false) throws -> [String] {
         var results: [String] = []
 
         for command in commands {
@@ -155,7 +155,7 @@ public class Shell: SuperLog {
     ///   - path: 执行命令的工作目录（可选）
     ///   - verbose: 是否输出详细日志
     /// - Returns: 元组包含输出和退出状态码
-    static func runWithStatus(_ command: String, at path: String? = nil, verbose: Bool = false) -> (output: String, exitCode: Int32) {
+    public static func runWithStatus(_ command: String, at path: String? = nil, verbose: Bool = false) -> (output: String, exitCode: Int32) {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/bash")
         process.arguments = ["-c", command]
@@ -223,7 +223,7 @@ public class Shell: SuperLog {
     /// 检查命令是否可用
     /// - Parameter command: 命令名
     /// - Returns: 命令是否可用
-    static func isCommandAvailable(_ command: String) -> Bool {
+    public static func isCommandAvailable(_ command: String) -> Bool {
         do {
             _ = try runSync("which \(command)")
             return true
@@ -235,7 +235,7 @@ public class Shell: SuperLog {
     /// 获取命令的完整路径
     /// - Parameter command: 命令名
     /// - Returns: 命令的完整路径
-    static func getCommandPath(_ command: String) -> String? {
+    public static func getCommandPath(_ command: String) -> String? {
         do {
             let path = try runSync("which \(command)")
             return path.isEmpty ? nil : path
@@ -246,7 +246,7 @@ public class Shell: SuperLog {
 
     /// 配置Git凭证缓存
     /// - Returns: 配置结果
-    static func configureGitCredentialCache() -> String {
+    public static func configureGitCredentialCache() -> String {
         do {
             return try self.runSync("git config --global credential.helper cache")
         } catch {
