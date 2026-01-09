@@ -189,12 +189,12 @@ public struct AvatarView: View, SuperLog {
                 if let selectedURL = files.first {
                     Task {
                         do {
-                            addLog("开始设置封面：\(selectedURL.lastPathComponent)")
+                            if verbose { os_log("\(self.t)🎨 开始设置封面：\(selectedURL.lastPathComponent)") }
 
                             // 获取文件的安全访问权限
                             guard selectedURL.startAccessingSecurityScopedResource() else {
                                 let accessError = NSError(domain: "AvatarView", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取文件访问权限"])
-                                addLog("无法获取文件访问权限")
+                                if verbose { os_log(.error, "\(self.t)🎨 无法获取文件访问权限") }
                                 state.setError(ViewError.thumbnailGenerationFailed(accessError))
                                 return
                             }
@@ -213,17 +213,17 @@ public struct AvatarView: View, SuperLog {
                             // 重新加载缩略图
                             state.reset()
                             await loadThumbnail()
-                            addLog("封面设置成功")
+                            if verbose { os_log("\(self.t)🎨 封面设置成功") }
                         } catch {
                             let errorMessage = "设置封面失败: \(error.localizedDescription)"
-                            addLog(errorMessage)
+                            if verbose { os_log(.error, "\(self.t)🎨 设置封面失败: \(error.localizedDescription)") }
                             state.setError(ViewError.thumbnailGenerationFailed(error))
                         }
                     }
                 }
             case let .failure(error):
                 let errorMessage = "选择图片失败: \(error.localizedDescription)"
-                addLog(errorMessage, level: .error)
+                if verbose { os_log(.error, "\(self.t)🎨 选择图片失败: \(error.localizedDescription)") }
                 state.setError(ViewError.thumbnailGenerationFailed(error))
             }
         }
@@ -238,7 +238,7 @@ public struct AvatarView: View, SuperLog {
             #endif
         }
         .onChange(of: progressBinding?.wrappedValue) {
-            addLog("外部将下载进度设置为: \(String(describing: progressBinding?.wrappedValue))")
+            if verbose { os_log("\(self.t)🔄 外部将下载进度设置为: \(String(describing: progressBinding?.wrappedValue))") }
 
             if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
                 Task {
@@ -264,49 +264,47 @@ public struct AvatarView: View, SuperLog {
 
     @Sendable private func loadThumbnail() async {
         if state.thumbnail != nil && url.isDownloaded {
-            addLog("跳过缩略图加载：已存在缩略图")
+            if verbose { os_log("\(self.t)跳过缩略图加载：已存在缩略图") }
             return
         }
 
         if state.isLoading {
-            addLog("跳过缩略图加载：正在加载中")
+            if verbose { os_log("\(self.t)跳过缩略图加载：正在加载中") }
             return
         }
 
         if url.isDownloading {
-            addLog("跳过缩略图加载：文件正在下载中")
+            if verbose { os_log("\(self.t)跳过缩略图加载：文件正在下载中") }
             return
         }
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
             if verbose {
-                addLog("开始加载缩略图: \(url.title)")
+                os_log("\(self.t)开始加载缩略图: \(url.title)")
             }
             if verbose { os_log("\(self.t)开始加载缩略图: \(url.title)") }
             await state.setLoading(true)
 
             do {
                 if verbose {
-                    addLog("🛫 正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
+                    os_log("\(self.t)🛫 正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
                 }
                 // 在后台线程中处理图片生成
                 let image = try await url.thumbnail(size: size, verbose: verbose, reason: self.className + ".loadThumbnail")
 
                 if let image = image {
                     if verbose {
-                        addLog("缩略图生成成功")
+                        os_log("\(self.t)🍽️ 缩略图生成成功")
                     }
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
                     let generationError = NSError(domain: "AvatarView", code: -2, userInfo: [NSLocalizedDescriptionKey: "缩略图生成返回空结果"])
-                    addLog("缩略图生成失败，使用默认图片", level: .warning)
                     await state.setThumbnail(url.defaultImage)
                     await state.setError(ViewError.thumbnailGenerationFailed(generationError))
                 }
             } catch URLError.cancelled {
-                addLog("缩略图加载已取消", level: .warning)
                 if verbose { os_log("\(self.t)缩略图加载已取消") }
             } catch {
                 let viewError: ViewError
@@ -314,17 +312,13 @@ public struct AvatarView: View, SuperLog {
                     switch urlError.code {
                     case .notConnectedToInternet, .networkConnectionLost, .timedOut:
                         viewError = .downloadFailed(urlError)
-                        addLog("网络错误: \(urlError.localizedDescription)", level: .error)
                     case .fileDoesNotExist:
                         viewError = .fileNotFound
-                        addLog("文件不存在: \(url.path)", level: .error)
                     default:
                         viewError = .thumbnailGenerationFailed(urlError)
-                        addLog("生成缩略图失败: \(urlError.localizedDescription)", level: .error)
                     }
                 } else {
                     viewError = .thumbnailGenerationFailed(error)
-                    addLog("未知错误: \(error.localizedDescription)", level: .error)
                 }
 
                 await state.setError(viewError)
@@ -332,21 +326,18 @@ public struct AvatarView: View, SuperLog {
             }
 
             await state.setLoading(false)
-            if verbose {
-                addLog("缩略图加载流程结束")
-            }
         }.value
     }
 
     @Sendable private func setupDownloadMonitor() async {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
             if verbose {
-                addLog("跳过下载监控设置：不需要监控或非 iCloud 文件")
+                os_log("\(self.t)跳过下载监控设置：不需要监控或非 iCloud 文件")
             }
             return
         }
 
-        addLog("开始设置下载监控: \(url.path)")
+        if verbose { os_log("\(self.t)开始设置下载监控: \(url.path)") }
         if verbose { os_log("\(self.t)设置下载监控: \(url.path)") }
 
         downloadMonitor.startMonitoring(
@@ -355,17 +346,17 @@ public struct AvatarView: View, SuperLog {
                 state.setProgress(progress)
                 // 记录下载进度
                 if progress >= 0 {
-                    addLog("下载进度: \(Int(progress * 100))%")
+                    if verbose { os_log("\(self.t)下载进度: \(Int(progress * 100))%") }
                 }
                 // 如果下载失败（进度为负数），设置相应的错误
                 if progress < 0 {
-                    addLog("下载失败", level: .error)
+                    if verbose { os_log(.error, "\(self.t)下载失败") }
                     state.setError(ViewError.downloadFailed(nil))
                 }
             },
             onFinished: {
                 Task {
-                    addLog("下载完成，开始重新加载缩略图")
+                    if verbose { os_log("\(self.t)下载完成，开始重新加载缩略图") }
                     state.reset()
                     await loadThumbnail()
                 }

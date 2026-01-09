@@ -61,9 +61,11 @@ extension URL {
                     do {
                         if let artworkData = try await artworkItem.load(.value) as? Data {
                             if let image = Image.PlatformImage.fromCacheData(artworkData) {
+                                if verbose { os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(key.rawValue) 成功") }
                                 return image
                             }
                         } else if let artworkImage = try await artworkItem.load(.value) as? Image.PlatformImage {
+                            if verbose { os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(key.rawValue) 成功") }
                             return artworkImage
                         }
                     } catch {
