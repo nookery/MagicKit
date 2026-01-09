@@ -287,10 +287,15 @@ public extension URL {
                 let urls: [URL]
                 if isInitial {
                     urls = (query.results as? [NSMetadataItem] ?? [])
-                        .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+                        .compactMap { item in
+                            // 安全地提取 URL，避免访问已删除文件的属性时崩溃
+                            (item.value(forAttribute: NSMetadataItemURLKey) as? URL)
+                        }
                 } else {
                     urls = (changedItems ?? [])
-                        .compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+                        .compactMap { item in
+                            (item.value(forAttribute: NSMetadataItemURLKey) as? URL)
+                        }
                 }
 
                 if verbose {
@@ -298,13 +303,75 @@ public extension URL {
                 }
 
                 // 处理删除的文件
-                if let deletedItems = deletedItems {
-                    let deletedUrls = deletedItems.compactMap { $0.value(forAttribute: NSMetadataItemURLKey) as? URL }
+                if let deletedItems = deletedItems, !deletedItems.isEmpty {
+                    if verbose {
+                        logger.info("\(self.t)🔍 [\(caller)] Processing \(deletedItems.count) deleted items")
+                    }
+
+                    let fileManager = FileManager.default
+
+                    // 安全地提取已删除文件的 URL，并过滤掉仍存在的文件
+                    var deletedUrls: [URL] = []
+
+                    for (index, item) in deletedItems.enumerated() {
+                        do {
+                         
+                            guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else {
+                                if verbose {
+                                    logger.warning("\(self.t)⚠️ [\(caller)] Deleted item \(index): No URL available")
+                                }
+                                continue
+                            }
+
+                            if verbose {
+                                logger.info("\(self.t)📍 [\(caller)] Deleted item \(index): \(url.lastPathComponent)")
+                            }
+
+                            // 验证文件是否确实不存在
+                            let exists = fileManager.fileExists(atPath: url.path)
+                            if exists {
+                                if verbose {
+                                    logger.warning("\(self.t)⚠️ [\(caller)] File still exists, skipping: \(url.lastPathComponent)")
+                                }
+                                continue
+                            }
+
+                            // 文件确实不存在，添加到删除列表
+                            deletedUrls.append(url)
+                            if verbose {
+                                logger.info("\(self.t)✅ [\(caller)] Confirmed deleted: \(url.lastPathComponent)")
+                            }
+                        } catch {
+                            if verbose {
+                                logger.error("\(self.t)❌ [\(caller)] Error processing deleted item \(index): \(error.localizedDescription)")
+                            }
+                        }
+                    }
+
+                    // 调用 onDeleted 回调
                     if !deletedUrls.isEmpty {
                         if verbose {
-                            logger.info("\(self.t)🗑️ [\(caller)] Deleted \(deletedUrls.count) files")
+                            logger.info("\(self.t)🗑️ [\(caller)] Calling onDeleted with \(deletedUrls.count) files")
                         }
-                        onDeleted(deletedUrls)
+
+                        // 关键：在主线程上异步调用 onDeleted 回调
+                        // 避免在后台线程同步调用导致 StateObject 访问错误
+                        DispatchQueue.main.async {
+                            do {
+                                onDeleted(deletedUrls)
+                                if verbose {
+                                    logger.info("\(self.t)✅ [\(caller)] onDeleted callback completed successfully")
+                                }
+                            } catch {
+                                if verbose {
+                                    logger.error("\(self.t)❌ [\(caller)] onDeleted callback failed: \(error.localizedDescription)")
+                                }
+                            }
+                        }
+                    } else {
+                        if verbose {
+                            logger.info("\(self.t)ℹ️ [\(caller)] No valid deleted URLs to process")
+                        }
                     }
                 }
 
