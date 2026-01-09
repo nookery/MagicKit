@@ -43,36 +43,42 @@ extension URL {
             AVMetadataKey.iTunesMetadataKeyCoverArt,
         ]
 
-        let commonMetadata = try await asset.load(.commonMetadata)
+        do {
+            let commonMetadata = try await asset.load(.commonMetadata)
+            
+            for key in artworkKeys {
+                if verbose && printArtworkKeys {
+                    os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
+                }
 
-        for key in artworkKeys {
-            if verbose && printArtworkKeys {
-                os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
-            }
+                let artworkItems = AVMetadataItem.metadataItems(
+                    from: commonMetadata,
+                    withKey: key,
+                    keySpace: AVMetadataKeySpace.common
+                )
 
-            let artworkItems = AVMetadataItem.metadataItems(
-                from: commonMetadata,
-                withKey: key,
-                keySpace: AVMetadataKeySpace.common
-            )
-
-            if let artworkItem = artworkItems.first {
-                do {
-                    if let artworkData = try await artworkItem.load(.value) as? Data {
-                        if let image = Image.PlatformImage.fromCacheData(artworkData) {
-                            return image
+                if let artworkItem = artworkItems.first {
+                    do {
+                        if let artworkData = try await artworkItem.load(.value) as? Data {
+                            if let image = Image.PlatformImage.fromCacheData(artworkData) {
+                                return image
+                            }
+                        } else if let artworkImage = try await artworkItem.load(.value) as? Image.PlatformImage {
+                            return artworkImage
                         }
-                    } else if let artworkImage = try await artworkItem.load(.value) as? Image.PlatformImage {
-                        return artworkImage
+                    } catch {
+                        os_log(.error, "Failed to load artwork for key \(key.rawValue): \(error.localizedDescription)")
+                        continue
                     }
-                } catch {
-                    os_log(.error, "Failed to load artwork for key \(key.rawValue): \(error.localizedDescription)")
-                    continue
                 }
             }
-        }
 
-        return nil
+            return nil
+        } catch {
+            os_log(.error, "\(self.t)无法从音频文件的元数据中获取封面图片: \(error.localizedDescription)")
+
+            throw error
+        }
     }
 
     /// 获取文件的缩略图
@@ -99,7 +105,7 @@ extension URL {
             // 只缓存非系统图标的缩略图
             if !result.isSystemIcon {
                 if verbose { os_log("\(self.t)🍽️ 缓存缩略图: \(self.title) 🐛 \(reason)") }
-                var cache = ThumbnailCache.shared
+                let cache = ThumbnailCache.shared
                 cache.verbose = verbose
                 cache.save(image, for: self, size: size)
             }
