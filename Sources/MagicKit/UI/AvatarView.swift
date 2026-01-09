@@ -155,7 +155,10 @@ public struct AvatarView: View, SuperLog {
                     .controlSize(.small)
             } else {
                 url.defaultImage
+                    .resizable()
+                    .scaledToFit()
                     .foregroundStyle(.secondary)
+                    .padding(4)
             }
         }
         .frame(width: size.width, height: size.height)
@@ -299,9 +302,7 @@ public struct AvatarView: View, SuperLog {
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
-                    let generationError = NSError(domain: "AvatarView", code: -2, userInfo: [NSLocalizedDescriptionKey: "缩略图生成返回空结果"])
-                    await state.setThumbnail(url.defaultImage)
-                    await state.setError(ViewError.thumbnailGenerationFailed(generationError))
+                    if verbose { os_log("\(self.t)<\(url.title)>缩略图生成返回空结果") }
                 }
             } catch URLError.cancelled {
                 if verbose { os_log("\(self.t)缩略图加载已取消") }

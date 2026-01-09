@@ -32,7 +32,7 @@ extension URL {
         let printArtworkKeys = true
 
         if verbose {
-            os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
+            os_log("\(self.t)<\(self.title)>从音频文件的元数据中获取封面图片")
         }
 
         let asset = AVURLAsset(url: self)
@@ -47,13 +47,13 @@ extension URL {
             let commonMetadata = try await asset.load(.commonMetadata)
 
             if artworkKeys.isEmpty {
-                if verbose { os_log("\(self.t)🍽️ 音频文件的元数据没有任何键值对") }
+                if verbose { os_log("\(self.t)<\(self.title)>音频文件的元数据没有任何键值对") }
                 return nil
             }
 
             for key in artworkKeys {
                 if verbose && printArtworkKeys {
-                    os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片<\(self.title)>: \(key.rawValue)")
+                    os_log("\(self.t)<\(self.title)>尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
                 }
 
                 let artworkItems = AVMetadataItem.metadataItems(
@@ -66,11 +66,11 @@ extension URL {
                     do {
                         if let artworkData = try await artworkItem.load(.value) as? Data {
                             if let image = Image.PlatformImage.fromCacheData(artworkData) {
-                                if verbose { os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(key.rawValue) 成功") }
+                                if verbose { os_log("\(self.t)<\(self.title)>从音频文件的元数据中获取封面图片: \(key.rawValue) 成功") }
                                 return image
                             }
                         } else if let artworkImage = try await artworkItem.load(.value) as? Image.PlatformImage {
-                            if verbose { os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(key.rawValue) 成功") }
+                            if verbose { os_log("\(self.t)<\(self.title)>从音频文件的元数据中获取封面图片: \(key.rawValue) 成功") }
                             return artworkImage
                         }
                     } catch {
@@ -80,11 +80,11 @@ extension URL {
                 }
             }
 
-            if verbose { os_log("\(self.t)🍽️ 音频文件的元数据中没有封面图片<\(self.title)>") }
+            if verbose { os_log("\(self.t)<\(self.title)>音频文件的元数据中没有封面图片") }
 
             return nil
         } catch {
-            os_log(.error, "\(self.t)无法从音频文件的元数据中获取封面图片: \(error.localizedDescription)")
+            os_log(.error, "\(self.t)<\(self.title)>无法从音频文件的元数据中获取封面图片: \(error.localizedDescription)")
 
             throw error
         }
@@ -174,6 +174,8 @@ extension URL {
             let audioFileThumbnail = try await platformAudioThumbnail(size: size, verbose: verbose)
             if let audioFileThumbnail = audioFileThumbnail {
                 return audioFileThumbnail
+            } else {
+                return nil
             }
         }
 
