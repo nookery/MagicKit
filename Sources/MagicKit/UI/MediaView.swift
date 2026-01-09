@@ -1,7 +1,6 @@
 import SwiftUI
 import OSLog
 
-// MARK: - Media File View
 public struct MediaFileView: View, SuperLog {
     public nonisolated static let emoji = "🖥️"
     

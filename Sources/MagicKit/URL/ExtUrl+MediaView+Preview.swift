@@ -83,6 +83,7 @@ struct MediaViewPreviewContainer: View {
                 Label("状态", systemImage: .iconInfo)
             }
         }
+        .frame(height: 600)
     }
 }
 

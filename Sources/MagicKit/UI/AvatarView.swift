@@ -3,8 +3,6 @@ import os
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - Avatar View
-
 /// 一个用于展示文件缩略图的头像视图组件
 ///
 /// `AvatarView` 是一个多功能的视图组件，专门用于展示文件的缩略图和状态。
