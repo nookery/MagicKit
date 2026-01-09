@@ -193,8 +193,9 @@ public struct AvatarView: View, SuperLog {
 
                             // 获取文件的安全访问权限
                             guard selectedURL.startAccessingSecurityScopedResource() else {
+                                let accessError = NSError(domain: "AvatarView", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取文件访问权限"])
                                 addLog("无法获取文件访问权限")
-                                state.setError(ViewError.thumbnailGenerationFailed)
+                                state.setError(ViewError.thumbnailGenerationFailed(accessError))
                                 return
                             }
 
@@ -216,14 +217,14 @@ public struct AvatarView: View, SuperLog {
                         } catch {
                             let errorMessage = "设置封面失败: \(error.localizedDescription)"
                             addLog(errorMessage)
-                            state.setError(ViewError.thumbnailGenerationFailed)
+                            state.setError(ViewError.thumbnailGenerationFailed(error))
                         }
                     }
                 }
             case let .failure(error):
                 let errorMessage = "选择图片失败: \(error.localizedDescription)"
                 addLog(errorMessage, level: .error)
-                state.setError(ViewError.thumbnailGenerationFailed)
+                state.setError(ViewError.thumbnailGenerationFailed(error))
             }
         }
         .sheet(isPresented: $showLogSheet) {
@@ -299,9 +300,10 @@ public struct AvatarView: View, SuperLog {
                     await state.setThumbnail(image)
                     await state.setError(nil)
                 } else {
+                    let generationError = NSError(domain: "AvatarView", code: -2, userInfo: [NSLocalizedDescriptionKey: "缩略图生成返回空结果"])
                     addLog("缩略图生成失败，使用默认图片", level: .warning)
                     await state.setThumbnail(url.defaultImage)
-                    await state.setError(ViewError.thumbnailGenerationFailed)
+                    await state.setError(ViewError.thumbnailGenerationFailed(generationError))
                 }
             } catch URLError.cancelled {
                 addLog("缩略图加载已取消", level: .warning)
@@ -311,17 +313,17 @@ public struct AvatarView: View, SuperLog {
                 if let urlError = error as? URLError {
                     switch urlError.code {
                     case .notConnectedToInternet, .networkConnectionLost, .timedOut:
-                        viewError = .downloadFailed
+                        viewError = .downloadFailed(urlError)
                         addLog("网络错误: \(urlError.localizedDescription)", level: .error)
                     case .fileDoesNotExist:
                         viewError = .fileNotFound
                         addLog("文件不存在: \(url.path)", level: .error)
                     default:
-                        viewError = .thumbnailGenerationFailed
+                        viewError = .thumbnailGenerationFailed(urlError)
                         addLog("生成缩略图失败: \(urlError.localizedDescription)", level: .error)
                     }
                 } else {
-                    viewError = .thumbnailGenerationFailed
+                    viewError = .thumbnailGenerationFailed(error)
                     addLog("未知错误: \(error.localizedDescription)", level: .error)
                 }
 
@@ -358,7 +360,7 @@ public struct AvatarView: View, SuperLog {
                 // 如果下载失败（进度为负数），设置相应的错误
                 if progress < 0 {
                     addLog("下载失败", level: .error)
-                    state.setError(ViewError.downloadFailed)
+                    state.setError(ViewError.downloadFailed(nil))
                 }
             },
             onFinished: {
