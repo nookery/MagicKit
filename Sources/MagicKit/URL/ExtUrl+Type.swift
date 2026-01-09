@@ -20,7 +20,8 @@ public extension URL {
     /// 是否是视频文件
     var isVideo: Bool {
         if let type = try? resourceValues(forKeys: [.contentTypeKey]).contentType {
-            return type.conforms(to: .audiovisualContent)
+            // 检查是否是音频视觉内容，但排除纯音频内容
+            return type.conforms(to: .audiovisualContent) && !type.conforms(to: .audio)
         }
         return videoExtensions.contains(pathExtension.lowercased())
     }

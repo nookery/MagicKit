@@ -29,7 +29,7 @@ extension URL {
     /// - Parameter verbose: 是否输出详细日志
     /// - Returns: 如果找到封面则返回平台原生图片格式，否则返回 nil
     public func getPlatformCoverFromMetadata(verbose: Bool = false) async throws -> Image.PlatformImage? {
-        let printArtworkKeys = false
+        let printArtworkKeys = true
 
         if verbose {
             os_log("\(self.t)🍽️ 从音频文件的元数据中获取封面图片: \(self.title)")
@@ -45,10 +45,15 @@ extension URL {
 
         do {
             let commonMetadata = try await asset.load(.commonMetadata)
-            
+
+            if artworkKeys.isEmpty {
+                if verbose { os_log("\(self.t)🍽️ 音频文件的元数据没有任何键值对") }
+                return nil
+            }
+
             for key in artworkKeys {
                 if verbose && printArtworkKeys {
-                    os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片: \(key.rawValue)")
+                    os_log("\(self.t)🍽️ 尝试从音频文件的元数据中获取封面图片<\(self.title)>: \(key.rawValue)")
                 }
 
                 let artworkItems = AVMetadataItem.metadataItems(
@@ -75,6 +80,8 @@ extension URL {
                 }
             }
 
+            if verbose { os_log("\(self.t)🍽️ 音频文件的元数据中没有封面图片<\(self.title)>") }
+
             return nil
         } catch {
             os_log(.error, "\(self.t)无法从音频文件的元数据中获取封面图片: \(error.localizedDescription)")
@@ -96,25 +103,31 @@ extension URL {
         // 检查缓存
         if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
             if verbose {
-                os_log("\(self.t)🍽️ 从缓存中获取缩略图: \(self.title) 🐛 \(reason)")
+                os_log("\(self.t)<\(self.title)>从缓存中获取缩略图 🐛 \(reason)")
             }
             return cachedImage.toSwiftUIImage()
         }
 
-        // 生成缩略图
-        if let result = try await platformThumbnail(size: size, useDefaultIcon: useDefaultIcon, verbose: verbose, reason: reason),
-           let image = result.image {
-            // 只缓存非系统图标的缩略图
-            if !result.isSystemIcon {
-                if verbose { os_log("\(self.t)🍽️ 缓存缩略图: \(self.title) 🐛 \(reason)") }
-                let cache = ThumbnailCache.shared
-                cache.verbose = verbose
-                cache.save(image, for: self, size: size)
-            }
+        do {
+            // 生成缩略图
+            if let result = try await platformThumbnail(size: size, useDefaultIcon: useDefaultIcon, verbose: verbose, reason: reason),
+               let image = result.image {
+                // 只缓存非系统图标的缩略图
+                if !result.isSystemIcon {
+                    if verbose { os_log("\(self.t)缓存缩略图: \(self.title) 🐛 \(reason)") }
+                    let cache = ThumbnailCache.shared
+                    cache.verbose = verbose
+                    cache.save(image, for: self, size: size)
+                }
 
-            return image.toSwiftUIImage()
+                return image.toSwiftUIImage()
+            }
+            
+            return nil
+        } catch {
+            os_log(.error, "\(self.t)<\(self.title)>获取缩略图失败: \(error.localizedDescription)")
+            throw error
         }
-        return nil
     }
 
     /// 获取文件的缩略图（原生图片格式）
@@ -128,7 +141,7 @@ extension URL {
         reason: String
     ) async throws -> ThumbnailResult? {
         if verbose {
-            os_log("\(self.t)🍽️ 获取缩略图: \(self.title) 🐛 \(reason)")
+            os_log("\(self.t)<\(self.title)>获取缩略图 🐛 \(reason)")
         }
 
         // 如果是网络 URL，根据文件类型返回对应图标
@@ -147,14 +160,17 @@ extension URL {
         }
 
         if hasDirectoryPath {
+            if verbose { os_log("\(self.t)<\(self.title)>格式是目录，获取目录缩略图") }
             return try await platformFolderThumbnail(size: size, verbose: verbose)
         }
 
         if isImage {
+            if verbose { os_log("\(self.t)<\(self.title)>格式是图片，获取图片缩略图") }
             return try await platformImageThumbnail(size: size, verbose: verbose)
         }
 
         if isAudio {
+            if verbose { os_log("\(self.t)<\(self.title)>格式是音频，获取音频缩略图") }
             let audioFileThumbnail = try await platformAudioThumbnail(size: size, verbose: verbose)
             if let audioFileThumbnail = audioFileThumbnail {
                 return audioFileThumbnail
@@ -162,13 +178,17 @@ extension URL {
         }
 
         if isVideo {
+            if verbose { os_log("\(self.t)<\(self.title)>格式是视频，获取视频缩略图") }
             return try await platformVideoThumbnail(size: size, verbose: verbose)
         }
 
         // 如果无法识别类型，返回默认文档图标
         if useDefaultIcon, let image = Image.PlatformImage.fromSystemIcon(icon) {
+            if verbose { os_log("\(self.t)<\(self.title)>使用默认系统图标") }
             return (image, true)
         }
+
+        if verbose { os_log("\(self.t)无法识别文件类型，返回 nil") }
 
         return nil
     }
@@ -208,11 +228,21 @@ extension URL {
 
     private func platformAudioThumbnail(size: CGSize, verbose: Bool) async throws -> ThumbnailResult? {
         // 尝试从音频元数据中获取封面
-        if let coverImage = try await getPlatformCoverFromMetadata(verbose: verbose) {
-            return (coverImage.resize(to: size), false)
-        }
+        if verbose { os_log("\(self.t)<\(self.title)>尝试从音频元数据中获取封面") }
 
-        return nil
+        do {
+            if let coverImage = try await getPlatformCoverFromMetadata(verbose: verbose) {
+                if verbose { os_log("\(self.t)<\(self.title)>从音频元数据中获取封面 成功") }
+                return (coverImage.resize(to: size), false)
+            }
+            
+            if verbose { os_log("\(self.t)<\(self.title)>音频元数据中没有封面图片") }
+            
+            return nil
+        } catch {
+            os_log(.error, "\(self.t)<\(self.title)>从音频元数据中获取封面失败: \(error.localizedDescription)")
+            throw error
+        }
     }
 }
 
