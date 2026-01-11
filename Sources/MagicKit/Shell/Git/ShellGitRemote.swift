@@ -95,10 +95,10 @@ extension ShellGit {
     /// - Parameters:
     ///   - path: 仓库路径
     /// - Returns: 远程结构体数组
-    public static func remoteList(at path: String? = nil) throws -> [GitRemote] {
+    public static func remoteList(at path: String? = nil) throws -> [MagicGitRemote] {
         let output = try remotes(verbose: true, at: path)
         let lines = output.split(separator: "\n").map { String($0) }
-        var remotes: [GitRemote] = []
+        var remotes: [MagicGitRemote] = []
         var seen: Set<String> = []
         for line in lines {
             // 例如 origin\thttps://github.com/user/repo.git (fetch)
@@ -115,10 +115,10 @@ extension ShellGit {
             if type == "(push)" { pushURL = url }
             if let idx = remotes.firstIndex(where: { $0.name == name }) {
                 // 已有，补充 push/fetch
-                if fetchURL != nil { remotes[idx] = GitRemote(id: name, name: name, url: remotes[idx].url, fetchURL: fetchURL, pushURL: remotes[idx].pushURL, isDefault: idx == 0) }
-                if pushURL != nil { remotes[idx] = GitRemote(id: name, name: name, url: remotes[idx].url, fetchURL: remotes[idx].fetchURL, pushURL: pushURL, isDefault: idx == 0) }
+                if fetchURL != nil { remotes[idx] = MagicGitRemote(id: name, name: name, url: remotes[idx].url, fetchURL: fetchURL, pushURL: remotes[idx].pushURL, isDefault: idx == 0) }
+                if pushURL != nil { remotes[idx] = MagicGitRemote(id: name, name: name, url: remotes[idx].url, fetchURL: remotes[idx].fetchURL, pushURL: pushURL, isDefault: idx == 0) }
             } else {
-                remotes.append(GitRemote(id: name, name: name, url: url, fetchURL: fetchURL, pushURL: pushURL, isDefault: remotes.isEmpty))
+                remotes.append(MagicGitRemote(id: name, name: name, url: url, fetchURL: fetchURL, pushURL: pushURL, isDefault: remotes.isEmpty))
             }
         }
         return remotes

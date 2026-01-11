@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一个 Git 分支
-public struct GitBranch: Identifiable, Equatable, Hashable {
+public struct MagicGitBranch: Identifiable, Equatable, Hashable {
     /// 分支名（唯一标识）
     public let id: String
     /// 分支名
@@ -15,7 +15,7 @@ public struct GitBranch: Identifiable, Equatable, Hashable {
     /// 最新提交信息
     public let latestCommitMessage: String
 
-    /// 初始化Git分支
+    /// 初始化MagicGit分支
     public init(id: String, name: String, isCurrent: Bool, upstream: String? = nil, latestCommitHash: String, latestCommitMessage: String) {
         self.id = id
         self.name = name

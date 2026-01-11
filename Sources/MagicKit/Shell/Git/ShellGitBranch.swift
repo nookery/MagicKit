@@ -94,17 +94,17 @@ extension ShellGit {
     ///   - includeRemote: 是否包含远程分支
     ///   - path: 仓库路径
     /// - Returns: 分支结构体数组
-    public static func branchList(includeRemote: Bool = false, at path: String? = nil) throws -> [GitBranch] {
+    public static func branchList(includeRemote: Bool = false, at path: String? = nil) throws -> [MagicGitBranch] {
         let branchesString = try branches(includeRemote: includeRemote, at: path)
         let lines = branchesString.split(separator: "\n").map { String($0) }
         let currentBranchName = try? currentBranch(at: path)
-        var result: [GitBranch] = []
+        var result: [MagicGitBranch] = []
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             let isCurrent = trimmed.hasPrefix("*")
             let name = trimmed.replacingOccurrences(of: "* ", with: "")
             // 获取上游、最新 commit hash/message 可后续扩展
-            result.append(GitBranch(id: name, name: name, isCurrent: currentBranchName == name, upstream: nil, latestCommitHash: "", latestCommitMessage: ""))
+            result.append(MagicGitBranch(id: name, name: name, isCurrent: currentBranchName == name, upstream: nil, latestCommitHash: "", latestCommitMessage: ""))
         }
         return result
     }
@@ -112,11 +112,11 @@ extension ShellGit {
     /// 获取当前分支（结构体版）
     /// - Parameter path: 仓库路径
     /// - Returns: 当前分支 GitBranch 结构体
-    public static func currentBranchInfo(at path: String? = nil) throws -> GitBranch? {
+    public static func currentBranchInfo(at path: String? = nil) throws -> MagicGitBranch? {
         let name = try currentBranch(at: path).trimmingCharacters(in: .whitespacesAndNewlines)
         guard !name.isEmpty else { return nil }
         // 可扩展：获取上游、最新 commit hash/message
-        return GitBranch(id: name, name: name, isCurrent: true, upstream: nil, latestCommitHash: "", latestCommitMessage: "")
+        return MagicGitBranch(id: name, name: name, isCurrent: true, upstream: nil, latestCommitHash: "", latestCommitMessage: "")
     }
 }
 #endif

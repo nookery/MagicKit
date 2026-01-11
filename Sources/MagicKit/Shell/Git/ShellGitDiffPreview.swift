@@ -18,7 +18,7 @@ struct ShellGitDiffPreview: View {
     @State private var filesError: String? = nil
     @State private var showFilesResult: Bool = false
     @State private var filesDetailCommit: String = "HEAD~1"
-    @State private var filesDetailList: [GitDiffFile] = []
+    @State private var filesDetailList: [MagicGitDiffFile] = []
     @State private var filesDetailError: String? = nil
     @State private var showFilesDetailResult: Bool = false
 

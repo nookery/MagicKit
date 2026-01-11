@@ -117,20 +117,20 @@ extension ShellGit {
     /// - Parameters:
     ///   - staged: 是否查看暂存区差异
     ///   - path: 仓库路径
-    /// - Returns: [GitDiffFile]
-    public static func diffFileList(staged: Bool = false, at path: String? = nil) async throws -> [GitDiffFile] {
+    /// - Returns: [MagicGitDiffFile]
+    public static func diffFileList(staged: Bool = false, at path: String? = nil) async throws -> [MagicGitDiffFile] {
         let option = staged ? "--cached" : ""
         // 获取变动文件及类型
         let nameStatus = try await Shell.runSync("git diff --name-status \(option)", at: path)
         let files = nameStatus.split(separator: "\n").map { String($0) }
-        var result: [GitDiffFile] = []
+        var result: [MagicGitDiffFile] = []
         for line in files {
             let parts = line.split(separator: "\t").map { String($0) }
             guard parts.count >= 2 else { continue }
             let changeType = parts[0]
             let file = parts[1]
             let diff = try Shell.runSync("git diff \(option) -- \(file)", at: path)
-            result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
+            result.append(MagicGitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
         }
         return result
     }
@@ -139,18 +139,18 @@ extension ShellGit {
     /// - Parameters:
     ///   - commit: commit 哈希
     ///   - path: 仓库路径
-    /// - Returns: [GitDiffFile]
-    public static func fileChanges(in commit: String, at path: String? = nil) throws -> [GitDiffFile] {
+    /// - Returns: [MagicGitDiffFile]
+    public static func fileChanges(in commit: String, at path: String? = nil) throws -> [MagicGitDiffFile] {
         let nameStatus = try Shell.runSync("git diff-tree --no-commit-id --name-status -r \(commit)", at: path)
         let files = nameStatus.split(separator: "\n").map { String($0) }
-        var result: [GitDiffFile] = []
+        var result: [MagicGitDiffFile] = []
         for line in files {
             let parts = line.split(separator: "\t").map { String($0) }
             guard parts.count >= 2 else { continue }
             let changeType = parts[0]
             let file = parts[1]
             let diff = try Shell.runSync("git show \(commit) -- \(file)", at: path)
-            result.append(GitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
+            result.append(MagicGitDiffFile(id: file, file: file, changeType: changeType, diff: diff))
         }
         return result
     }
@@ -170,8 +170,8 @@ extension ShellGit {
     ///   - commit: commit 哈希
     ///   - path: 仓库路径
     ///   - verbose: 是否详细输出，默认不详细输出
-    /// - Returns: [GitDiffFile]，仅包含文件名和变动类型，diff 为空
-    public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) async throws -> [GitDiffFile] {
+    /// - Returns: [MagicGitDiffFile]，仅包含文件名和变动类型，diff 为空
+    public static func changedFilesDetail(in commit: String, at path: String? = nil, verbose: Bool = false) async throws -> [MagicGitDiffFile] {
         // 检查是否为初始commit（没有父commit）
         // 使用 rev-list --parents 获取commit及其父commit信息
         let revListOutput = try await Shell.run("git rev-list --parents -n 1 \(commit)", at: path, verbose: false)
@@ -187,7 +187,7 @@ extension ShellGit {
                 guard parts.count >= 2 else { return nil }
                 let changeType = parts[0]
                 let file = parts[1]
-                return GitDiffFile(id: file, file: file, changeType: changeType, diff: "")
+                return MagicGitDiffFile(id: file, file: file, changeType: changeType, diff: "")
             }
         } else {
             // 初始commit，使用show --name-only获取所有文件
@@ -199,7 +199,7 @@ extension ShellGit {
                 let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return nil }
                 // 对于初始commit，所有文件都是新增的（A = Added）
-                return GitDiffFile(id: trimmed, file: trimmed, changeType: "A", diff: "")
+                return MagicGitDiffFile(id: trimmed, file: trimmed, changeType: "A", diff: "")
             }
         }
     }

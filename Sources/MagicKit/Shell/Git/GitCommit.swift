@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一次 Git 提交记录
-public struct GitCommit: Identifiable, Equatable {
+public struct MagicGitCommit: Identifiable, Equatable {
     /// 提交哈希（唯一标识）
     public let id: String
     /// 提交哈希
@@ -21,7 +21,7 @@ public struct GitCommit: Identifiable, Equatable {
     /// 关联的标签名
     public let tags: [String]
 
-    /// 初始化提交记录
+    /// 初始化MagicGit提交记录
     public init(id: String, hash: String, author: String, email: String, date: Date, message: String, body: String = "", refs: [String] = [], tags: [String] = []) {
         self.id = id
         self.hash = hash
@@ -34,8 +34,8 @@ public struct GitCommit: Identifiable, Equatable {
         self.tags = tags
     }
 
-    /// 从GitCommitDetail创建GitCommit
-    public init(from detail: GitCommitDetail) {
+    /// 从MagicGitCommitDetail创建MagicGitCommit
+    public init(from detail: MagicGitCommitDetail) {
         self.init(
             id: detail.id,
             hash: detail.id,
@@ -73,7 +73,7 @@ public struct CommitWithTag {
 ///
 /// ```swift
 /// // 创建包含Co-Authored-By信息的提交
-/// let commit = GitCommit(
+/// let commit = MagicGitCommit(
 ///     id: "abc123",
 ///     hash: "abc123",
 ///     author: "John Doe",
@@ -100,7 +100,7 @@ public struct CommitWithTag {
 /// - `Co-Authored-By: Name` (无邮箱)
 /// - `co-authored-by:` (大小写不敏感)
 ///
-public extension GitCommit {
+public extension MagicGitCommit {
     /// 从提交消息中解析的共同作者列表
     var coAuthors: [String] {
         parseCoAuthors(from: body.isEmpty ? message : body)
@@ -135,18 +135,18 @@ public extension GitCommit {
 }
 
 /// 提交详细信息
-public struct GitCommitDetail {
+public struct MagicGitCommitDetail {
     public let id: String
     public let author: String
     public let email: String
     public let date: Date
     public let message: String
     public let body: String
-    public let files: [GitDiffFile]
+    public let files: [MagicGitDiffFile]
     public let diff: String
 
-    /// 初始化提交详细信息
-    public init(id: String, author: String, email: String, date: Date, message: String, body: String, files: [GitDiffFile], diff: String) {
+    /// 初始化MagicGit提交详细信息
+    public init(id: String, author: String, email: String, date: Date, message: String, body: String, files: [MagicGitDiffFile], diff: String) {
         self.id = id
         self.author = author
         self.email = email
@@ -158,9 +158,9 @@ public struct GitCommitDetail {
     }
 }
 
-// MARK: - Co-Authored-By Support for GitCommitDetail
+// MARK: - Co-Authored-By Support for MagicGitCommitDetail
 
-/// GitCommitDetail的Co-Authored-By功能支持
+/// MagicGitCommitDetail的Co-Authored-By功能支持
 ///
 /// 提供与GitCommit相同的Co-Authored-By解析功能，
 /// 用于详细的提交信息展示。
@@ -178,7 +178,7 @@ public struct GitCommitDetail {
 /// let allAuthors = detail.allAuthors  // "John Doe + Jane Smith + Bob Johnson"
 /// ```
 ///
-public extension GitCommitDetail {
+public extension MagicGitCommitDetail {
     /// 从提交消息body中解析的共同作者列表
     var coAuthors: [String] {
         parseCoAuthors(from: body)

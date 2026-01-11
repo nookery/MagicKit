@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一次 diff 结果中的单个文件变动
-public struct GitDiffFile: Identifiable, Equatable, Hashable {
+public struct MagicGitDiffFile: Identifiable, Equatable, Hashable {
     /// 文件名（唯一标识）
     public let id: String
     /// 文件名
@@ -11,7 +11,7 @@ public struct GitDiffFile: Identifiable, Equatable, Hashable {
     /// 该文件的 diff 内容
     public let diff: String
 
-    /// 初始化diff文件信息
+    /// 初始化MagicGit diff文件信息
     public init(id: String, file: String, changeType: String, diff: String) {
         self.id = id
         self.file = file

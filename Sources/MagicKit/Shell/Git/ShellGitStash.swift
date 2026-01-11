@@ -32,16 +32,16 @@ extension ShellGit {
     
     /// 获取暂存列表（结构体版）
     /// - Parameter path: 仓库路径
-    /// - Returns: [GitStash]
-    public static func stashListArray(at path: String? = nil) throws -> [GitStash] {
+    /// - Returns: [MagicGitStash]
+    public static func stashListArray(at path: String? = nil) throws -> [MagicGitStash] {
         let list = try stashList(at: path)
         let lines = list.split(separator: "\n").map { String($0) }
-        var result: [GitStash] = []
+        var result: [MagicGitStash] = []
         for (idx, line) in lines.enumerated() {
             // 例：stash@{0}: On main: 测试暂存
             let desc = line
             let commitHash = (try? Shell.runSync("git rev-parse stash@{\(idx)}^0", at: path)) ?? ""
-            result.append(GitStash(id: idx, description: desc, commitHash: commitHash, date: nil))
+            result.append(MagicGitStash(id: idx, description: desc, commitHash: commitHash, date: nil))
         }
         return result
     }

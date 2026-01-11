@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一个 Git 远程仓库
-public struct GitRemote: Identifiable, Equatable {
+public struct MagicGitRemote: Identifiable, Equatable {
     /// 远程名（唯一标识）
     public let id: String
     /// 远程名
@@ -15,7 +15,7 @@ public struct GitRemote: Identifiable, Equatable {
     /// 是否为默认远程（如 origin）
     public let isDefault: Bool
 
-    /// 初始化Git远程仓库
+    /// 初始化MagicGit远程仓库
     public init(id: String, name: String, url: String, fetchURL: String? = nil, pushURL: String? = nil, isDefault: Bool = false) {
         self.id = id
         self.name = name

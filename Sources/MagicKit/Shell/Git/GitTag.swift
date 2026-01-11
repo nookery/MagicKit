@@ -1,7 +1,7 @@
 import Foundation
 
 /// 表示一个 Git 标签
-public struct GitTag: Identifiable, Equatable {
+public struct MagicGitTag: Identifiable, Equatable {
     /// 标签名（唯一标识）
     public let id: String
     /// 标签名
@@ -15,7 +15,7 @@ public struct GitTag: Identifiable, Equatable {
     /// 标签信息（如有）
     public let message: String?
 
-    /// 初始化Git标签
+    /// 初始化MagicGit标签
     public init(id: String, name: String, commitHash: String, author: String? = nil, date: Date? = nil, message: String? = nil) {
         self.id = id
         self.name = name

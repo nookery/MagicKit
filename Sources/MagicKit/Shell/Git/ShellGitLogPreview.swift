@@ -85,7 +85,7 @@ import SwiftUI
                             }
                         }
                         VDemoSection(title: "结构体提交记录", icon: "🧩") {
-                            VDemoButtonWithLog("获取 GitCommit 列表", action: {
+                            VDemoButtonWithLog("获取 MagicGitCommit 列表", action: {
                                 do {
                                     let commits = try ShellGit.commitList(limit: 10, at: repoPath)
                                     if commits.isEmpty { return "无提交" }
@@ -99,7 +99,7 @@ import SwiftUI
                                         return line
                                     }.joined(separator: "\n\n")
                                 } catch {
-                                    return "获取 GitCommit 列表失败: \(error.localizedDescription)"
+                                    return "获取 MagicGitCommit 列表失败: \(error.localizedDescription)"
                                 }
                             })
                         }

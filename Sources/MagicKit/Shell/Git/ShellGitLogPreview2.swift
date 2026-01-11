@@ -45,7 +45,7 @@ import SwiftUI
                                     }
                                 })
                                 
-                                VDemoButtonWithLog("获取 GitCommit 列表", action: {
+                                VDemoButtonWithLog("获取 MagicGitCommit 列表", action: {
                                     do {
                                         let commits = try ShellGit.commitList(limit: 10, at: path)
                                         let df = DateFormatter()

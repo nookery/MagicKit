@@ -44,9 +44,9 @@ extension ShellGit {
     /// 获取标签结构体列表
     /// - Parameter path: 仓库路径
     /// - Returns: 标签结构体数组
-    public static func tagList(at path: String? = nil) throws -> [GitTag] {
+    public static func tagList(at path: String? = nil) throws -> [MagicGitTag] {
         let tagNames = try tags(at: path).split(separator: "\n").map { String($0) }
-        var tags: [GitTag] = []
+        var tags: [MagicGitTag] = []
         for name in tagNames {
             // 获取 commit hash
             let commitHash = (try? Shell.runSync("git rev-list -n 1 \(name)", at: path)) ?? ""
@@ -56,7 +56,7 @@ extension ShellGit {
             let author = parts.count > 0 ? parts[0] : nil
             let date = parts.count > 1 ? ISO8601DateFormatter().date(from: parts[1]) : nil
             let message = parts.count > 2 ? parts[2] : nil
-            tags.append(GitTag(id: name, name: name, commitHash: commitHash, author: author, date: date, message: message))
+            tags.append(MagicGitTag(id: name, name: name, commitHash: commitHash, author: author, date: date, message: message))
         }
         return tags
     }
@@ -65,10 +65,10 @@ extension ShellGit {
     /// - Parameters:
     ///   - commit: commit 哈希
     ///   - path: 仓库路径
-    /// - Returns: [GitTag]
-    public static func tagList(for commit: String, at path: String? = nil) throws -> [GitTag] {
+    /// - Returns: [MagicGitTag]
+    public static func tagList(for commit: String, at path: String? = nil) throws -> [MagicGitTag] {
         let tagNames = try tags(for: commit, at: path)
-        var tags: [GitTag] = []
+        var tags: [MagicGitTag] = []
         for name in tagNames {
             let commitHash = (try? Shell.runSync("git rev-list -n 1 \(name)", at: path)) ?? ""
             let tagInfo = (try? Shell.runSync("git for-each-ref refs/tags/\(name) --format='%(taggername)::%(taggerdate)::%(subject)'", at: path)) ?? "::"
@@ -76,7 +76,7 @@ extension ShellGit {
             let author = parts.count > 0 ? parts[0] : nil
             let date = parts.count > 1 ? ISO8601DateFormatter().date(from: parts[1]) : nil
             let message = parts.count > 2 ? parts[2] : nil
-            tags.append(GitTag(id: name, name: name, commitHash: commitHash, author: author, date: date, message: message))
+            tags.append(MagicGitTag(id: name, name: name, commitHash: commitHash, author: author, date: date, message: message))
         }
         return tags
     }
