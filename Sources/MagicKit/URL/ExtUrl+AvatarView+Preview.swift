@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 /// 头像视图的功能展示组件
@@ -345,3 +346,5 @@ public struct AvatarDemoView: View {
 #Preview("头像视图") {
     AvatarDemoView()
 }
+
+#endif

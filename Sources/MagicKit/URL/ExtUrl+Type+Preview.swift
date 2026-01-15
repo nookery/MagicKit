@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 // MARK: - Preview Container
@@ -202,3 +203,5 @@ private struct FileTypeRow: View {
 #Preview("File Types") {
     FileTypePreviewContainer()
 }
+
+#endif

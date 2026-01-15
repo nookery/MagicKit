@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 #if DEBUG && os(macOS)
@@ -133,4 +134,6 @@ import SwiftUI
     #Preview("ShellGitLogPreview2") {
         ShellGitLogPreview2()
     }
+#endif
+
 #endif

@@ -60,6 +60,8 @@ public extension URL {
 }
 
 // MARK: - Preview
+#if DEBUG
 #Preview("头像视图") {
     AvatarDemoView()
 }
+#endif

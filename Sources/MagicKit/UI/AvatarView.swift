@@ -367,6 +367,8 @@ public struct AvatarView: View, SuperLog {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("头像视图") {
     AvatarDemoView()
 }
+#endif

@@ -13,7 +13,9 @@ extension AvatarView {
     }
 }
 
+#if DEBUG
 #Preview {
     AvatarView.ThumbnailImageView(image: Image(systemName: "photo"))
         .frame(width: 100, height: 100)
-} 
+}
+#endif 

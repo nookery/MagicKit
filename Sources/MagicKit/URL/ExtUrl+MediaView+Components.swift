@@ -51,6 +51,8 @@ struct FolderContentModifier: ViewModifier {
     }
 }
 
+#if DEBUG
 #Preview("Media View") {
     MediaViewPreviewContainer()
 }
+#endif

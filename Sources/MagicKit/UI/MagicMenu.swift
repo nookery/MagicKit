@@ -190,6 +190,7 @@ public struct MagicMenu: View {
     }
 }
 
+#if DEBUG
 struct MenuTile_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 0) {
@@ -284,4 +285,5 @@ struct MenuTile_Previews: PreviewProvider {
         .padding(.all, 8)
     }
 }
+#endif
 #endif

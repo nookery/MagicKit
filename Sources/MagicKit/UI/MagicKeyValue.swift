@@ -61,6 +61,7 @@ public struct MagicKeyValue<Icon: View>: View {
     }
 }
 
+#if DEBUG
 #Preview("MagicKeyValue 演示") {
     TabView {
         // 基础示例
@@ -137,3 +138,4 @@ public struct MagicKeyValue<Icon: View>: View {
         Text("分组")
     }
 }
+#endif

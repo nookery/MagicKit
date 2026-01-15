@@ -1,3 +1,4 @@
+#if DEBUG
 import AVFoundation
 
 import SwiftUI
@@ -184,3 +185,5 @@ struct ThumbnailPreview: View {
 #Preview {
     ThumbnailPreview()
 }
+
+#endif

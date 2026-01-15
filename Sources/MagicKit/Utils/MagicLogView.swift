@@ -233,6 +233,7 @@ public struct MagicLogView: View {
     }
 }
 
+#if DEBUG
 #Preview("With Logs") {
     let logger = MagicLogger.shared
     logger.logView()
@@ -244,3 +245,4 @@ public struct MagicLogView: View {
             logger.error("This is an error message")
         }
 }
+#endif

@@ -628,6 +628,8 @@ public extension MediaFileView {
     }
 }
 
+#if DEBUG
 #Preview("Media View") {
     MediaViewPreviewContainer()
 }
+#endif

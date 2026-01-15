@@ -1,3 +1,4 @@
+#if DEBUG
 import OSLog
 import SwiftUI
 
@@ -189,3 +190,5 @@ public struct HttpClientPreview: View {
 #Preview {
     HttpClientPreview()
 }
+
+#endif

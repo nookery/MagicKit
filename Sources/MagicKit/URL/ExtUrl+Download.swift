@@ -393,6 +393,8 @@ public extension URL {
     }
 }
 
+#if DEBUG
 #Preview {
     DownloadButtonPreview()
 }
+#endif

@@ -43,6 +43,8 @@ public extension URL {
     }
 }
 
+#if DEBUG
 #Preview("Copy View") {
     CopyViewPreviewContainer()
 }
+#endif

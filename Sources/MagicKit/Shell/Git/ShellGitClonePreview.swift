@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 #if DEBUG && os(macOS)
@@ -142,4 +143,6 @@ import SwiftUI
         ShellGitClonePreview()
             
     }
+#endif
+
 #endif

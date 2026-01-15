@@ -345,7 +345,9 @@ public struct MagicPerformanceDemo: View {
     }
 }
 
+#if DEBUG
 #Preview("性能监控演示") {
     MagicPerformanceDemo()
 }
+#endif
 #endif 

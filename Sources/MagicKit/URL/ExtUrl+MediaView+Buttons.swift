@@ -79,6 +79,8 @@ public struct ActionButtonsSection: View {
     }
 }
 
+#if DEBUG
 #Preview("Media View") {
     MediaViewPreviewContainer()
 }
+#endif

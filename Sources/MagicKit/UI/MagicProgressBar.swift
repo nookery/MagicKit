@@ -140,6 +140,7 @@ private struct TimeLabel: View {
     }
 }
 
+#if DEBUG
 #Preview("MagicProgressBar") {
     TabView {
         // 基础用法
@@ -228,6 +229,7 @@ private struct TimeLabel: View {
             }
     }
 }
+#endif
 
 // MARK: - Dynamic Preview
 

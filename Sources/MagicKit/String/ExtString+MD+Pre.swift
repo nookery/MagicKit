@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 struct HTMLToMarkdownDemoView: View {
@@ -59,7 +60,11 @@ struct HTMLToMarkdownDemoView: View {
 }
 
 // 修改预览
+#if DEBUG
 #Preview {
     HTMLToMarkdownDemoView()
         .frame(width: 600, height: 500)
 }
+#endif
+
+#endif

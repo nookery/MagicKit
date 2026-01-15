@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 /// MagicContainer 预览视图
@@ -214,4 +215,6 @@ extension MagicContainerPreview {
     MagicContainerPreview.iPhoneSEPreview
         .frame(width: 600, height: 600)
 }
+#endif
+
 #endif

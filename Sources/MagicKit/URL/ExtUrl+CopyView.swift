@@ -363,6 +363,8 @@ private struct ToastView: View {
     }
 }
 
+#if DEBUG
 #Preview("Copy View") {
     CopyViewPreviewContainer()
 }
+#endif

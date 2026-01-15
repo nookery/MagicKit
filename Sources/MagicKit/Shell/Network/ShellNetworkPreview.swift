@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 #if os(macOS)
@@ -118,5 +119,7 @@ struct ShellNetworkPreviewView: View {
     ShellNetworkPreviewView()
         
 }
+
+#endif
 
 #endif

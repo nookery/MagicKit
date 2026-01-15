@@ -1,3 +1,4 @@
+#if DEBUG
 
 import SwiftUI
 
@@ -246,3 +247,5 @@ private struct ErrorHandlingPreview: View {
 #Preview("Copy View") {
     CopyViewPreviewContainer()
 }
+
+#endif

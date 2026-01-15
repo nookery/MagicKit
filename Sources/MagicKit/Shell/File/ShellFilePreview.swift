@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 #if DEBUG && os(macOS)
@@ -76,4 +77,6 @@ struct ShellFilePreviewView: View {
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
 }
+#endif
+
 #endif

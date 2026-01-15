@@ -182,8 +182,10 @@ public extension Date {
     }
 }
 
+#if DEBUG
 #Preview("Date 格式化演示") {
     NavigationStack {
         DateFormattingDemoView()
     }
 }
+#endif

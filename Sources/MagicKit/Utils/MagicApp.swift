@@ -516,6 +516,8 @@ public class MagicApp {
         
 }
 
+#if DEBUG
 #Preview {
     MagicAppDemoView()
 }
+#endif

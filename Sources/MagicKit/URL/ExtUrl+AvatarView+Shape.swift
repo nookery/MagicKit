@@ -112,7 +112,9 @@ public enum AvatarViewShape: Shape {
 }
 
 // MARK: - Preview
+#if DEBUG
 #Preview("头像视图") {
     AvatarDemoView()
 }
+#endif
 

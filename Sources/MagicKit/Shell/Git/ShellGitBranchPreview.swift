@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 #if DEBUG && os(macOS)
@@ -85,4 +86,6 @@ struct ShellGitBranchPreview: View {
     ShellGitBranchPreview()
         
 } 
+#endif
+
 #endif

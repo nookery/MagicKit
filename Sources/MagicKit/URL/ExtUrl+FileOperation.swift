@@ -228,9 +228,11 @@ public extension URL {
 
 // MARK: - 预览
 
+#if DEBUG
 #Preview("File Operations") {
     FileOperationTestView()
 }
+#endif
 
 private struct FileOperationTestView: View {
     @State private var selectedFile: URL?

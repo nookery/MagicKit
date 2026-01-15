@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 import MagicUI
 
@@ -455,3 +456,5 @@ private struct FileStatusContent: View {
 #Preview("Media View") {
     MediaViewPreviewContainer()
 }
+
+#endif

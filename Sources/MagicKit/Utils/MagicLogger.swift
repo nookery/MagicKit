@@ -244,6 +244,7 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("MagicLogger") {
     VStack(spacing: 20) {
         // 测试日志按钮
@@ -266,3 +267,4 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
     }
     
 }
+#endif

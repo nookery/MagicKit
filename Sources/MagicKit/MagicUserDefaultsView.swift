@@ -119,8 +119,10 @@ public struct MagicUserDefaultsView: View, SuperLog {
     }
 }
 
+#if DEBUG
 #Preview("UserDefaults 调试") {
     MagicUserDefaultsView()
         .frame(width: 600)
         .frame(height: 800)
 }
+#endif

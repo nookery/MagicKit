@@ -259,6 +259,8 @@ private extension URL {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("File Types") {
     FileTypePreviewContainer()
-} 
+}
+#endif 

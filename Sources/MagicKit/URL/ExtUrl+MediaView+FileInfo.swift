@@ -45,6 +45,7 @@ struct FileInfoSection: View {
     }
 }
 
+#if DEBUG
 #Preview("File Info") {
     FileInfoSection(
         url: URL(fileURLWithPath: "/path/to/file.txt"),
@@ -53,4 +54,5 @@ struct FileInfoSection: View {
         showBorder: true
     )
     .padding()
-} 
+}
+#endif 

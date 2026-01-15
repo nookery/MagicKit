@@ -250,6 +250,8 @@ extension URL {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     ThumbnailPreview()
 }
+#endif

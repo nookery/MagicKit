@@ -125,6 +125,8 @@ struct DownloadButtonView: View, SuperLog {
     }
 }
 
+#if DEBUG
 #Preview {
     DownloadButtonPreview()
 }
+#endif

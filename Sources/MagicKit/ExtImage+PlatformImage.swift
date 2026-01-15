@@ -350,8 +350,10 @@ struct PlatformImageDemoView: View {
     }
 }
 
+#if DEBUG
 #Preview("平台图片演示") {
     NavigationStack {
         PlatformImageDemoView()
     }
 }
+#endif

@@ -29,6 +29,7 @@ public extension URL {
     }
 }
 
+#if DEBUG
 struct URLZipExtension_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
@@ -69,3 +70,4 @@ struct URLZipExtension_Previews: PreviewProvider {
         .padding()
     }
 }
+#endif

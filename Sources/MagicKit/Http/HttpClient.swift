@@ -389,6 +389,8 @@ private final class FileCacheStore {
     }
 }
 
+#if DEBUG
 #Preview {
     HttpClientPreview()
 }
+#endif

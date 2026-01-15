@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 /// WebView功能演示视图
@@ -332,11 +333,13 @@ public struct MagicWebViewDemo: View {
 
 // MARK: - Previews
 
+#if DEBUG
 #Preview("WebView Demo") {
     MagicWebViewDemo()
         .frame(height: 800)
         .frame(width: 1000)
 }
+#endif
 
 // MARK: - Subviews for URL Jump Demo
 
@@ -383,3 +386,5 @@ private struct LocalJumpDemoView: View {
         }
     }
 }
+
+#endif

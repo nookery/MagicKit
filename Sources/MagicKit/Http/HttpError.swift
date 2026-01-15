@@ -24,6 +24,8 @@ public enum HttpError: Error, LocalizedError {
     }
 }
 
+#if DEBUG
 #Preview {
     HttpClientPreview()
 }
+#endif

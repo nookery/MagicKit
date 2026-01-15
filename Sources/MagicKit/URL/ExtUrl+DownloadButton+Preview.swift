@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 struct DownloadButtonPreview: View {
@@ -136,3 +137,5 @@ struct DownloadButtonPreview: View {
 #Preview {
     DownloadButtonPreview()
 }
+
+#endif

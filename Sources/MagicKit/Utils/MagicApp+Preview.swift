@@ -1,3 +1,4 @@
+#if DEBUG
 
 import SwiftUI
 
@@ -369,3 +370,5 @@ struct TimeComponentView: View {
 #Preview("MagicApp 功能演示") {
     MagicAppDemoView()
 }
+
+#endif

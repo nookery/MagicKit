@@ -109,8 +109,10 @@ struct TimeIntervalExtensionDemoView: View {
     }
 }
 
+#if DEBUG
 #Preview("时间格式化演示") {
     NavigationStack {
         TimeIntervalExtensionDemoView()
     }
 }
+#endif

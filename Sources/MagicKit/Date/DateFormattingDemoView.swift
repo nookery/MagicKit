@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 /// 日期格式化演示视图
@@ -111,3 +112,5 @@ struct DateFormattingDemoView: View {
         DateFormattingDemoView()
     }
 }
+
+#endif

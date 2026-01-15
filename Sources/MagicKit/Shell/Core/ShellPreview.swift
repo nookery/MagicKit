@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 #if DEBUG && os(macOS)
@@ -277,4 +278,6 @@ struct ShellDemoView: View {
         .padding()
         
 }
+#endif
+
 #endif

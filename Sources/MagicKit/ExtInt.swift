@@ -168,8 +168,10 @@ struct IntExtensionDemoView: View {
     }
 }
 
+#if DEBUG
 #Preview("Int 扩展演示") {
     NavigationStack {
         IntExtensionDemoView()
     }
 }
+#endif

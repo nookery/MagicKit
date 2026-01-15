@@ -221,7 +221,9 @@ public enum OpenAppType: String {
     #endif
 }
 
+#if DEBUG
 #Preview("Open Buttons") {
     OpenPreivewView()
         
 }
+#endif

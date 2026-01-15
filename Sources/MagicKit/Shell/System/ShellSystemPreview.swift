@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 #if os(macOS)
 struct ShellSystemPreviewView: View {
@@ -86,4 +87,6 @@ struct ShellSystemPreviewView: View {
     ShellSystemPreviewView()
         
 } 
+#endif
+
 #endif

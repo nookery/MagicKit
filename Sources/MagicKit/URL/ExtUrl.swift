@@ -426,8 +426,10 @@ struct URLExtensionDemoView: View {
     }
 }
 
+#if DEBUG
 #Preview("URL 扩展演示") {
     NavigationStack {
         URLExtensionDemoView()
     }
 }
+#endif

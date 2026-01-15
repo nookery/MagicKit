@@ -101,6 +101,8 @@ struct ShapeModifier: ViewModifier {
     }
 }
 
+#if DEBUG
 #Preview("Copy View") {
     CopyViewPreviewContainer()
 }
+#endif

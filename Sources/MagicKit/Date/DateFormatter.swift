@@ -112,8 +112,10 @@ public extension RelativeDateTimeFormatter {
     }()
 }
 
+#if DEBUG
 #Preview("Date 格式化演示") {
     NavigationStack {
         DateFormattingDemoView()
     }
 }
+#endif

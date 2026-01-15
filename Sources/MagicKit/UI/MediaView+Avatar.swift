@@ -37,6 +37,7 @@ struct AvatarSection: View {
     }
 }
 
+#if DEBUG
 #Preview {
     AvatarSection(
         url: URL(string: "https://example.com")!,
@@ -50,3 +51,4 @@ struct AvatarSection: View {
         isHovering: false
     )
 }
+#endif

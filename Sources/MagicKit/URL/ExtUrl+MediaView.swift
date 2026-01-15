@@ -128,6 +128,8 @@ public extension URL {
     }
 }
 
+#if DEBUG
 #Preview("Media View") {
     MediaViewPreviewContainer()
 }
+#endif

@@ -265,6 +265,8 @@ extension URL {
     }
 }
 
+#if DEBUG
 #Preview {
     ThumbnailPreview()
 }
+#endif

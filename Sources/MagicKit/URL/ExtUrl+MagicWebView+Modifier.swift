@@ -37,7 +37,9 @@ public extension MagicWebView {
     }
 }
 
+#if DEBUG
 #Preview("WebView Demo") {
     MagicWebViewDemo()
         .frame(height: 800)
 }
+#endif

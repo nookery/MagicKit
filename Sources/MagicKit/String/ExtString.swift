@@ -270,6 +270,7 @@ extension String {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack {
         Spacer()
@@ -298,6 +299,7 @@ extension String {
     }
     .frame(width: 100)
 }
+#endif
 
 /// String 类型的扩展，提供常用的工具方法
 public extension String {
@@ -483,8 +485,10 @@ struct StringExtensionDemoView: View {
     }
 }
 
+#if DEBUG
 #Preview("String 扩展演示") {
     NavigationStack {
         StringExtensionDemoView()
     }
 }
+#endif
