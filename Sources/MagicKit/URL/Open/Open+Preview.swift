@@ -1,3 +1,4 @@
+#if DEBUG
 import SwiftUI
 
 struct OpenPreivewView: View {
@@ -7,7 +8,7 @@ struct OpenPreivewView: View {
                 // 网络链接
                 Group {
                     Text("网络链接示例").font(.headline)
-                    
+
                     // 单个打开按钮
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -16,7 +17,7 @@ struct OpenPreivewView: View {
                             URL.sample_web_mp3_kennedy.makeOpenButton()
                         }
                     }
-                    
+
                     // 网页浏览器按钮
                     VStack(alignment: .leading, spacing: 12) {
                         Text("指定浏览器打开：")
@@ -45,7 +46,7 @@ struct OpenPreivewView: View {
                 // 本地文件
                 Group {
                     Text("本地文件示例").font(.headline)
-                    
+
                     // 单个打开按钮
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -54,7 +55,7 @@ struct OpenPreivewView: View {
                             URL.sample_temp_txt.makeOpenButton()
                         }
                     }
-                    
+
                     // 文件管理
                     VStack(alignment: .leading, spacing: 12) {
                         Text("文件管理：")
@@ -64,7 +65,7 @@ struct OpenPreivewView: View {
                             URL.sample_temp_txt.makeOpenButton(.finder)
                         }
                     }
-                    
+
                     // 文本编辑器 - 系统图标
                     VStack(alignment: .leading, spacing: 12) {
                         Text("文本编辑器（系统图标）：")
@@ -94,43 +95,48 @@ struct OpenPreivewView: View {
                                 Spacer()
                                 URL.sample_temp_txt.makeOpenButton(.trae)
                             }
+                            HStack {
+                                Text("• Antigravity AI 编辑器：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.antigravity)
+                            }
                         }
                     }
-                    
+
                     #if os(macOS)
-                    // 文本编辑器 - 真实应用图标
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("文本编辑器（真实应用图标）：")
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack {
-                                Text("• 系统文本编辑器：")
-                                Spacer()
-                                URL.sample_temp_txt.makeOpenButton(.textEdit, useRealIcon: true)
-                            }
-                            HStack {
-                                Text("• Xcode 开发环境：")
-                                Spacer()
-                                URL.sample_temp_txt.makeOpenButton(.xcode, useRealIcon: true)
-                            }
-                            HStack {
-                                Text("• VS Code 编辑器：")
-                                Spacer()
-                                URL.sample_temp_txt.makeOpenButton(.vscode, useRealIcon: true)
-                            }
-                            HStack {
-                                Text("• Cursor AI 编辑器：")
-                                Spacer()
-                                URL.sample_temp_txt.makeOpenButton(.cursor, useRealIcon: true)
-                            }
-                            HStack {
-                                Text("• Trae 开发工具：")
-                                Spacer()
-                                URL.sample_temp_txt.makeOpenButton(.trae, useRealIcon: true)
+                        // 文本编辑器 - 真实应用图标
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("文本编辑器（真实应用图标）：")
+                            VStack(alignment: .leading, spacing: 8) {
+                                HStack {
+                                    Text("• 系统文本编辑器：")
+                                    Spacer()
+                                    URL.sample_temp_txt.makeOpenButton(.textEdit, useRealIcon: true)
+                                }
+                                HStack {
+                                    Text("• Xcode 开发环境：")
+                                    Spacer()
+                                    URL.sample_temp_txt.makeOpenButton(.xcode, useRealIcon: true)
+                                }
+                                HStack {
+                                    Text("• VS Code 编辑器：")
+                                    Spacer()
+                                    URL.sample_temp_txt.makeOpenButton(.vscode, useRealIcon: true)
+                                }
+                                HStack {
+                                    Text("• Cursor AI 编辑器：")
+                                    Spacer()
+                                    URL.sample_temp_txt.makeOpenButton(.cursor, useRealIcon: true)
+                                }
+                                HStack {
+                                    Text("• Trae 开发工具：")
+                                    Spacer()
+                                    URL.sample_temp_txt.makeOpenButton(.trae, useRealIcon: true)
+                                }
                             }
                         }
-                    }
                     #endif
-                    
+
                     // 其他工具
                     VStack(alignment: .leading, spacing: 12) {
                         Text("其他工具：")
@@ -156,5 +162,5 @@ struct OpenPreivewView: View {
 
 #Preview("Open Buttons") {
     OpenPreivewView()
-        
 }
+#endif

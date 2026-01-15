@@ -13,6 +13,8 @@ public enum OpenAppType: String {
     case cursor
     /// 在Trae中打开
     case trae
+    /// 在Antigravity中打开
+    case antigravity
     /// 在Chrome中打开
     case chrome
     /// 在Safari中打开
@@ -41,6 +43,8 @@ public enum OpenAppType: String {
             return "com.todesktop.230313mzl4w4u92"
         case .trae:
             return "com.trae.app"
+        case .antigravity:
+            return "com.google.antigravity"
         case .chrome:
             return "com.google.Chrome"
         case .safari:
@@ -71,6 +75,8 @@ public enum OpenAppType: String {
             return .iconCode // 使用code图标代表Cursor
         case .trae:
             return .iconCode // 使用code图标代表Trae
+        case .antigravity:
+            return .iconCode // 使用code图标代表Antigravity
         case .chrome:
             return .iconGlobe // 使用globe图标代替Chrome
         case .safari:
@@ -97,6 +103,8 @@ public enum OpenAppType: String {
             return "在Xcode中打开"
         case .vscode:
             return "在VS Code中打开"
+        case .antigravity:
+            return "在Antigravity中打开"
         case .cursor:
             return "在Cursor中打开"
         case .trae:

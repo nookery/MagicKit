@@ -29,7 +29,9 @@ public extension URL {
     }
 }
 
+#if DEBUG
 #Preview("Open Buttons") {
     OpenPreivewView()
         
 }
+#endif
