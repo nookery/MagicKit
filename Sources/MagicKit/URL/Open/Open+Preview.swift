@@ -151,6 +151,11 @@ struct OpenPreivewView: View {
                                 Spacer()
                                 URL.sample_temp_txt.makeOpenButton(.terminal)
                             }
+                            HStack {
+                                Text("• 在 GitHub Desktop 中打开：")
+                                Spacer()
+                                URL.sample_temp_txt.makeOpenButton(.githubDesktop)
+                            }
                         }
                     }
                 }

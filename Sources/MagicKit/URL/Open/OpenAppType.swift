@@ -29,6 +29,8 @@ public enum OpenAppType: String {
     case finder
     /// 在默认浏览器中打开
     case browser
+    /// 在 GitHub Desktop 中打开
+    case githubDesktop
     
     /// 获取应用程序的Bundle ID
     var bundleId: String? {
@@ -59,6 +61,8 @@ public enum OpenAppType: String {
             return "com.apple.finder"
         case .browser:
             return nil
+        case .githubDesktop:
+            return "com.github.GitHubClient"
         }
     }
     
@@ -91,6 +95,8 @@ public enum OpenAppType: String {
             return .iconShowInFinder
         case .browser:
             return .iconSafari
+        case .githubDesktop:
+            return .iconCode
         }
     }
     
@@ -123,6 +129,8 @@ public enum OpenAppType: String {
             return "在访达中显示"
         case .browser:
             return "在浏览器中打开"
+        case .githubDesktop:
+            return "在GitHub Desktop中打开"
         }
     }
     
