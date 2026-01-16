@@ -31,7 +31,9 @@ public enum OpenAppType: String {
     case browser
     /// 在 GitHub Desktop 中打开
     case githubDesktop
-    
+    /// 在Kiro中打开
+    case kiro
+
     /// 获取应用程序的Bundle ID
     var bundleId: String? {
         switch self {
@@ -63,6 +65,8 @@ public enum OpenAppType: String {
             return nil
         case .githubDesktop:
             return "com.github.GitHubClient"
+        case .kiro:
+            return "dev.kiro.desktop"
         }
     }
     
@@ -96,6 +100,8 @@ public enum OpenAppType: String {
         case .browser:
             return .iconSafari
         case .githubDesktop:
+            return .iconCode
+        case .kiro:
             return .iconCode
         }
     }
@@ -131,6 +137,8 @@ public enum OpenAppType: String {
             return "在浏览器中打开"
         case .githubDesktop:
             return "在GitHub Desktop中打开"
+        case .kiro:
+            return "在Kiro中打开"
         }
     }
     
