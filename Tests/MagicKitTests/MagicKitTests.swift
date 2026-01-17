@@ -1,5 +1,5 @@
 import XCTest
-@testable import MagicCore
+@testable import MagicKit
 
 final class MagicKitTests: XCTestCase {
     func testExample() throws {
