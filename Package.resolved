@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nookery/MagicUI.git",
       "state" : {
-        "revision" : "4ebce77756ddcb876f17a005c7ede658fffc1b34",
-        "version" : "0.0.4"
+        "revision" : "95485d76bd3641904ad4f018ac09b2d53311f61d",
+        "version" : "0.0.6"
       }
     },
     {
