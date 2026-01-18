@@ -1,6 +1,6 @@
 import Foundation
-import SwiftUI
 import MagicAlert
+import SwiftUI
 #if os(macOS)
     import AppKit
 #endif
@@ -84,7 +84,7 @@ extension MagicContainer {
         #if os(macOS)
             let widthInt = Int(containerWidth)
             let heightInt = Int(containerHeight)
-        let title = "MagicContainer_\(Date().compactDateTime)_\(widthInt)x\(heightInt)"
+            let title = "MagicContainer_\(Date().compactDateTime)_\(widthInt)x\(heightInt)"
             do {
                 try content.frame(width: containerWidth, height: containerHeight).snapshot(title: title, scale: 2.0)
                 MagicMessageProvider.shared.success("截图已保存到下载文件夹")

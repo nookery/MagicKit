@@ -54,7 +54,7 @@ struct MagicContainerToolbar: View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
+    #Preview("iPhone") {
+        MagicContainerPreview.iPhonePreview
+    }
 #endif

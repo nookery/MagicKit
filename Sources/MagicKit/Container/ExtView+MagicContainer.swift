@@ -11,7 +11,7 @@ public extension View {
             self
         }
     }
-    
+
     /// 为预览视图添加缩放功能
     /// - Parameter scale: 缩放比例，默认为 1.0
     /// - Returns: 带有缩放功能的视图
@@ -23,7 +23,7 @@ public extension View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
+    #Preview("iPhone") {
+        MagicContainerPreview.iPhonePreview
+    }
 #endif

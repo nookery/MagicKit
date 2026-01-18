@@ -1,6 +1,6 @@
 # MagicKit
 
-MagicKit 是一个综合性的 SwiftUI 工具包，为 macOS 和 iOS 应用开发提供完整的解决方案。
+MagicKit 是一个综合性的 SwiftUI 工具包，为 macOS 和 iOS 应用开发提供辅助功能。
 
 ## 安装
 
@@ -10,7 +10,7 @@ MagicKit 是一个综合性的 SwiftUI 工具包，为 macOS 和 iOS 应用开�
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/nookery/MagicKit.git", branch: "main")
+    .package(url: "https://github.com/nookery/MagicKit.git", from: "1.0.0")
 ]
 ```
 
@@ -30,22 +30,6 @@ dependencies: [
 1. 打开您的项目
 2. 选择 File > Swift Packages > Add Package Dependency
 3. 输入仓库 URL：`https://github.com/nookery/MagicKit.git`
-
-## 使用方法
-
-```swift
-import SwiftUI
-import MagicKit
-
-struct ContentView: View {
-    var body: some View {
-        // 现在您可以使用所有 MagicKit 组件！
-        MagicPlayMan() // 媒体播放
-        MagicDevice.currentDeviceType() // 设备信息
-        // ... 等等
-    }
-}
-```
 
 ## 系统要求
 
