@@ -11,14 +11,14 @@ struct FileInfoSection: View {
     let showFileSize: Bool
     let showFileStatus: Bool
     let showBorder: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(url.lastPathComponent)
                 .font(.headline)
                 .lineLimit(1)
                 .overlay(borderOverlay(.green))
-            
+
             HStack {
                 if showFileSize {
                     Text(url.getSizeReadable())
@@ -26,7 +26,7 @@ struct FileInfoSection: View {
                         .foregroundStyle(.secondary)
                         .overlay(borderOverlay(.green))
                 }
-                
+
                 if showFileStatus, let status = url.magicFileStatus {
                     Text(status)
                         .font(.caption)
@@ -37,7 +37,7 @@ struct FileInfoSection: View {
         }
         .overlay(borderOverlay(.purple))
     }
-    
+
     private func borderOverlay(_ color: Color) -> some View {
         RoundedRectangle(cornerRadius: 0)
             .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
@@ -46,13 +46,13 @@ struct FileInfoSection: View {
 }
 
 #if DEBUG
-#Preview("File Info") {
-    FileInfoSection(
-        url: URL(fileURLWithPath: "/path/to/file.txt"),
-        showFileSize: true,
-        showFileStatus: true,
-        showBorder: true
-    )
-    .padding()
-}
-#endif 
+    #Preview("File Info") {
+        FileInfoSection(
+            url: URL(fileURLWithPath: "/path/to/file.txt"),
+            showFileSize: true,
+            showFileStatus: true,
+            showBorder: true
+        )
+        .padding()
+    }
+#endif

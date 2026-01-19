@@ -18,9 +18,6 @@ struct AvatarSection: View {
             .magicBackground(avatarBackgroundColor)
             .magicDownloadMonitor(monitorDownload)
             .magicContextMenu(false)
-            .onLog { message, level in
-                MagicLogger.log(message, level: level)
-            }
         
         let finalAvatarView = if let progress = avatarProgressBinding {
             avatarView.magicDownloadProgress(progress)
