@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(defaults read:*)",
+      "Bash(plutil:*)",
+      "Bash(swift build:*)",
+      "mcp__ide__getDiagnostics"
+    ]
+  }
+}

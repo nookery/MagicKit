@@ -10,6 +10,33 @@
       }
     },
     {
+      "identity" : "magicalert",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nookery/MagicAlert.git",
+      "state" : {
+        "revision" : "8a6e2513094744a651834a18ff6cc2600638be4a",
+        "version" : "0.0.3"
+      }
+    },
+    {
+      "identity" : "magicdevice",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nookery/MagicDevice.git",
+      "state" : {
+        "revision" : "9d836a20cf7d584071ad0db643944bc2c0c018ba",
+        "version" : "0.0.2"
+      }
+    },
+    {
+      "identity" : "magicui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nookery/MagicUI.git",
+      "state" : {
+        "revision" : "95485d76bd3641904ad4f018ac09b2d53311f61d",
+        "version" : "0.0.6"
+      }
+    },
+    {
       "identity" : "swift-async-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-async-algorithms",
