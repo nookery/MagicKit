@@ -132,14 +132,6 @@ public struct AvatarView: View, SuperLog {
         }
     }
 
-    // MARK: - Private Methods
-
-    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
-        if verbose {
-            logger.log(message, level: level)
-        }
-    }
-
     // MARK: - Body
 
     public var body: some View {
@@ -283,15 +275,9 @@ public struct AvatarView: View, SuperLog {
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
-            if verbose {
-                os_log("\(self.t)<\(url.title)>开始加载缩略图")
-            }
             await state.setLoading(true)
 
             do {
-                if verbose {
-                    os_log("\(self.t)<\(url.title)>正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
-                }
                 // 在后台线程中处理图片生成
                 let image = try await url.thumbnail(size: size, verbose: verbose, reason: self.className + ".loadThumbnail")
 
@@ -333,9 +319,6 @@ public struct AvatarView: View, SuperLog {
         guard monitorDownload && url.isiCloud && progressBinding == nil else {
             return
         }
-
-        if verbose { os_log("\(self.t)<\(url.title)>开始设置下载监控") }
-        if verbose { os_log("\(self.t)<\(url.title)>设置下载监控") }
 
         downloadMonitor.startMonitoring(
             url: url,

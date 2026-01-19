@@ -23,7 +23,7 @@ extension AvatarView {
             let progressCancellable = url.onDownloading(verbose: self.verbose, caller: "AvatarView.DownloadMonitor", updateInterval: 1, onProgress)
             progressCancellable.store(in: &cancellables)
             
-            let finishedCancellable = url.onDownloadFinished(caller: "AvatarView.DownloadMonitor", onFinished)
+            let finishedCancellable = url.onDownloadFinished(verbose: self.verbose, caller: "AvatarView.DownloadMonitor", onFinished)
             finishedCancellable.store(in: &cancellables)
         }
         

@@ -11,7 +11,7 @@ public extension URL {
     ///   - onFinished: 下载完成回调
     /// - Returns: 可用于取消监听的 AnyCancellable
     func onDownloadFinished(
-        verbose: Bool = true,
+        verbose: Bool,
         caller: String,
         _ onFinished: @escaping () -> Void
     ) -> AnyCancellable {
