@@ -282,13 +282,8 @@ public struct AvatarView: View, SuperLog {
                 let image = try await url.thumbnail(size: size, verbose: verbose, reason: self.className + ".loadThumbnail")
 
                 if let image = image {
-                    if verbose {
-                        os_log("\(self.t)<\(url.title)>缩略图生成成功")
-                    }
                     await state.setThumbnail(image)
                     await state.setError(nil)
-                } else {
-                    if verbose { os_log("\(self.t)<\(url.title)>缩略图生成返回空结果") }
                 }
             } catch URLError.cancelled {
                 if verbose { os_log("\(self.t)缩略图加载已取消") }
