@@ -257,10 +257,6 @@ public extension URL {
                         // 检查是否应该更新进度
                         guard await progressThrottle.shouldUpdate(for: url, progress: progress) else { continue }
                         
-                        if verbose {
-                            logger.info("\(self.t)📥 [\(caller)] \(url.lastPathComponent): \(Int(progress * 100))%")
-                        }
-                        
                         await MainActor.run {
                             onProgress(url, progress)
                         }
@@ -296,10 +292,6 @@ public extension URL {
                         .compactMap { item in
                             (item.value(forAttribute: NSMetadataItemURLKey) as? URL)
                         }
-                }
-
-                if verbose {
-                    logger.info("\(self.t)📦 [\(caller)] Found \(urls.count) \(isInitial ? "total" : "changed") files")
                 }
 
                 // 处理删除的文件

@@ -241,7 +241,7 @@ private struct FileCopyProgressView: View, SuperLog {
                     if verbose {
                         os_log("\(self.t)开始从 iCloud 下载文件")
                     }
-                    try await source.download { progress in
+                    try await source.download(reason: "复制文件") { progress in
                         Task { @MainActor in
                             await updateDownloadProgress(progress * 100)
                             if verbose {

@@ -40,12 +40,12 @@ public extension URL {
     /// 下载 iCloud 文件
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false
-    ///   - reason: 下载原因，用于日志记录，默认为空字符串
+    ///   - reason: 下载原因，用于日志记录
     ///   - method: 下载方式，默认为 .polling
     ///   - onProgress: 下载进度回调
     func download(
         verbose: Bool = false, 
-        reason: String = "", 
+        reason: String, 
         method: DownloadMethod = .polling(), 
         onProgress: ((Double) -> Void)? = nil
     ) async throws {
@@ -58,14 +58,14 @@ public extension URL {
         }
         
         if verbose {
-            os_log("\(self.t)🛫 开始下载文件\(reason.isEmpty ? "" : "，原因：\(reason)")")
+            os_log("\(self.t)🛫 <\(self.title)> 开始下载文件，原因：\(reason)")
         }
         
         // 如果不需要进度回调，直接使用简单的下载方式
         guard let onProgress = onProgress else {
             try await FileManager.default.startDownloadingUbiquitousItem(at: self)
             if verbose {
-                os_log("\(self.t)⏬ 已启动下载")
+                os_log("\(self.t)⏬ <\(self.title)> 已启动下载")
             }
             return
         }
@@ -291,7 +291,7 @@ public extension URL {
 
         if self.checkIsICloud(verbose: false) && self.isNotDownloaded {
             os_log("\(self.t)检测到 iCloud 文件未下载，开始下载")
-            try await download()
+            try await download(verbose: false, reason: "移动文件时，检测到 iCloud 文件未下载，开始下载")
         }
         
         let coordinator = NSFileCoordinator()

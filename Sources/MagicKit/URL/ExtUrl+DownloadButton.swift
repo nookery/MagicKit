@@ -112,7 +112,7 @@ struct DownloadButtonView: View, SuperLog {
                         progress = newProgress
                     }
                 } else {
-                    try await url.download { newProgress in
+                    try await url.download(reason: "MagicKit.DownloadButtonView") { newProgress in
                         progress = newProgress
                     }
                 }

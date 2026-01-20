@@ -133,6 +133,9 @@ public struct AvatarView: View, SuperLog {
         }
     }
 
+    /// 加载延迟时间（毫秒），用于防止快速滚动时触发过多缩略图加载
+    var loadDelay: UInt64 = 150
+    
     // MARK: - Body
 
     public var body: some View {
@@ -229,7 +232,7 @@ public struct AvatarView: View, SuperLog {
                 }
             }
         }
-        .task { await onTask() }
+        .task(id: url) { await onTaskWithDelay() }
         .onDisappear(perform: onDisappear)
     }
 }
@@ -349,13 +352,32 @@ extension AvatarView {
 // MARK: - Event Handler
 
 extension AvatarView {
+    /// 处理视图出现时的事件（带延迟）
+    /// 延迟加载缩略图，防止快速滚动时触发过多任务
+    private func onTaskWithDelay() async {
+        // 延迟指定时间，如果 cell 仍然可见才加载
+        // 这样快速滚动时，已经滚出屏幕的 cell 不会触发加载
+        do {
+            try await Task.sleep(nanoseconds: loadDelay * 1_000_000)
+        } catch {
+            // 任务被取消，说明视图已经不可见
+            return
+        }
+        
+        // 检查任务是否被取消
+        guard !Task.isCancelled else { return }
+        
+        await onTask()
+    }
+    
     /// 处理视图出现时的事件
     /// 加载缩略图并设置下载监控
     private func onTask() async {
         if state.error == nil {
             await loadThumbnail()
         }
-        if monitorDownload {
+        // 仅对正在下载的 iCloud 文件启用监控
+        if monitorDownload && url.isDownloading {
             await setupDownloadMonitor()
         }
     }
