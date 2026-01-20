@@ -39,9 +39,6 @@ public struct AvatarView: View, SuperLog {
     /// 文件的URL
     let url: URL
 
-    /// 日志回调，用于让调用者接收本视图内部的日志信息
-    var onLog: ((String, MagicLogEntry.Level) -> Void)?
-
     /// 是否启用详细日志输出
     let verbose: Bool
 
@@ -62,9 +59,6 @@ public struct AvatarView: View, SuperLog {
 
     /// 控制图片选择器是否显示
     @State private var isImagePickerPresented = false
-
-    /// 魔法日志记录器
-    private let logger = MagicLogger()
 
     // MARK: - Computed Properties
 
