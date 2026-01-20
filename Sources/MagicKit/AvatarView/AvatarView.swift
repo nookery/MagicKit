@@ -23,11 +23,6 @@ import UniformTypeIdentifiers
 /// // 自定义形状
 /// AvatarView(url: fileURL)
 ///     .magicShape(.roundedRectangle(cornerRadius: 8))
-///
-/// // 下载进度控制
-/// @State var progress: Double = 0
-/// AvatarView(url: fileURL)
-///     .magicDownloadProgress($progress)
 /// ```
 public struct AvatarView: View, SuperLog {
     // MARK: - Properties
@@ -56,9 +51,6 @@ public struct AvatarView: View, SuperLog {
     /// 是否监控下载进度（仅对iCloud文件有效）
     var monitorDownload: Bool = true
 
-    /// 下载进度绑定，用于外部控制下载进度显示
-    var progressBinding: Binding<Double>?
-
     /// 视图尺寸
     var size: CGSize = CGSize(width: 40, height: 40)
 
@@ -78,24 +70,12 @@ public struct AvatarView: View, SuperLog {
 
     /// 当前的下载进度
     private var downloadProgress: Double {
-        progressBinding?.wrappedValue ?? state.autoDownloadProgress
+        state.autoDownloadProgress
     }
 
     /// 是否正在下载
     private var isDownloading: Bool {
-        // 检查手动控制的进度
-        if let binding = progressBinding {
-            if binding.wrappedValue <= 1 {
-                return true
-            }
-        }
-
-        // 检查自动监控的进度
-        if downloadProgress > 0 && downloadProgress <= 1 {
-            return true
-        }
-
-        return false
+        downloadProgress > 0 && downloadProgress <= 1
     }
 
     // MARK: - Initialization
@@ -219,16 +199,6 @@ public struct AvatarView: View, SuperLog {
                 state.setError(ViewError.thumbnailGenerationFailed(error))
             }
         }
-        .onChange(of: progressBinding?.wrappedValue) {
-            if self.verbose { os_log("\(self.t)🔄 外部将下载进度设置为: \(String(describing: progressBinding?.wrappedValue))") }
-
-            if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
-                Task {
-                    state.reset()
-                    await loadThumbnail()
-                }
-            }
-        }
         .task(id: url) { await onTaskWithDelay() }
         .onChange(of: state.needsReload) {
             // 下载完成后触发重新加载缩略图
@@ -302,12 +272,11 @@ extension AvatarView {
     }
 
     /// 设置下载进度监控器
-    /// 仅对iCloud文件且未绑定外部进度时启动监控
+    /// 仅对iCloud文件启动监控
     /// 使用全局下载监控器，避免多个视图重复创建监听器
     /// 耗时操作在后台线程执行，仅 UI 更新在主线程
     @Sendable private func setupDownloadMonitor() async {
-        // 前置条件检查（progressBinding 是值类型，可以安全检查）
-        guard monitorDownload && progressBinding == nil else {
+        guard monitorDownload else {
             return
         }
         
@@ -400,7 +369,7 @@ extension AvatarView {
     /// 处理视图消失时的事件
     /// 取消订阅全局下载监控
     private func onDisappear() {
-        if monitorDownload && url.checkIsICloud(verbose: false) && progressBinding == nil {
+        if monitorDownload && url.checkIsICloud(verbose: false) {
             GlobalDownloadMonitor.shared.unsubscribe(url: url)
         }
     }
