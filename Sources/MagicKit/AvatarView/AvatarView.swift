@@ -193,7 +193,7 @@ public struct AvatarView: View, SuperLog {
                 state.setError(ViewError.thumbnailGenerationFailed(error))
             }
         }
-        .task(id: url) { await onTaskWithDelay() }
+        .task(id: url) { await onTask() }
         .onChange(of: state.needsReload) {
             // 下载完成后触发重新加载缩略图
             if state.needsReload {
@@ -208,6 +208,37 @@ public struct AvatarView: View, SuperLog {
 // MARK: - Actions
 
 extension AvatarView {
+    /// 立即尝试从缓存加载缩略图
+    /// - Returns: 如果缓存命中并成功设置缩略图返回 true，否则返回 false
+    @Sendable private func loadFromCacheIfAvailable() async -> Bool {
+        // 检查是否可以使用缓存
+        let canUseCache = await Task.detached(priority: .utility) { [url] in
+            url.isDownloaded || url.isNotiCloud
+        }.value
+        
+        guard canUseCache else {
+            if verbose { os_log("\(self.t)不满足缓存条件，需要延迟加载") }
+            return false
+        }
+        
+        // 在后台线程检查缓存
+        let cachedImage = await Task.detached(priority: .utility) { [url, size] () -> Image? in
+            if let platformImage = ThumbnailCache.shared.fetch(for: url, size: size) {
+                return platformImage.toSwiftUIImage()
+            }
+            return nil
+        }.value
+        
+        if let image = cachedImage {
+            await state.setThumbnail(image)
+            if verbose { os_log("\(self.t)<\(url.title)>从缓存立即加载缩略图 ✅") }
+            return true
+        }
+        
+        if verbose { os_log("\(self.t)<\(url.title)>缓存未命中，需要延迟加载") }
+        return false
+    }
+    
     /// 异步加载文件的缩略图
     /// 根据文件类型和状态决定是否需要生成或加载缩略图
     @Sendable private func loadThumbnail() async {
@@ -336,9 +367,31 @@ extension AvatarView {
 // MARK: - Event Handler
 
 extension AvatarView {
-    /// 处理视图出现时的事件（带延迟）
-    /// 延迟加载缩略图，防止快速滚动时触发过多任务
-    private func onTaskWithDelay() async {
+    /// 处理视图出现时的事件
+    /// 优化策略：先立即尝试从缓存加载，只有在缓存未命中时才使用延迟加载
+    private func onTask() async {
+        // 如果已有缩略图，无需加载
+        if state.thumbnail != nil {
+            if verbose { os_log("\(self.t)已有缩略图，跳过加载") }
+            // 仍然需要设置下载监控
+            if monitorDownload {
+                await setupDownloadMonitor()
+            }
+            return
+        }
+        
+        // 先立即尝试从缓存加载（不需要延迟）
+        let cachedImmediately = await loadFromCacheIfAvailable()
+        
+        if cachedImmediately {
+            // 缓存命中，设置下载监控后返回
+            if monitorDownload {
+                await setupDownloadMonitor()
+            }
+            return
+        }
+        
+        // 缓存未命中，使用延迟加载策略
         // 延迟指定时间，如果 cell 仍然可见才加载
         // 这样快速滚动时，已经滚出屏幕的 cell 不会触发加载
         do {
@@ -354,6 +407,7 @@ extension AvatarView {
         if state.error == nil {
             await loadThumbnail()
         }
+        
         // 对 iCloud 文件启用下载进度监控（setupDownloadMonitor 内部会检查是否为 iCloud 文件）
         if monitorDownload {
             await setupDownloadMonitor()
