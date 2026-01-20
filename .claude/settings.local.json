@@ -5,7 +5,11 @@
       "Bash(plutil:*)",
       "Bash(swift build:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
