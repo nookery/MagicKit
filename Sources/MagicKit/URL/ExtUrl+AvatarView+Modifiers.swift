@@ -21,7 +21,26 @@ public extension AvatarView {
     }
 
     /// 设置是否监控下载进度
-    /// - Parameter monitor: 是否监控
+    ///
+    /// **✅ 内部使用全局监控器，现在可以安全地在任何场景下启用！**
+    ///
+    /// MagicKit 会自动管理下载进度监听器的生命周期：
+    /// - 每个 URL 只创建一个监听器
+    /// - 多个视图自动共享同一个进度源
+    /// - 引用计数归零时自动清理
+    ///
+    /// ## 使用示例：
+    /// ```swift
+    /// // ✅ 列表中直接使用
+    /// url.makeAvatarView()
+    ///     .magicDownloadMonitor(true)
+    ///
+    /// // ✅ 播放器中使用
+    /// currentTrackURL.makeAvatarView()
+    ///     .magicDownloadMonitor(true)
+    /// ```
+    ///
+    /// - Parameter monitor: 是否监控下载进度
     /// - Returns: 修改后的视图
     func magicDownloadMonitor(_ monitor: Bool) -> AvatarView {
         var view = self

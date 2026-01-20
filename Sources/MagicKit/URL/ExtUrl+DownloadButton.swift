@@ -37,13 +37,13 @@ struct DownloadButtonView: View, SuperLog {
     private var buttonIcon: String {
         if url.isDownloaded {
             return .iconCheckmark
-        } else if url.isiCloud {
+        } else if url.checkIsICloud(verbose: false) {
             return .iconICloudDownloadAlt
         } else {
             return .iconDownload
         }
     }
-    
+
     private var buttonStyle: MagicButton.Style {
         if url.isDownloaded {
             return .primary
@@ -51,11 +51,11 @@ struct DownloadButtonView: View, SuperLog {
             return .secondary
         }
     }
-    
+
     private var buttonLabel: String {
         if url.isDownloaded {
             return "已下载"
-        } else if url.isiCloud {
+        } else if url.checkIsICloud(verbose: false) {
             return "从 iCloud 下载"
         } else {
             return "下载"

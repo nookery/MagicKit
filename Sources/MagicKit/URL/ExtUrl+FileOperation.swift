@@ -140,8 +140,14 @@ public extension URL {
     ///
     /// 大小会自动转换为最适合的单位（B、KB、MB、GB 或 TB）。
     ///
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志
     /// - Returns: 表示大小的格式化字符串（例如："1.5 MB"）。
-    func getSizeReadable() -> String {
+    func getSizeReadable(verbose: Bool = false) -> String {
+        if verbose {
+            os_log("\(self.t)<\(self.title)>获取文件大小: \(self.path)")
+        }
+
         let size = Double(getSize())
         let units = ["B", "KB", "MB", "GB", "TB"]
         var index = 0

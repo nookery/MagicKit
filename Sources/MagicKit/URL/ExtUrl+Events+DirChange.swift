@@ -28,7 +28,7 @@ public extension URL {
         onDeleted: @escaping (_ urls: [URL]) -> Void = { _ in },
         onProgress: @escaping (_ url: URL, _ progress: Double) -> Void = { _, _ in }
     ) -> AnyCancellable {
-        if isiCloud {
+        if checkIsICloud(verbose: false) {
             if verbose {
             os_log("\(self.t)👀 [\(caller)] Start monitoring iCloud directory: \(self.shortPath())")
             }

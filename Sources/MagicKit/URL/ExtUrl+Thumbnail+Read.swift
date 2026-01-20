@@ -151,7 +151,7 @@ extension URL {
         }
 
         // 如果是 iCloud 文件且未下载，返回下载图标
-        if isiCloud && isNotDownloaded {
+        if checkIsICloud(verbose: false) && isNotDownloaded {
             return (Image.PlatformImage.fromSystemIcon(.iconICloudDownload), true)
         }
 

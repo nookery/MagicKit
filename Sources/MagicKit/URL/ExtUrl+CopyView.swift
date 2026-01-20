@@ -137,14 +137,14 @@ private struct FileCopyProgressView: View, SuperLog {
         ZStack {
             VStack(spacing: 12) {
                 FileInfoView(url: source, thumbnail: thumbnail)
-                
-                if source.isiCloud && source.isNotDownloaded {
+
+                if source.checkIsICloud(verbose: false) && source.isNotDownloaded {
                     ProgressIndicatorView(
                         progress: downloadProgress,
                         message: "正在从 iCloud 下载..."
                     )
                 }
-                
+
                 if isCopying {
                     ProgressIndicatorView(
                         progress: copyProgress,
@@ -237,7 +237,7 @@ private struct FileCopyProgressView: View, SuperLog {
             }
             
             do {
-                if source.isiCloud && source.isNotDownloaded {
+                if source.checkIsICloud(verbose: false) && source.isNotDownloaded {
                     if verbose {
                         os_log("\(self.t)开始从 iCloud 下载文件")
                     }
