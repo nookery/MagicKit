@@ -11,23 +11,7 @@ public extension AvatarView {
         return view
     }
 
-    /// 设置下载进度绑定
-    /// - Parameter progress: 进度绑定
-    /// - Returns: 修改后的视图
-    func magicDownloadProgress(_ progress: Binding<Double>) -> AvatarView {
-        var view = self
-        view.progressBinding = progress
-        return view
-    }
-
     /// 设置是否监控下载进度
-    ///
-    /// **✅ 内部使用全局监控器，现在可以安全地在任何场景下启用！**
-    ///
-    /// MagicKit 会自动管理下载进度监听器的生命周期：
-    /// - 每个 URL 只创建一个监听器
-    /// - 多个视图自动共享同一个进度源
-    /// - 引用计数归零时自动清理
     ///
     /// ## 使用示例：
     /// ```swift
@@ -97,15 +81,6 @@ public extension AvatarView {
     func magicBackground(_ color: Color) -> AvatarView {
         var view = self
         view.backgroundColor = color
-        return view
-    }
-
-    /// 设置日志回调
-    /// - Parameter callback: 日志回调闭包，接收日志消息和日志级别
-    /// - Returns: 修改后的视图
-    func onLog(_ callback: @escaping (String, MagicLogEntry.Level) -> Void) -> AvatarView {
-        var view = self
-        view.onLog = callback
         return view
     }
     

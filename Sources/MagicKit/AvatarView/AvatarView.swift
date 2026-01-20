@@ -32,9 +32,6 @@ import UniformTypeIdentifiers
 public struct AvatarView: View, SuperLog {
     // MARK: - Properties
 
-    /// 是否启用详细日志输出
-    static let verbose = false
-
     /// 表情符号标识符
     public static let emoji = "🚉"
 
@@ -150,7 +147,7 @@ public struct AvatarView: View, SuperLog {
                 ProgressView()
                     .controlSize(.small)
             } else {
-                url.defaultImage
+                url.fastDefaultImage
                     .resizable()
                     .scaledToFit()
                     .foregroundStyle(.secondary)
@@ -233,6 +230,13 @@ public struct AvatarView: View, SuperLog {
             }
         }
         .task(id: url) { await onTaskWithDelay() }
+        .onChange(of: state.needsReload) {
+            // 下载完成后触发重新加载缩略图
+            if state.needsReload {
+                state.clearNeedsReload()
+                Task { await loadThumbnail() }
+            }
+        }
         .onDisappear(perform: onDisappear)
     }
 }
@@ -243,23 +247,25 @@ extension AvatarView {
     /// 异步加载文件的缩略图
     /// 根据文件类型和状态决定是否需要生成或加载缩略图
     @Sendable private func loadThumbnail() async {
-        if state.thumbnail != nil && url.isDownloaded {
-            if self.verbose { os_log("\(self.t)跳过缩略图加载：已存在缩略图") }
-            return
-        }
+        let hasThumbnail = state.thumbnail != nil
 
         if state.isLoading {
             if self.verbose { os_log("\(self.t)跳过缩略图加载：正在加载中") }
             return
         }
 
-        if url.isDownloading {
-            if self.verbose { os_log("\(self.t)跳过缩略图加载：文件正在下载中") }
-            return
-        }
-
         // 使用后台任务队列
         await Task.detached(priority: .utility) {
+            if hasThumbnail && url.checkIsDownloaded() {
+                if self.verbose { os_log("\(self.t)跳过缩略图加载：已存在缩略图") }
+                return
+            }
+            
+            if url.isDownloading {
+                if self.verbose { os_log("\(self.t)跳过缩略图加载：文件正在下载中") }
+                return
+            }
+            
             await state.setLoading(true)
 
             do {
@@ -298,54 +304,69 @@ extension AvatarView {
     /// 设置下载进度监控器
     /// 仅对iCloud文件且未绑定外部进度时启动监控
     /// 使用全局下载监控器，避免多个视图重复创建监听器
+    /// 耗时操作在后台线程执行，仅 UI 更新在主线程
     @Sendable private func setupDownloadMonitor() async {
-        guard monitorDownload && url.checkIsICloud(verbose: false) && progressBinding == nil else {
+        // 前置条件检查（progressBinding 是值类型，可以安全检查）
+        guard monitorDownload && progressBinding == nil else {
             return
         }
-
-        // 如果已有订阅，先取消并清理（防止重复订阅导致内存泄漏）
-        if progressCancellable != nil {
-            if Self.verbose { os_log("\(Self.t)<\(url.title)>检测到重复订阅，先取消旧订阅") }
-            GlobalDownloadMonitor.shared.unsubscribe(url: url)
-            progressCancellable?.cancel()
-            progressCancellable = nil
-        } else {
-            if Self.verbose { os_log("\(Self.t)<\(url.title)>首次创建下载监控订阅") }
-        }
-
-        // 使用全局下载监控器
-        progressCancellable = GlobalDownloadMonitor.shared
-            .subscribe(url: url)
-            .receive(on: DispatchQueue.main) // 确保在主线程更新 UI
-            .sink { progress in
-                // 更新进度状态（主线程）
-                state.setProgress(progress)
-
-                // 记录下载进度（后台线程）
-                if progress >= 0 && self.verbose {
-                    Task.detached(priority: .utility) {
-                        os_log("\(AvatarView.t)<\(url.title)>下载进度: \(Int(progress * 100))%")
-                    }
-                }
-
-                // 如果下载失败（进度为负数），设置相应的错误
-                if progress < 0 {
-                    if self.verbose { os_log(.error, "\(Self.t)<\(url.title)>下载失败") }
-                    state.setError(ViewError.downloadFailed(nil))
-                }
-
-                // 如果下载完成
-                if progress >= 1.0 {
+        
+        // 在后台线程执行 iCloud 检查和订阅操作
+        let cancellable = await Task.detached(priority: .utility) { [url, verbose, state] () -> AnyCancellable? in
+            // iCloud 检查涉及文件系统 I/O，放在后台线程
+            guard url.checkIsICloud(verbose: false) else {
+                return nil
+            }
+            
+            if verbose { os_log("\(AvatarView.t)<\(url.title)>在后台线程创建下载监控订阅") }
+            
+            // 订阅操作也在后台线程执行（subscribe 是 async 方法）
+            return await GlobalDownloadMonitor.shared
+                .subscribe(url: url)
+                .receive(on: DispatchQueue.main) // 仅 sink 回调在主线程更新 UI
+                .sink { progress in
+                    // 使用 Task 调用 @MainActor 隔离的方法
                     Task { @MainActor in
-                        if self.verbose { os_log("\(Self.t)<\(url.title)>下载完成，开始重新加载缩略图") }
-                        state.reset()
-                        await loadThumbnail()
-                        // 下载完成后取消订阅，释放内存
-                        progressCancellable?.cancel()
-                        GlobalDownloadMonitor.shared.unsubscribe(url: url)
+                        // 更新进度状态（主线程）
+                        state.setProgress(progress)
+
+                        // 如果下载失败（进度为负数），设置相应的错误
+                        if progress < 0 {
+                            if verbose { os_log(.error, "\(AvatarView.t)<\(url.title)>下载失败") }
+                            state.setError(ViewError.downloadFailed(nil))
+                        }
+
+                        // 如果下载完成
+                        if progress >= 1.0 {
+                            if verbose { os_log("\(AvatarView.t)<\(url.title)>下载完成，标记需要重新加载缩略图") }
+                            // 标记需要重新加载，视图会通过 onChange 监听此变化并触发加载
+                            state.markNeedsReload()
+                        }
                     }
+                    
+                    // 下载完成后在后台线程取消订阅
+                    if progress >= 1.0 {
+                        Task.detached(priority: .utility) {
+                            await GlobalDownloadMonitor.shared.unsubscribe(url: url)
+                        }
+                    }
+                }
+        }.value
+        
+        // 在主线程更新订阅状态
+        await MainActor.run {
+            // 如果已有订阅，先取消并清理（防止重复订阅导致内存泄漏）
+            if progressCancellable != nil {
+                if verbose { os_log("\(Self.t)<\(url.title)>检测到重复订阅，先取消旧订阅") }
+                progressCancellable?.cancel()
+                // 在后台线程执行取消订阅
+                Task.detached(priority: .utility) { [url] in
+                    await GlobalDownloadMonitor.shared.unsubscribe(url: url)
                 }
             }
+            
+            progressCancellable = cancellable
+        }
     }
 }
 
@@ -367,17 +388,11 @@ extension AvatarView {
         // 检查任务是否被取消
         guard !Task.isCancelled else { return }
         
-        await onTask()
-    }
-    
-    /// 处理视图出现时的事件
-    /// 加载缩略图并设置下载监控
-    private func onTask() async {
         if state.error == nil {
             await loadThumbnail()
         }
-        // 仅对正在下载的 iCloud 文件启用监控
-        if monitorDownload && url.isDownloading {
+        // 对 iCloud 文件启用下载进度监控（setupDownloadMonitor 内部会检查是否为 iCloud 文件）
+        if monitorDownload {
             await setupDownloadMonitor()
         }
     }
