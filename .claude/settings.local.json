@@ -9,7 +9,9 @@
       "Bash(find:*)",
       "Bash(xcodebuild:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git reset:*)",
+      "Bash(swiftc:*)"
     ]
   }
 }
