@@ -16,7 +16,7 @@ import SwiftUI
 public final class AvatarDownloadMonitor: SuperLog {
     nonisolated(unsafe) public static let emoji = "📥"
     /// 是否输出详细日志
-    nonisolated(unsafe) public static let verbose = true
+    nonisolated(unsafe) public static let verbose = false
 
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
