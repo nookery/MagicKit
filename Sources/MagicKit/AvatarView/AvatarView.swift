@@ -236,11 +236,11 @@ extension AvatarView {
             if hasThumbnail && capturedUrl.checkIsDownloaded() {
                 return
             }
-            
-            if capturedUrl.isDownloading {
+
+            if capturedUrl.checkIsDownloading(verbose: false) {
                 return
             }
-            
+
             await capturedState.setLoading(true)
 
             do {
@@ -298,8 +298,15 @@ extension AvatarView {
             return
         }
         
-        // 创建订阅
-        let cancellable = await GlobalDownloadMonitor.shared
+        // ⚠️ 重要：先取消旧订阅，再创建新订阅，避免引用计数混乱
+        if let oldCancellable = progressCancellable {
+            oldCancellable.cancel()
+            progressCancellable = nil
+            await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
+        }
+        
+        // 创建新订阅
+        let cancellable = await AvatarDownloadMonitor.shared
             .subscribe(url: capturedUrl)
             .receive(on: DispatchQueue.main)
             .sink { [capturedState, capturedUrl] progress in
@@ -316,16 +323,10 @@ extension AvatarView {
                     capturedState.markNeedsReload()
                     // 取消订阅
                     Task {
-                        await GlobalDownloadMonitor.shared.unsubscribe(url: capturedUrl)
+                        await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
                     }
                 }
             }
-        
-        // 如果已有订阅，先取消
-        if let oldCancellable = progressCancellable {
-            oldCancellable.cancel()
-            await GlobalDownloadMonitor.shared.unsubscribe(url: capturedUrl)
-        }
         
         progressCancellable = cancellable
     }
@@ -375,14 +376,17 @@ extension AvatarView {
     /// 处理视图消失时的事件
     /// 取消所有订阅，释放资源
     private func onDisappear() {
-        // 取消 Combine 订阅
-        progressCancellable?.cancel()
+        // 先清空本地引用，防止重复取消
+        let oldCancellable = progressCancellable
         progressCancellable = nil
         
-        // 取消全局下载监控订阅
+        // 取消 Combine 订阅
+        oldCancellable?.cancel()
+        
+        // 取消全局下载监控订阅（使用 Task 而非 detached，确保在主线程执行）
         let capturedUrl = url
-        Task.detached(priority: .utility) {
-            await GlobalDownloadMonitor.shared.unsubscribe(url: capturedUrl)
+        Task { @MainActor in
+            await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
         }
     }
 }

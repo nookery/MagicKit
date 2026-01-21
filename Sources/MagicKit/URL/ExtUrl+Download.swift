@@ -16,7 +16,7 @@ public extension URL {
             return "远程文件"
         } else if isFileURL {
             if checkIsICloud(verbose: true) {
-                if isDownloading {
+                if checkIsDownloading(verbose: false) {
                     return "正在从 iCloud 下载"
                 } else if isDownloaded {
                     return "已从 iCloud 下载"
@@ -88,89 +88,67 @@ public extension URL {
 
     /// 检查文件是否已下载（明确标注为耗时操作）
     /// - Parameters:
-    ///   - verbose: 是否输出详细日志，默认为 true
+    ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 如果文件已下载返回 true，否则返回 false
     /// - Note: 此函数会访问文件系统，建议在后台线程调用
     /// - Performance: ~1-5ms for iCloud files, ~0.1μs for local files
-    func checkIsDownloaded(verbose: Bool = true) -> Bool {
-        if verbose {
-            os_log("\(self.t)<\(self.title)>检查文件是否已下载")
-        }
-
-        if isLocal {
-            if verbose {
-                os_log("\(self.t)<\(self.title)>是本地文件，已下载 ✅")
-            }
+    func checkIsDownloaded(verbose: Bool = false) -> Bool {
+        // 使用单次 I/O 获取所有需要的属性
+        // 这比先调用 checkIsICloud 再调用 resourceValues 效率高得多
+        guard let resources = try? self.resourceValues(forKeys: [
+            .isUbiquitousItemKey,
+            .ubiquitousItemDownloadingStatusKey
+        ]) else {
+            // 无法获取资源，可能是本地文件
             return true
         }
 
-        if checkIsICloud(verbose: false) {
-            guard let resources = try? self.resourceValues(forKeys: [
-                .ubiquitousItemDownloadingStatusKey
-            ]) else {
-                if verbose {
-                    os_log("\(self.t)<\(self.title)>无法获取 iCloud 文件资源 ❌")
-                }
-                return false
-            }
+        // 如果不是 iCloud 文件，视为本地文件
+        guard resources.isUbiquitousItem == true else {
+            return true
+        }
 
-            guard let status = resources.ubiquitousItemDownloadingStatus else {
-                if verbose {
-                    os_log("\(self.t)<\(self.title)>iCloud 文件下载状态为空 ❌")
-                }
-                return false
-            }
-
-            let isDownloaded = status == .current
+        // 检查下载状态
+        guard let status = resources.ubiquitousItemDownloadingStatus else {
             if verbose {
-                if isDownloaded {
-                    os_log("\(self.t)<\(self.title)>iCloud 文件已下载 ✅")
-                } else {
-                    os_log("\(self.t)<\(self.title)>iCloud 文件未下载 ⏳")
-                }
-            }
-            return isDownloaded
-        }
-
-        if verbose {
-            os_log("\(self.t)<\(self.title)>非本地文件，返回 false ❌")
-        }
-        return false
-    }
-    
-    /// 判断 URL 对应的文件是否正在从 iCloud 下载中
-    /// ⚠️ 注意：此属性会访问文件系统，可能需要 1-5 毫秒
-    /// 建议在后台线程调用，或使用 `checkIsDownloading()` 函数
-    /// - Returns: 如果文件是 iCloud 文件且正在下载返回 true，否则返回 false
-    var isDownloading: Bool {
-        checkIsDownloading(verbose: false)
-    }
-
-    /// 检查文件是否正在下载（明确标注为耗时操作）
-    /// - Parameters:
-    ///   - verbose: 是否输出详细日志，默认为 true
-    /// - Returns: 如果文件是 iCloud 文件且正在下载返回 true，否则返回 false
-    /// - Note: 此函数会访问文件系统，建议在后台线程调用
-    /// - Performance: ~1-5ms for iCloud files
-    func checkIsDownloading(verbose: Bool = true) -> Bool {
-        if verbose {
-            os_log("\(self.t)<\(self.title)>检查文件是否正在下载")
-        }
-
-        // 首先确保是 iCloud 文件
-        guard checkIsICloud(verbose: false) else {
-            if verbose {
-                os_log("\(self.t)<\(self.title)>不是 iCloud 文件，未在下载 ❌")
+                os_log("\(self.t)<\(self.title)>iCloud 文件下载状态为空 ❌")
             }
             return false
         }
 
-        // 获取文件的下载状态
+        let isDownloaded = status == .current
+        if verbose {
+            if isDownloaded {
+                os_log("\(self.t)<\(self.title)>iCloud 文件已下载 ✅")
+            } else {
+                os_log("\(self.t)<\(self.title)>iCloud 文件未下载 ⏳")
+            }
+        }
+        return isDownloaded
+    }
+
+    /// 检查文件是否正在下载（明确标注为耗时操作）
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
+    /// - Returns: 如果文件是 iCloud 文件且正在下载返回 true，否则返回 false
+    /// - Note: 此函数会访问文件系统，建议在后台线程调用
+    /// - Performance: ~1-5ms for iCloud files
+    func checkIsDownloading(verbose: Bool = false) -> Bool {
+        // 使用单次 I/O 获取所有需要的属性
         guard let resources = try? self.resourceValues(forKeys: [
+            .isUbiquitousItemKey,
             .ubiquitousItemDownloadingStatusKey
         ]) else {
             if verbose {
-                os_log("\(self.t)<\(self.title)>无法获取 iCloud 文件资源 ❌")
+                os_log("\(self.t)<\(self.title)>无法获取文件资源 ❌")
+            }
+            return false
+        }
+
+        // 如果不是 iCloud 文件，肯定不在下载
+        guard resources.isUbiquitousItem == true else {
+            if verbose {
+                os_log("\(self.t)<\(self.title)>不是 iCloud 文件，未在下载 ❌")
             }
             return false
         }
@@ -334,13 +312,12 @@ public extension URL {
     ) async throws {
         // 创建下载任务
         try FileManager.default.startDownloadingUbiquitousItem(at: self)
-        
+
         // 等待下载完成
-        while isDownloading {
+        while checkIsDownloading(verbose: false) {
             if verbose {
                 os_log("\(self.t)文件下载中...")
             }
-            
             // 获取下载进度
             if let resources = try? self.resourceValues(forKeys: [.ubiquitousItemDownloadingStatusKey, .ubiquitousItemDownloadingErrorKey, .fileSizeKey, .fileAllocatedSizeKey]),
                let totalSize = resources.fileSize,
@@ -461,11 +438,11 @@ public extension URL {
 
     /// 获取文件的下载进度（明确标注为耗时操作）
     /// - Parameters:
-    ///   - verbose: 是否输出详细日志，默认为 true
+    ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 下载进度（0.0 到 1.0 之间）
     /// - Note: 此函数会访问文件系统，建议在后台线程调用
     /// - Performance: ~1-5ms for iCloud files, ~0.1μs for local files
-    func getDownloadProgress(verbose: Bool = true) -> Double {
+    func getDownloadProgress(verbose: Bool = false) -> Double {
         if verbose {
             os_log("\(self.t)<\(self.title)>获取下载进度")
         }
