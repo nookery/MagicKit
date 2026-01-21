@@ -31,9 +31,20 @@ public extension URL {
         }
         
         var lastUpdateTime: TimeInterval = 0
+        // 保存 observer token 以便后续移除，避免内存泄漏
+        var observer: NSObjectProtocol?
+        
         let task = Task {
             let stream = AsyncStream<Notification> { continuation in
-                NotificationCenter.default.addObserver(
+                // 设置取消时的清理操作，确保移除 NotificationCenter 观察者
+                continuation.onTermination = { _ in
+                    if let obs = observer {
+                        NotificationCenter.default.removeObserver(obs)
+                        observer = nil
+                    }
+                }
+                
+                observer = NotificationCenter.default.addObserver(
                     forName: .NSMetadataQueryDidUpdate,
                     object: query,
                     queue: queue
@@ -70,6 +81,11 @@ public extension URL {
             }
             task.cancel()
             query.stop()
+            // 确保移除观察者，防止内存泄漏
+            if let obs = observer {
+                NotificationCenter.default.removeObserver(obs)
+                observer = nil
+            }
         }
     }
 }

@@ -15,6 +15,9 @@ extension AvatarView {
         /// 自动下载进度
         @Published var autoDownloadProgress: Double = 0
         
+        /// 标记是否需要重新加载缩略图（下载完成后触发）
+        @Published var needsReload = false
+        
         /// 重置所有状态
         func reset() {
             thumbnail = nil
@@ -41,6 +44,17 @@ extension AvatarView {
         /// 设置下载进度
         func setProgress(_ progress: Double) {
             self.autoDownloadProgress = progress
+        }
+        
+        /// 标记下载完成，需要重新加载缩略图
+        func markNeedsReload() {
+            reset()
+            needsReload = true
+        }
+        
+        /// 清除重新加载标记
+        func clearNeedsReload() {
+            needsReload = false
         }
     }
 } 

@@ -94,7 +94,6 @@ public struct MediaFileView: View, SuperLog {
                             avatarSize: avatarSize,
                             avatarBackgroundColor: avatarBackgroundColor,
                             monitorDownload: monitorDownload,
-                            avatarProgressBinding: avatarProgressBinding,
                             showBorder: showBorder,
                             isHovering: isHovering
                         )

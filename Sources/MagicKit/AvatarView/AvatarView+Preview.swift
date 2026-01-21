@@ -149,24 +149,6 @@ public struct AvatarDemoView: View {
             ScrollView {
                 HStack {
                     VStack(spacing: 32) {
-                        // 下载进度
-                        demoSection("手动进度控制") {
-                            VStack {
-                                URL.sample_web_jpg_earth.makeAvatarView()
-                                    .magicDownloadProgress($downloadProgress)
-                                    .magicSize(64)
-
-                                Slider(value: $downloadProgress, in: 0 ... 1) {
-                                    Text("下载进度")
-                                } minimumValueLabel: {
-                                    Text("0%")
-                                } maximumValueLabel: {
-                                    Text("100%")
-                                }
-                            }
-                            .frame(maxWidth: 300)
-                        }
-
                         // iCloud 文件
                         demoSection("iCloud 文件") {
                             VStack(spacing: 16) {

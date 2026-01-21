@@ -3,6 +3,22 @@ import OSLog
 import SwiftUI
 import Compression
 
+import Compression
+
+// MARK: - Cache Support
+
+private class SizeCacheEntry {
+    let size: Int64
+    let modificationDate: Date
+
+    init(size: Int64, modificationDate: Date) {
+        self.size = size
+        self.modificationDate = modificationDate
+    }
+}
+
+private let fileSizeCache = NSCache<NSString, SizeCacheEntry>()
+
 public extension URL {
     /// 删除指定 URL 对应的文件或目录。
     ///
@@ -122,27 +138,59 @@ public extension URL {
     ///
     /// 对于目录，此方法会递归计算所有包含文件的总大小。
     ///
+    /// - Parameter useCache: 是否使用缓存（默认为 true）。如果为 true，会根据文件修改时间检查缓存。
     /// - Returns: 以 Int64 表示的字节大小。
     /// - Note: 如果无法确定大小，则返回 0。
-    func getSize() -> Int64 {
-        // 如果是文件夹，计算所有子项的大小总和
-        if hasDirectoryPath {
-            return getAllFilesInDirectory()
-                .reduce(Int64(0)) { $0 + $1.getSize() }
+    func getSize(useCache: Bool = true) -> Int64 {
+        // 获取当前文件的修改时间
+        let currentModificationDate: Date?
+        if useCache {
+            currentModificationDate = (try? resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
+            
+            // 尝试从缓存获取
+            if let date = currentModificationDate,
+               let cached = fileSizeCache.object(forKey: path as NSString),
+               cached.modificationDate == date {
+                return cached.size
+            }
+        } else {
+            currentModificationDate = nil
         }
 
-        // 如果是文件，返回文件大小
-        let attributes = try? resourceValues(forKeys: [.fileSizeKey])
-        return Int64(attributes?.fileSize ?? 0)
+        var size: Int64 = 0
+
+        // 如果是文件夹，计算所有子项的大小总和
+        if hasDirectoryPath {
+            size = getAllFilesInDirectory()
+                .reduce(Int64(0)) { $0 + $1.getSize(useCache: useCache) }
+        } else {
+            // 如果是文件，返回文件大小
+            let attributes = try? resourceValues(forKeys: [.fileSizeKey])
+            size = Int64(attributes?.fileSize ?? 0)
+        }
+
+        // 写入缓存
+        if useCache, let date = currentModificationDate {
+            fileSizeCache.setObject(SizeCacheEntry(size: size, modificationDate: date), forKey: path as NSString)
+        }
+
+        return size
     }
 
     /// 返回文件或目录大小的人类可读格式。
     ///
     /// 大小会自动转换为最适合的单位（B、KB、MB、GB 或 TB）。
     ///
+    /// - Parameters:
+    ///   - verbose: 是否输出详细日志
+    ///   - useCache: 是否使用缓存（默认为 true）
     /// - Returns: 表示大小的格式化字符串（例如："1.5 MB"）。
-    func getSizeReadable() -> String {
-        let size = Double(getSize())
+    func getSizeReadable(verbose: Bool = false, useCache: Bool = true) -> String {
+        if verbose {
+            os_log("\(self.t)<\(self.title)>获取文件大小: \(self.path)")
+        }
+
+        let size = Double(getSize(useCache: useCache))
         let units = ["B", "KB", "MB", "GB", "TB"]
         var index = 0
         var convertedSize = size

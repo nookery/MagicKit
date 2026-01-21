@@ -40,11 +40,50 @@ public extension URL {
     /// ```swift
     /// // 自动监听 iCloud 文件
     /// let cloudView = url.makeAvatarView()
-    /// 
+    ///
     /// // 手动控制进度
     /// @State var progress: Double = 0
     /// let progressView = url.makeAvatarView()
     ///     .magicDownloadProgress($progress)
+    /// ```
+    ///
+    /// # 性能警告 - 下载监控
+    /// **✅ 好消息：MagicKit 现在内部使用全局下载进度管理器！**
+    ///
+    /// 从当前版本开始，`magicDownloadMonitor` 已优化为使用全局监控器。
+    /// 每个文件 URL 只会创建一个监听器，多个视图共享同一个进度源。
+    ///
+    /// ## 现在可以安全使用的场景：
+    /// - ✅ 列表/集合视图（即使有上百个项目）
+    /// - ✅ 快速滚动的视图
+    /// - ✅ 详情页、播放器界面
+    ///
+    /// ## 工作原理：
+    /// 1. **全局单例**：`GlobalDownloadMonitor.shared` 集中管理所有下载进度
+    /// 2. **引用计数**：自动跟踪每个 URL 的订阅者数量
+    /// 3. **自动清理**：当没有订阅者时自动清理监听器
+    /// 4. **零配置**：无需额外代码，直接使用即可
+    ///
+    /// ## 使用示例：
+    /// ```swift
+    /// // ✅ 列表中直接使用，无需担心性能
+    /// url.makeAvatarView()
+    ///     .magicDownloadMonitor(true)
+    ///
+    /// // ✅ 多个视图显示同一个文件，自动共享进度
+    /// // (例如列表中的头像 + 播放器中的头像)
+    /// ```
+    ///
+    /// ## 内部实现：
+    /// ```swift
+    /// @MainActor
+    /// public final class GlobalDownloadMonitor {
+    ///     public static let shared = GlobalDownloadMonitor()
+    ///
+    ///     // 每个 URL 只创建一个监听器
+    ///     public func subscribe(url: URL) -> AnyPublisher<Double>
+    ///     public func unsubscribe(url: URL)
+    /// }
     /// ```
     /// 
     /// # 错误处理

@@ -168,6 +168,51 @@ public extension URL {
     }
     
     var systemIcon: String { icon }
+
+    /// 基于文件扩展名快速获取图标名称（不调用 resourceValues，避免主线程卡顿）
+    /// 适用于列表滚动等需要高性能的场景
+    var fastIcon: String {
+        let ext = pathExtension.lowercased()
+
+        // 使用静态集合避免重复创建
+        if Self.audioExtSet.contains(ext) {
+            return "music.note"
+        } else if Self.videoExtSet.contains(ext) {
+            return "film"
+        } else if Self.imageExtSet.contains(ext) {
+            return "photo"
+        } else if hasDirectoryPath {
+            return "folder"
+        } else {
+            return "doc"
+        }
+    }
+
+    /// 基于文件扩展名快速获取默认图片（不调用 resourceValues）
+    var fastDefaultImage: Image {
+        Image(systemName: fastIcon)
+    }
+
+    // 静态扩展名集合，避免重复创建
+    private static let audioExtSet: Set<String> = [
+        "mp3", "m4a", "aac", "wav", "aiff", "wma",
+        "ogg", "oga", "opus", "flac", "alac", "mid",
+        "midi", "ac3", "dsf", "dff", "ape", "wv"
+    ]
+
+    private static let videoExtSet: Set<String> = [
+        "mp4", "m4v", "mov", "avi", "wmv", "flv",
+        "mkv", "webm", "3gp", "mpeg", "mpg", "ts",
+        "mts", "m2ts", "vob", "ogv", "rm", "rmvb",
+        "asf", "divx", "f4v"
+    ]
+
+    private static let imageExtSet: Set<String> = [
+        "jpg", "jpeg", "png", "gif", "bmp", "tiff",
+        "webp", "heic", "heif", "raw", "svg", "ico",
+        "tga", "psd", "ai", "eps", "cr2", "nef",
+        "arw", "dng", "orf", "rw2"
+    ]
 }
 
 // MARK: - Supported Extensions

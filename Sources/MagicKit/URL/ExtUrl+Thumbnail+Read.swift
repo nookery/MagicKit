@@ -100,8 +100,10 @@ extension URL {
         verbose: Bool,
         reason: String
     ) async throws -> Image? {
+        let canUseCache = isDownloaded || isNotiCloud
+        
         // 检查缓存
-        if let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
+        if canUseCache, let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
             if verbose {
                 os_log("\(self.t)<\(self.title)>从缓存中获取缩略图 🐛 \(reason)")
             }
@@ -114,7 +116,6 @@ extension URL {
                let image = result.image {
                 // 只缓存非系统图标的缩略图
                 if !result.isSystemIcon {
-                    if verbose { os_log("\(self.t)缓存缩略图: \(self.title) 🐛 \(reason)") }
                     let cache = ThumbnailCache.shared
                     cache.verbose = verbose
                     cache.save(image, for: self, size: size)
@@ -150,7 +151,7 @@ extension URL {
         }
 
         // 如果是 iCloud 文件且未下载，返回下载图标
-        if isiCloud && isNotDownloaded {
+        if checkIsICloud(verbose: false) && isNotDownloaded {
             return (Image.PlatformImage.fromSystemIcon(.iconICloudDownload), true)
         }
 

@@ -23,39 +23,30 @@ import UniformTypeIdentifiers
 /// // 自定义形状
 /// AvatarView(url: fileURL)
 ///     .magicShape(.roundedRectangle(cornerRadius: 8))
-///
-/// // 下载进度控制
-/// @State var progress: Double = 0
-/// AvatarView(url: fileURL)
-///     .magicDownloadProgress($progress)
 /// ```
 public struct AvatarView: View, SuperLog {
     // MARK: - Properties
 
+    /// 表情符号标识符
     public static let emoji = "🚉"
 
-    /// 状态管理器
+    /// 视图状态管理器，管理缩略图、加载状态和错误状态
     @StateObject private var state = ViewState()
 
-    /// 下载监控器
-    private let downloadMonitor: DownloadMonitor
+    /// 全局下载进度订阅
+    @State private var progressCancellable: AnyCancellable? = nil
 
     /// 文件的URL
     let url: URL
 
-    /// 日志回调，用于让调用者接收本视图内部的日志
-    var onLog: ((String, MagicLogEntry.Level) -> Void)?
-
+    /// 是否启用详细日志输出
     let verbose: Bool
 
-    /// 视图的形状
+    /// 视图的形状样式
     var shape: AvatarViewShape = .circle
 
-    /// 是否监控下载进度
+    /// 是否监控下载进度（仅对iCloud文件有效）
     var monitorDownload: Bool = true
-
-    /// 下载进度绑定
-    var progressBinding: Binding<Double>?
 
     /// 视图尺寸
     var size: CGSize = CGSize(width: 40, height: 40)
@@ -66,37 +57,19 @@ public struct AvatarView: View, SuperLog {
     /// 是否显示右键菜单
     var showContextMenu: Bool = true
 
-    /// 控制文件选择器的显示
+    /// 控制图片选择器是否显示
     @State private var isImagePickerPresented = false
-
-    /// 控制日志显示
-    @State private var showLogSheet = false
-
-    /// 日志记录器
-    private let logger = MagicLogger()
 
     // MARK: - Computed Properties
 
     /// 当前的下载进度
     private var downloadProgress: Double {
-        progressBinding?.wrappedValue ?? state.autoDownloadProgress
+        state.autoDownloadProgress
     }
 
     /// 是否正在下载
     private var isDownloading: Bool {
-        // 检查手动控制的进度
-        if let binding = progressBinding {
-            if binding.wrappedValue <= 1 {
-                return true
-            }
-        }
-
-        // 检查自动监控的进度
-        if downloadProgress > 0 && downloadProgress <= 1 {
-            return true
-        }
-
-        return false
+        downloadProgress > 0 && downloadProgress <= 1
     }
 
     // MARK: - Initialization
@@ -109,13 +82,12 @@ public struct AvatarView: View, SuperLog {
         self.url = url
         self.size = size
         self.verbose = verbose
-        self.downloadMonitor = DownloadMonitor(verbose: verbose)
 
         // 在初始化时进行基本的 URL 检查
         if url.isFileURL {
             // 检查本地文件是否存在
             if url.isNotFileExist {
-                if verbose {
+                if self.verbose {
                     os_log("\(Self.t)文件不存在: \(url.path)")
                 }
                 _state = StateObject(wrappedValue: ViewState())
@@ -124,7 +96,7 @@ public struct AvatarView: View, SuperLog {
         } else {
             // 检查 URL 格式
             guard url.isNetworkURL else {
-                os_log("\(Self.t)无效的 URL: \(url)")
+                os_log(.error, "\(Self.t)无效的 URL: \(url)")
                 _state = StateObject(wrappedValue: ViewState())
                 state.setError(ViewError.invalidURL)
                 return
@@ -132,14 +104,9 @@ public struct AvatarView: View, SuperLog {
         }
     }
 
-    // MARK: - Private Methods
-
-    private func addLog(_ message: String, level: MagicLogEntry.Level = .info) {
-        if verbose {
-            logger.log(message, level: level)
-        }
-    }
-
+    /// 加载延迟时间（毫秒），用于防止快速滚动时触发过多缩略图加载
+    var loadDelay: UInt64 = 150
+    
     // MARK: - Body
 
     public var body: some View {
@@ -154,7 +121,7 @@ public struct AvatarView: View, SuperLog {
                 ProgressView()
                     .controlSize(.small)
             } else {
-                url.defaultImage
+                url.fastDefaultImage
                     .resizable()
                     .scaledToFit()
                     .foregroundStyle(.secondary)
@@ -176,10 +143,6 @@ public struct AvatarView: View, SuperLog {
                 }
 
                 Divider()
-
-                Button("查看日志") {
-                    showLogSheet = true
-                }
             }
         }
         .fileImporter(
@@ -192,12 +155,12 @@ public struct AvatarView: View, SuperLog {
                 if let selectedURL = files.first {
                     Task {
                         do {
-                            if verbose { os_log("\(self.t)🎨 开始设置封面：\(selectedURL.lastPathComponent)") }
+                            if self.verbose { os_log("\(self.t)🎨 开始设置封面：\(selectedURL.lastPathComponent)") }
 
                             // 获取文件的安全访问权限
                             guard selectedURL.startAccessingSecurityScopedResource() else {
                                 let accessError = NSError(domain: "AvatarView", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取文件访问权限"])
-                                if verbose { os_log(.error, "\(self.t)🎨 无法获取文件访问权限") }
+                                if self.verbose { os_log(.error, "\(self.t)🎨 无法获取文件访问权限") }
                                 state.setError(ViewError.thumbnailGenerationFailed(accessError))
                                 return
                             }
@@ -216,96 +179,83 @@ public struct AvatarView: View, SuperLog {
                             // 重新加载缩略图
                             state.reset()
                             await loadThumbnail()
-                            if verbose { os_log("\(self.t)🎨 封面设置成功") }
+                            if self.verbose { os_log("\(self.t)🎨 封面设置成功") }
                         } catch {
                             let errorMessage = "设置封面失败: \(error.localizedDescription)"
-                            if verbose { os_log(.error, "\(self.t)🎨 设置封面失败: \(error.localizedDescription)") }
+                            if self.verbose { os_log(.error, "\(self.t)🎨 设置封面失败: \(error.localizedDescription)") }
                             state.setError(ViewError.thumbnailGenerationFailed(error))
                         }
                     }
                 }
             case let .failure(error):
                 let errorMessage = "选择图片失败: \(error.localizedDescription)"
-                if verbose { os_log(.error, "\(self.t)🎨 选择图片失败: \(error.localizedDescription)") }
+                if self.verbose { os_log(.error, "\(self.t)🎨 选择图片失败: \(error.localizedDescription)") }
                 state.setError(ViewError.thumbnailGenerationFailed(error))
             }
         }
-        .sheet(isPresented: $showLogSheet) {
-            NavigationView {
-                logger.logView(title: "AvatarView Logs") {
-                    showLogSheet = false
-                }
-            }
-            #if os(macOS)
-            .frame(minWidth: 500, minHeight: 300)
-            #endif
-        }
-        .onChange(of: progressBinding?.wrappedValue) {
-            if verbose { os_log("\(self.t)🔄 外部将下载进度设置为: \(String(describing: progressBinding?.wrappedValue))") }
-
-            if let progress = progressBinding?.wrappedValue, progress >= 1.0 {
-                Task {
-                    state.reset()
-                    await loadThumbnail()
-                }
+        .task(id: url) { await onTask() }
+        .onChange(of: state.needsReload) {
+            // 下载完成后触发重新加载缩略图
+            if state.needsReload {
+                state.clearNeedsReload()
+                Task { await loadThumbnail() }
             }
         }
-        .task {
-            if state.error == nil {
-                await loadThumbnail()
-            }
-            if monitorDownload {
-                await setupDownloadMonitor()
-            }
-        }
-        .onDisappear {
-            downloadMonitor.stopMonitoring()
-        }
+        .onDisappear(perform: onDisappear)
     }
+}
 
-    // MARK: - Private Methods
+// MARK: - Actions
 
-    @Sendable private func loadThumbnail() async {
-        if state.thumbnail != nil && url.isDownloaded {
-            if verbose { os_log("\(self.t)跳过缩略图加载：已存在缩略图") }
-            return
-        }
+extension AvatarView {
+    /// 检查是否可以跳过延迟（缓存可用时不需要延迟）
+    /// - Returns: 如果可以跳过延迟返回 true
+    private func canSkipDelay() async -> Bool {
+        // 在后台线程检查文件状态
+        return await Task.detached(priority: .utility) { [url] in
+            url.isDownloaded || url.isNotiCloud
+        }.value
+    }
+    
+    /// 异步加载文件的缩略图
+    /// 根据文件类型和状态决定是否需要生成或加载缩略图
+    private func loadThumbnail() async {
+        let hasThumbnail = state.thumbnail != nil
 
         if state.isLoading {
-            if verbose { os_log("\(self.t)跳过缩略图加载：正在加载中") }
             return
         }
 
-        if url.isDownloading {
-            if verbose { os_log("\(self.t)跳过缩略图加载：文件正在下载中") }
-            return
-        }
+        // 显式捕获所有需要的值，避免捕获 self
+        let capturedUrl = url
+        let capturedSize = size
+        let capturedState = state
 
         // 使用后台任务队列
-        await Task.detached(priority: .utility) {
-            if verbose {
-                os_log("\(self.t)<\(url.title)>开始加载缩略图")
+        await Task.detached(priority: .utility) { [hasThumbnail] in
+            if hasThumbnail && capturedUrl.checkIsDownloaded() {
+                return
             }
-            await state.setLoading(true)
+
+            if capturedUrl.checkIsDownloading(verbose: false) {
+                return
+            }
+
+            await capturedState.setLoading(true)
 
             do {
-                if verbose {
-                    os_log("\(self.t)<\(url.title)>正在生成缩略图，目标尺寸: \(size.width)x\(size.height)")
-                }
-                // 在后台线程中处理图片生成
-                let image = try await url.thumbnail(size: size, verbose: verbose, reason: self.className + ".loadThumbnail")
+                let image = try await capturedUrl.thumbnail(
+                    size: capturedSize,
+                    verbose: false,
+                    reason: "AvatarView.loadThumbnail"
+                )
 
                 if let image = image {
-                    if verbose {
-                        os_log("\(self.t)<\(url.title)>缩略图生成成功")
-                    }
-                    await state.setThumbnail(image)
-                    await state.setError(nil)
-                } else {
-                    if verbose { os_log("\(self.t)<\(url.title)>缩略图生成返回空结果") }
+                    await capturedState.setThumbnail(image)
+                    await capturedState.setError(nil)
                 }
             } catch URLError.cancelled {
-                if verbose { os_log("\(self.t)缩略图加载已取消") }
+                // 任务被取消，忽略
             } catch {
                 let viewError: ViewError
                 if let urlError = error as? URLError {
@@ -321,44 +271,123 @@ public struct AvatarView: View, SuperLog {
                     viewError = .thumbnailGenerationFailed(error)
                 }
 
-                await state.setError(viewError)
-                if verbose { os_log(.error, "\(self.t)<\(url.title)>加载缩略图失败: \(viewError.localizedDescription)") }
+                await capturedState.setError(viewError)
             }
 
-            await state.setLoading(false)
+            await capturedState.setLoading(false)
         }.value
     }
 
-    @Sendable private func setupDownloadMonitor() async {
-        guard monitorDownload && url.isiCloud && progressBinding == nil else {
+    /// 设置下载进度监控器
+    /// 仅对iCloud文件启动监控
+    private func setupDownloadMonitor() async {
+        guard monitorDownload else {
             return
         }
+        
+        // 显式捕获需要的值
+        let capturedUrl = url
+        let capturedState = state
+        
+        // 在后台线程检查是否为 iCloud 文件
+        let isICloud = await Task.detached(priority: .utility) {
+            capturedUrl.checkIsICloud(verbose: false)
+        }.value
+        
+        guard isICloud else {
+            return
+        }
+        
+        // ⚠️ 重要：先取消旧订阅，再创建新订阅，避免引用计数混乱
+        if let oldCancellable = progressCancellable {
+            oldCancellable.cancel()
+            progressCancellable = nil
+            await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
+        }
+        
+        // 创建新订阅
+        let cancellable = await AvatarDownloadMonitor.shared
+            .subscribe(url: capturedUrl)
+            .receive(on: DispatchQueue.main)
+            .sink { [capturedState, capturedUrl] progress in
+                // 更新进度状态
+                capturedState.setProgress(progress)
 
-        if verbose { os_log("\(self.t)<\(url.title)>开始设置下载监控") }
-        if verbose { os_log("\(self.t)<\(url.title)>设置下载监控") }
-
-        downloadMonitor.startMonitoring(
-            url: url,
-            onProgress: { progress in
-                state.setProgress(progress)
-                // 记录下载进度
-                if progress >= 0 {
-                    if verbose { os_log("\(self.t)<\(url.title)>下载进度: \(Int(progress * 100))%") }
-                }
-                // 如果下载失败（进度为负数），设置相应的错误
+                // 如果下载失败
                 if progress < 0 {
-                    if verbose { os_log(.error, "\(self.t)<\(url.title)>下载失败") }
-                    state.setError(ViewError.downloadFailed(nil))
+                    capturedState.setError(ViewError.downloadFailed(nil))
                 }
-            },
-            onFinished: {
-                Task {
-                    if verbose { os_log("\(self.t)<\(url.title)>下载完成，开始重新加载缩略图") }
-                    state.reset()
-                    await loadThumbnail()
+
+                // 如果下载完成
+                if progress >= 1.0 {
+                    capturedState.markNeedsReload()
+                    // 取消订阅
+                    Task {
+                        await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
+                    }
                 }
             }
-        )
+        
+        progressCancellable = cancellable
+    }
+}
+
+// MARK: - Event Handler
+
+extension AvatarView {
+    /// 处理视图出现时的事件
+    /// 优化策略：对于已下载/本地文件跳过延迟直接加载（因为会从缓存读取）
+    private func onTask() async {
+        // 如果已有缩略图，无需加载
+        if state.thumbnail != nil {
+            // 仍然需要设置下载监控
+            if monitorDownload {
+                await setupDownloadMonitor()
+            }
+            return
+        }
+        
+        // 检查是否可以跳过延迟（已下载或本地文件可以从缓存快速加载）
+        let skipDelay = await canSkipDelay()
+        
+        if !skipDelay {
+            // 需要延迟加载（未下载的 iCloud 文件等）
+            do {
+                try await Task.sleep(nanoseconds: loadDelay * 1_000_000)
+            } catch {
+                // 任务被取消
+                return
+            }
+            
+            guard !Task.isCancelled else { return }
+        }
+        
+        // 加载缩略图
+        if state.error == nil {
+            await loadThumbnail()
+        }
+        
+        // 对 iCloud 文件启用下载进度监控
+        if monitorDownload {
+            await setupDownloadMonitor()
+        }
+    }
+
+    /// 处理视图消失时的事件
+    /// 取消所有订阅，释放资源
+    private func onDisappear() {
+        // 先清空本地引用，防止重复取消
+        let oldCancellable = progressCancellable
+        progressCancellable = nil
+        
+        // 取消 Combine 订阅
+        oldCancellable?.cancel()
+        
+        // 取消全局下载监控订阅（使用 Task 而非 detached，确保在主线程执行）
+        let capturedUrl = url
+        Task { @MainActor in
+            await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
+        }
     }
 }
 

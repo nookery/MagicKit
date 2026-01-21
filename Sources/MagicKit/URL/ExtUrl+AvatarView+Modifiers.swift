@@ -11,17 +11,20 @@ public extension AvatarView {
         return view
     }
 
-    /// 设置下载进度绑定
-    /// - Parameter progress: 进度绑定
-    /// - Returns: 修改后的视图
-    func magicDownloadProgress(_ progress: Binding<Double>) -> AvatarView {
-        var view = self
-        view.progressBinding = progress
-        return view
-    }
-
     /// 设置是否监控下载进度
-    /// - Parameter monitor: 是否监控
+    ///
+    /// ## 使用示例：
+    /// ```swift
+    /// // ✅ 列表中直接使用
+    /// url.makeAvatarView()
+    ///     .magicDownloadMonitor(true)
+    ///
+    /// // ✅ 播放器中使用
+    /// currentTrackURL.makeAvatarView()
+    ///     .magicDownloadMonitor(true)
+    /// ```
+    ///
+    /// - Parameter monitor: 是否监控下载进度
     /// - Returns: 修改后的视图
     func magicDownloadMonitor(_ monitor: Bool) -> AvatarView {
         var view = self
@@ -80,15 +83,6 @@ public extension AvatarView {
         view.backgroundColor = color
         return view
     }
-
-    /// 设置日志回调
-    /// - Parameter callback: 日志回调闭包，接收日志消息和日志级别
-    /// - Returns: 修改后的视图
-    func onLog(_ callback: @escaping (String, MagicLogEntry.Level) -> Void) -> AvatarView {
-        var view = self
-        view.onLog = callback
-        return view
-    }
     
     /// 设置是否显示右键菜单
     /// - Parameter enabled: 是否启用右键菜单
@@ -96,6 +90,30 @@ public extension AvatarView {
     func magicContextMenu(_ enabled: Bool) -> AvatarView {
         var view = self
         view.showContextMenu = enabled
+        return view
+    }
+    
+    /// 设置缩略图加载延迟时间
+    ///
+    /// 用于优化列表滚动性能。设置延迟后，只有在视图可见超过指定时间后才会开始加载缩略图。
+    /// 这样在快速滚动时，已经滚出屏幕的视图不会触发不必要的加载操作。
+    ///
+    /// ## 使用示例：
+    /// ```swift
+    /// // 设置 200ms 延迟，适合快速滚动场景
+    /// url.makeAvatarView()
+    ///     .magicLoadDelay(200)
+    ///
+    /// // 设置 0ms 延迟，立即加载（默认行为）
+    /// url.makeAvatarView()
+    ///     .magicLoadDelay(0)
+    /// ```
+    ///
+    /// - Parameter milliseconds: 延迟时间（毫秒），默认 150ms
+    /// - Returns: 修改后的视图
+    func magicLoadDelay(_ milliseconds: UInt64) -> AvatarView {
+        var view = self
+        view.loadDelay = milliseconds
         return view
     }
 }

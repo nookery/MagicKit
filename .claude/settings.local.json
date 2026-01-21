@@ -4,7 +4,14 @@
       "Bash(defaults read:*)",
       "Bash(plutil:*)",
       "Bash(swift build:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(xcodebuild:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git reset:*)",
+      "Bash(swiftc:*)"
     ]
   }
 }
