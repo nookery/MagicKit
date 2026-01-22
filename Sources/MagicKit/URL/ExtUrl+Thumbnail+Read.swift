@@ -105,7 +105,7 @@ extension URL {
         // 检查缓存
         if canUseCache, let cachedImage = ThumbnailCache.shared.fetch(for: self, size: size) {
             if verbose {
-                os_log("\(self.t)<\(self.title)>从缓存中获取缩略图 🐛 \(reason)")
+                os_log("\(self.t)🐛 (\(reason)) 从缓存中获取缩略图")
             }
             return cachedImage.toSwiftUIImage()
         }
@@ -142,7 +142,7 @@ extension URL {
         reason: String
     ) async throws -> ThumbnailResult? {
         if verbose {
-            os_log("\(self.t)<\(self.title)>获取缩略图 🐛 \(reason)")
+            os_log("\(self.t)🐛 (\(reason)) 获取缩略图")
         }
 
         // 如果是网络 URL，根据文件类型返回对应图标

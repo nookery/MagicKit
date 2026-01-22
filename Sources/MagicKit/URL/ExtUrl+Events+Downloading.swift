@@ -77,7 +77,7 @@ public extension URL {
         
         return AnyCancellable {
             if verbose {
-                os_log("\(self.t)🔚🔚🔚 [\(caller)] 停止监听下载进度 -> \(self.title)")
+                os_log("\(self.t)🔚 [\(caller)] 停止监听下载进度 -> \(self.title)")
             }
             task.cancel()
             query.stop()
