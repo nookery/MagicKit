@@ -58,14 +58,14 @@ public extension URL {
         }
         
         if verbose {
-            os_log("\(self.t)🛫 <\(self.title)> 开始下载文件，原因：\(reason)")
+            os_log("\(self.t)🛫 (\(reason)) <\(self.title)> 开始下载")
         }
         
         // 如果不需要进度回调，直接使用简单的下载方式
         guard let onProgress = onProgress else {
             try await FileManager.default.startDownloadingUbiquitousItem(at: self)
             if verbose {
-                os_log("\(self.t)⏬ <\(self.title)> 已启动下载")
+                os_log("\(self.t)⏬ (\(reason)) <\(self.title)> 已启动下载")
             }
             return
         }
