@@ -5,7 +5,7 @@ struct ShellProcessPreviewView: View {
     var body: some View {
         VStack(spacing: 20) {
             Text("⚙️ ShellProcess 功能演示")
-                .font(.title)
+                .font(Font.title)
                 .bold()
             
             ScrollView {
