@@ -106,7 +106,7 @@ public struct AvatarView: View, SuperLog {
 
     /// 加载延迟时间（毫秒），用于防止快速滚动时触发过多缩略图加载
     var loadDelay: UInt64 = 150
-    
+
     // MARK: - Body
 
     public var body: some View {
@@ -181,14 +181,12 @@ public struct AvatarView: View, SuperLog {
                             await loadThumbnail()
                             if self.verbose { os_log("\(self.t)🎨 封面设置成功") }
                         } catch {
-                            let errorMessage = "设置封面失败: \(error.localizedDescription)"
                             if self.verbose { os_log(.error, "\(self.t)🎨 设置封面失败: \(error.localizedDescription)") }
                             state.setError(ViewError.thumbnailGenerationFailed(error))
                         }
                     }
                 }
             case let .failure(error):
-                let errorMessage = "选择图片失败: \(error.localizedDescription)"
                 if self.verbose { os_log(.error, "\(self.t)🎨 选择图片失败: \(error.localizedDescription)") }
                 state.setError(ViewError.thumbnailGenerationFailed(error))
             }
@@ -216,7 +214,7 @@ extension AvatarView {
             url.isDownloaded || url.isNotiCloud
         }.value
     }
-    
+
     /// 异步加载文件的缩略图
     /// 根据文件类型和状态决定是否需要生成或加载缩略图
     private func loadThumbnail() async {
@@ -284,27 +282,27 @@ extension AvatarView {
         guard monitorDownload else {
             return
         }
-        
+
         // 显式捕获需要的值
         let capturedUrl = url
         let capturedState = state
-        
+
         // 在后台线程检查是否为 iCloud 文件
         let isICloud = await Task.detached(priority: .utility) {
             capturedUrl.checkIsICloud(verbose: false)
         }.value
-        
+
         guard isICloud else {
             return
         }
-        
+
         // ⚠️ 重要：先取消旧订阅，再创建新订阅，避免引用计数混乱
         if let oldCancellable = progressCancellable {
             oldCancellable.cancel()
             progressCancellable = nil
             await AvatarDownloadMonitor.shared.unsubscribe(url: capturedUrl)
         }
-        
+
         // 创建新订阅
         let cancellable = await AvatarDownloadMonitor.shared
             .subscribe(url: capturedUrl)
@@ -327,7 +325,7 @@ extension AvatarView {
                     }
                 }
             }
-        
+
         progressCancellable = cancellable
     }
 }
@@ -346,27 +344,27 @@ extension AvatarView {
             }
             return
         }
-        
+
         // 检查是否可以跳过延迟（已下载或本地文件可以从缓存快速加载）
         let skipDelay = await canSkipDelay()
-        
+
         if !skipDelay {
             // 需要延迟加载（未下载的 iCloud 文件等）
             do {
-                try await Task.sleep(nanoseconds: loadDelay * 1_000_000)
+                try await Task.sleep(nanoseconds: loadDelay * 1000000)
             } catch {
                 // 任务被取消
                 return
             }
-            
+
             guard !Task.isCancelled else { return }
         }
-        
+
         // 加载缩略图
         if state.error == nil {
             await loadThumbnail()
         }
-        
+
         // 对 iCloud 文件启用下载进度监控
         if monitorDownload {
             await setupDownloadMonitor()
@@ -379,10 +377,10 @@ extension AvatarView {
         // 先清空本地引用，防止重复取消
         let oldCancellable = progressCancellable
         progressCancellable = nil
-        
+
         // 取消 Combine 订阅
         oldCancellable?.cancel()
-        
+
         // 取消全局下载监控订阅（使用 Task 而非 detached，确保在主线程执行）
         let capturedUrl = url
         Task { @MainActor in

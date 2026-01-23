@@ -54,9 +54,9 @@ extension AvatarView {
 }
 
 #if DEBUG
-#Preview {
-    AvatarView
-        .ErrorIndicatorView(error: URLError(.badURL))
-        .frame(width: 100, height: 100)
-}
+    #Preview {
+        AvatarView
+            .ErrorIndicatorView(error: URLError(.badURL))
+            .frame(width: 100, height: 100)
+    }
 #endif
