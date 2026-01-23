@@ -19,7 +19,7 @@ let package = Package(
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),  // ZIP 文件处理库
         .package(url: "https://github.com/nookery/MagicAlert.git", from: "0.0.1"),  // MagicAlert 通知库
         .package(url: "https://github.com/nookery/MagicDevice.git", from: "0.0.1"),  // MagicDevice 设备模块
-        .package(url: "https://github.com/nookery/MagicUI.git", from: "0.0.1"),  // MagicUI 组件库
+        .package(url: "https://github.com/nookery/MagicUI.git", from: "1.0.0"),  // MagicUI 组件库
     ],
     // 编译目标（模块）
     targets: [

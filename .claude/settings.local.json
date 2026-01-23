@@ -11,7 +11,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git reset:*)",
-      "Bash(swiftc:*)"
+      "Bash(swiftc:*)",
+      "Bash(swift package update:*)"
     ]
   }
 }
