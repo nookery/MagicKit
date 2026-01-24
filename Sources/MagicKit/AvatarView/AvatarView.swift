@@ -77,11 +77,14 @@ public struct AvatarView: View, SuperLog {
         self.size = size
         self.verbose = verbose
 
+        if true {
+            os_log("\(Self.t)AvatarView init: \(url.lastPathComponent)")
+        }
         // 在初始化时进行基本的 URL 检查
         if url.isFileURL {
             // 检查本地文件是否存在
             if url.isNotFileExist {
-                if self.verbose {
+                if true {
                     os_log("\(Self.t)文件不存在: \(url.path)")
                 }
                 _state = StateObject(wrappedValue: ViewState())
@@ -126,10 +129,11 @@ public struct AvatarView: View, SuperLog {
                     backgroundColor: backgroundColor
                 )
             } else if state.isLoading {
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(width: size.width, height: size.height)
-                    .background(backgroundColor)
+                LoadingView(
+                    shape: shape,
+                    size: size,
+                    backgroundColor: backgroundColor
+                )
             } else {
                 DefaultIconView(
                     url: url,
@@ -143,6 +147,7 @@ public struct AvatarView: View, SuperLog {
         .onChange(of: state.needsReload) {
             // 下载完成后触发重新加载缩略图
             if state.needsReload {
+                os_log("\(Self.t)触发重新加载缩略图: \(url.lastPathComponent)")
                 state.clearNeedsReload()
                 Task { await loadThumbnail() }
             }
@@ -179,11 +184,15 @@ extension AvatarView {
 
         // 使用后台任务队列
         await Task.detached(priority: .utility) { [hasThumbnail] in
+            os_log("\(Self.t)开始加载缩略图: \(capturedUrl.lastPathComponent) (已有: \(hasThumbnail))")
+
             if hasThumbnail && capturedUrl.checkIsDownloaded() {
+                os_log("\(Self.t)跳过加载: 已有缩略图且文件已下载")
                 return
             }
 
             if capturedUrl.checkIsDownloading(verbose: false) {
+                os_log("\(Self.t)跳过加载: 文件正在下载中")
                 return
             }
 
@@ -198,12 +207,16 @@ extension AvatarView {
 
                 if let result = result,
                    let image = result.toSwiftUIImage() {
+                    os_log("\(Self.t)加载缩略图成功: \(capturedUrl.lastPathComponent) (系统图标: \(result.isSystemIcon))")
                     await capturedState.setThumbnail(image, isSystemIcon: result.isSystemIcon)
                     await capturedState.setError(nil)
+                } else {
+                    os_log("\(Self.t)加载缩略图返回为空: \(capturedUrl.lastPathComponent)")
                 }
             } catch URLError.cancelled {
-                // 任务被取消，忽略
+                os_log("\(Self.t)缩略图加载被取消")
             } catch {
+                os_log("\(Self.t)❌ 加载缩略图失败: \(error.localizedDescription)")
                 let viewError: ViewError
                 if let urlError = error as? URLError {
                     switch urlError.code {
@@ -260,13 +273,17 @@ extension AvatarView {
                 // 更新进度状态
                 capturedState.setProgress(progress)
 
+                os_log("\(Self.t)下载进度更新: \(Int(progress * 100))% - \(capturedUrl.lastPathComponent)")
+
                 // 如果下载失败
                 if progress < 0 {
+                    os_log("\(Self.t)❌ 下载失败: \(capturedUrl.lastPathComponent)")
                     capturedState.setError(ViewError.downloadFailed(nil))
                 }
 
                 // 如果下载完成
                 if progress >= 1.0 {
+                    os_log("\(Self.t)✅ 下载完成，准备重新加载: \(capturedUrl.lastPathComponent)")
                     capturedState.markNeedsReload()
                     // 取消订阅
                     Task {
@@ -285,8 +302,10 @@ extension AvatarView {
     /// 处理视图出现时的事件
     /// 优化策略：对于已下载/本地文件跳过延迟直接加载（因为会从缓存读取）
     private func onTask() async {
+        os_log("\(Self.t)onTask 开始: \(url.lastPathComponent)")
         // 如果已有缩略图，无需加载
         if state.thumbnail != nil {
+            os_log("\(Self.t)已有缩略图，跳过加载")
             // 仍然需要设置下载监控
             if monitorDownload {
                 await setupDownloadMonitor()
@@ -298,15 +317,20 @@ extension AvatarView {
         let skipDelay = await canSkipDelay()
 
         if !skipDelay {
+            os_log("\(Self.t)等候延迟加载 (\(loadDelay)ms)")
             // 需要延迟加载（未下载的 iCloud 文件等）
             do {
                 try await Task.sleep(nanoseconds: loadDelay * 1000000)
             } catch {
+                os_log("\(Self.t)延迟加载被取消")
                 // 任务被取消
                 return
             }
 
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else { 
+                os_log("\(Self.t)延迟加载后任务已取消")
+                return 
+            }
         }
 
         // 加载缩略图
@@ -323,6 +347,7 @@ extension AvatarView {
     /// 处理视图消失时的事件
     /// 取消所有订阅，释放资源
     private func onDisappear() {
+        if verbose { os_log("\(Self.t)onDisappear: \(url.lastPathComponent)") }
         // 先清空本地引用，防止重复取消
         let oldCancellable = progressCancellable
         progressCancellable = nil

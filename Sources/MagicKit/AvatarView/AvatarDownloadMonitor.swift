@@ -16,7 +16,7 @@ import SwiftUI
 public final class AvatarDownloadMonitor: SuperLog {
     public nonisolated(unsafe) static let emoji = "📥"
     /// 是否输出详细日志
-    public nonisolated(unsafe) static let verbose = false
+    public nonisolated(unsafe) static let verbose = true
 
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
@@ -341,7 +341,16 @@ public final class AvatarDownloadMonitor: SuperLog {
         if let totalSize = resources.fileSize,
            let downloadedSize = resources.fileAllocatedSize,
            totalSize > 0 {
-            return min(1.0, Double(downloadedSize) / Double(totalSize))
+            let progress = min(1.0, Double(downloadedSize) / Double(totalSize))
+            // 💡 关键修复：如果字节下载完了但状态还没变成 .current，返回 0.99
+            // 这样监听逻辑会继续运行，直到状态变为 .current
+            if progress >= 1.0 {
+                if Self.verbose {
+                    os_log("\(Self.t)字节已满但状态非 .current，保持 0.99: \(url.lastPathComponent)")
+                }
+                return 0.99
+            }
+            return progress
         }
 
         return 0.0

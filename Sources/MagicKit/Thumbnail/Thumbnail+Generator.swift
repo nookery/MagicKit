@@ -51,12 +51,11 @@ public struct ThumbnailGenerator {
     /// 生成缩略图
     /// - Returns: 缩略图结果，如果无法生成则返回 nil
     public func generate() async throws -> ThumbnailResult? {
-        if verbose {
-            os_log("\(url.t)🐛 (\(reason)) 获取缩略图")
-        }
+        os_log("\(url.t)🐛 (\(reason)) 开始生成缩略图: \(url.lastPathComponent)")
 
         // 如果是网络 URL，返回下载图标
         if url.isNetworkURL {
+            os_log("\(url.t)是网络 URL，返回 iCloud 下载图标")
             let image = Image.PlatformImage.fromSystemIcon(.iconICloudDownload)
             return ThumbnailResult(
                 image: image,
@@ -68,7 +67,10 @@ public struct ThumbnailGenerator {
         }
 
         // 如果是 iCloud 文件且未下载，返回下载图标
-        if url.checkIsICloud(verbose: false) && url.isNotDownloaded {
+        let isiCloud = url.checkIsICloud(verbose: false)
+        let isNotDownloaded = url.isNotDownloaded
+        if isiCloud && isNotDownloaded {
+            os_log("\(url.t)是未下载的 iCloud 文件，返回 iCloud 下载图标")
             let image = Image.PlatformImage.fromSystemIcon(.iconICloudDownload)
             return ThumbnailResult(
                 image: image,
@@ -94,18 +96,20 @@ public struct ThumbnailGenerator {
         }
 
         if url.isAudio {
+            os_log("\(url.t)识别为音频文件，尝试提取音频封面")
             let audioResult = try await audioThumbnail(size: size, verbose: verbose)
             return audioResult
         }
 
         if url.isVideo {
+            os_log("\(url.t)识别为视频文件，尝试生成视频预览")
             return try await videoThumbnail(size: size, verbose: verbose)
         }
 
         // 如果无法识别类型，返回默认文档图标
         if useDefaultIcon,
            let image = Image.PlatformImage.fromSystemIcon(url.icon) {
-            if verbose { os_log("\(url.t)<\(url.title)>使用默认系统图标") }
+            os_log("\(url.t)<\(url.title)>使用默认系统图标 (类型: \(url.fileType))")
             return ThumbnailResult(
                 image: image,
                 isSystemIcon: true,

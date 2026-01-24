@@ -117,13 +117,7 @@ public extension URL {
         }
 
         let isDownloaded = status == .current
-        if verbose {
-            if isDownloaded {
-                os_log("\(self.t)<\(self.title)>iCloud 文件已下载 ✅")
-            } else {
-                os_log("\(self.t)<\(self.title)>iCloud 文件未下载 ⏳")
-            }
-        }
+        os_log("\(self.t)<\(self.title)>iCloud 文件下载状态: \(status.rawValue) (已下载: \(isDownloaded))")
         return isDownloaded
     }
 
