@@ -131,13 +131,12 @@ public struct AvatarView: View, SuperLog {
                     .frame(width: size.width, height: size.height)
                     .background(backgroundColor)
             } else {
-                url.fastDefaultImage
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.secondary)
-                    .padding(4)
-                    .frame(width: size.width, height: size.height)
-                    .background(backgroundColor)
+                DefaultIconView(
+                    url: url,
+                    shape: shape,
+                    size: size,
+                    backgroundColor: backgroundColor
+                )
             }
         }
         .task(id: url) { await onTask() }
