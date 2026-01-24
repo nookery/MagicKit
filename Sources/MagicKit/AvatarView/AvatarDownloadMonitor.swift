@@ -14,9 +14,9 @@ import SwiftUI
 /// - 使用轮询机制，每秒检查一次文件状态
 /// - 将非 UI 操作移到后台线程执行，避免阻塞主线程
 public final class AvatarDownloadMonitor: SuperLog {
-    public nonisolated(unsafe) static let emoji = "📥"
+    public static let emoji = "📥"
     /// 是否输出详细日志
-    public nonisolated(unsafe) static let verbose = true
+    public static let verbose = true
 
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
@@ -103,12 +103,6 @@ public final class AvatarDownloadMonitor: SuperLog {
     @MainActor
     public private(set) var activeMonitorCount: Int = 0
 
-    private init() {
-        if Self.verbose {
-            os_log("\(Self.t)🚀 全局下载监控器初始化")
-        }
-    }
-
     /// 订阅指定 URL 的下载进度
     ///
     /// 如果该 URL 已有监听器，增加引用计数并返回现有发布者。
@@ -178,7 +172,7 @@ public final class AvatarDownloadMonitor: SuperLog {
     /// 减少引用计数，当引用计数归零时清理该 URL 的监听器。
     ///
     /// - Parameter url: 要取消订阅的文件 URL
-    public func unsubscribe(url: URL) async {
+    public func unsubscribe(url: URL, verbose: Bool) async {
         let result = await store.updateRefCount(for: url, increment: false)
 
         // 更新主线程上的计数
@@ -191,7 +185,7 @@ public final class AvatarDownloadMonitor: SuperLog {
         case let .inUse(info, count):
             newCount = count
             // 还有其他订阅者，只是减少了引用计数
-            if Self.verbose {
+            if verbose {
                 os_log("\(Self.t)🔻 减少引用 [引用: \(info.refCount), 总数: \(count)]: \(url.lastPathComponent)")
             }
 
@@ -199,7 +193,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             newCount = count
             // 引用计数归零，监听器已从 store 中移除，取消任务
             removedInfo.monitorTask?.cancel()
-            if Self.verbose {
+            if verbose {
                 os_log("\(Self.t)🗑️ 移除监听器 [剩余: \(count)]: \(url.lastPathComponent)")
             }
         }
@@ -237,10 +231,27 @@ public final class AvatarDownloadMonitor: SuperLog {
                 }
                 return
             }
-
+            
             // 如果不在下载中，直接返回
             if url.checkIsDownloading() == false {
                 return
+            }
+
+            // 💡 关键：强制清理并重新获取最新进度
+            var mutableUrl = url
+            mutableUrl.removeAllCachedResourceValues()
+            let refreshedProgress = await self?.queryProgress(for: mutableUrl) ?? 0.0
+
+            // 如果已经完成了，直接发送 1.0 并退出
+            if refreshedProgress >= 1.0 {
+                await MainActor.run {
+                    publisher.send(1.0)
+                }
+                return
+            }
+
+            if Self.verbose {
+                os_log("\(Self.t)监听到未完成文件，开始轮询: \(url.lastPathComponent)")
             }
 
             // 发送初始进度（如果跳过了初始查询，publisher 已经有了正确的初始值，不需要再发送）
@@ -258,15 +269,16 @@ public final class AvatarDownloadMonitor: SuperLog {
             let pollInterval: UInt64 = 1000000000 // 1 秒
 
             while !Task.isCancelled {
-                // 等待下一次轮询
+                // 💡 关键：每次轮询前清理缓存并获取最新进度
+                var mutableUrl = url
+                mutableUrl.removeAllCachedResourceValues()
+                let progress = await self?.queryProgress(for: mutableUrl) ?? 0.0
                 do {
                     try await Task.sleep(nanoseconds: pollInterval)
                 } catch {
                     // 任务被取消
                     break
                 }
-
-                let progress = await self?.queryProgress(for: url) ?? 1.0
 
                 await MainActor.run {
                     publisher.send(progress)
@@ -289,7 +301,7 @@ public final class AvatarDownloadMonitor: SuperLog {
                     }
                 }
 
-                if shouldLog, AvatarDownloadMonitor.verbose {
+                if shouldLog, Self.verbose {
                     let percentage = Int(progress * 100)
                     if progress >= 1.0 {
                         await MainActor.run {
@@ -310,14 +322,16 @@ public final class AvatarDownloadMonitor: SuperLog {
         }
     }
 
-    /// 查询文件下载进度
-    /// 使用单次 resourceValues 调用获取所有需要的属性，减少 I/O
     private nonisolated func queryProgress(for url: URL) async -> Double {
         // 使用单次 resourceValues 调用，获取所有需要的属性
         // 避免了之前的多次 I/O 调用（checkIsICloud + checkIsDownloaded）
-        guard let resources = try? url.resourceValues(forKeys: [
+        var mutableUrl = url
+        mutableUrl.removeAllCachedResourceValues()
+
+        guard let resources = try? mutableUrl.resourceValues(forKeys: [
             .isUbiquitousItemKey,
             .ubiquitousItemDownloadingStatusKey,
+            URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey"),
             .fileSizeKey,
             .fileAllocatedSizeKey,
         ]) else {
@@ -330,7 +344,15 @@ public final class AvatarDownloadMonitor: SuperLog {
             return 1.0
         }
 
-        // 检查下载状态
+        // 优先检查百分比（这比 DownloadingStatus 刷新得更快）
+        if let percent = resources.allValues[URLResourceKey(rawValue: NSMetadataUbiquitousItemPercentDownloadedKey)] as? Double, percent >= 100.0 {
+            if let status = resources.ubiquitousItemDownloadingStatus, status == .current {
+                return 1.0
+            }
+            return 0.99
+        }
+
+        // 备选检查下载状态
         if let status = resources.ubiquitousItemDownloadingStatus {
             if status == .current {
                 return 1.0

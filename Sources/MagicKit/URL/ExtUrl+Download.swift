@@ -86,18 +86,21 @@ public extension URL {
         checkIsDownloaded(verbose: false)
     }
 
-    /// 检查文件是否已下载（明确标注为耗时操作）
+    /// 检查文件是否已下载
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 如果文件已下载返回 true，否则返回 false
     /// - Note: 此函数会访问文件系统，建议在后台线程调用
     /// - Performance: ~1-5ms for iCloud files, ~0.1μs for local files
     func checkIsDownloaded(verbose: Bool = false) -> Bool {
-        // 使用单次 I/O 获取所有需要的属性
-        // 这比先调用 checkIsICloud 再调用 resourceValues 效率高得多
-        guard let resources = try? self.resourceValues(forKeys: [
+        // 💡 关键：强制清理 URL 的内部资源属性缓存，确保获取到磁盘上的最新状态
+        var mutableSelf = self
+        mutableSelf.removeAllCachedResourceValues()
+
+        guard let resources = try? mutableSelf.resourceValues(forKeys: [
             .isUbiquitousItemKey,
-            .ubiquitousItemDownloadingStatusKey
+            .ubiquitousItemDownloadingStatusKey,
+            URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey")
         ]) else {
             // 无法获取资源，可能是本地文件
             return true
@@ -105,6 +108,11 @@ public extension URL {
 
         // 如果不是 iCloud 文件，视为本地文件
         guard resources.isUbiquitousItem == true else {
+            return true
+        }
+
+        // 先检查进度，100% 进度视为已下载
+        if let progress = resources.allValues[URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey")] as? Double, progress >= 100.0 {
             return true
         }
 
@@ -117,11 +125,10 @@ public extension URL {
         }
 
         let isDownloaded = status == .current
-        os_log("\(self.t)<\(self.title)>iCloud 文件下载状态: \(status.rawValue) (已下载: \(isDownloaded))")
         return isDownloaded
     }
 
-    /// 检查文件是否正在下载（明确标注为耗时操作）
+    /// 检查文件是否正在下载
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 如果文件是 iCloud 文件且正在下载返回 true，否则返回 false
@@ -141,9 +148,6 @@ public extension URL {
 
         // 如果不是 iCloud 文件，肯定不在下载
         guard resources.isUbiquitousItem == true else {
-            if verbose {
-                os_log("\(self.t)<\(self.title)>不是 iCloud 文件，未在下载 ❌")
-            }
             return false
         }
 
@@ -157,13 +161,6 @@ public extension URL {
 
         // 使用原始字符串比较，因为 Apple 的 API 在不同系统版本中可能有差异
         let isDownloading = status.rawValue == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
-        if verbose {
-            if isDownloading {
-                os_log("\(self.t)<\(self.title)>iCloud 文件正在下载 ⏬")
-            } else {
-                os_log("\(self.t)<\(self.title)>iCloud 文件未在下载 ⏸️")
-            }
-        }
         return isDownloading
     }
     

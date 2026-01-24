@@ -83,30 +83,6 @@ public extension AvatarView {
         view.backgroundColor = color
         return view
     }
-    
-    /// 设置缩略图加载延迟时间
-    ///
-    /// 用于优化列表滚动性能。设置延迟后，只有在视图可见超过指定时间后才会开始加载缩略图。
-    /// 这样在快速滚动时，已经滚出屏幕的视图不会触发不必要的加载操作。
-    ///
-    /// ## 使用示例：
-    /// ```swift
-    /// // 设置 200ms 延迟，适合快速滚动场景
-    /// url.makeAvatarView()
-    ///     .magicLoadDelay(200)
-    ///
-    /// // 设置 0ms 延迟，立即加载（默认行为）
-    /// url.makeAvatarView()
-    ///     .magicLoadDelay(0)
-    /// ```
-    ///
-    /// - Parameter milliseconds: 延迟时间（毫秒），默认 150ms
-    /// - Returns: 修改后的视图
-    func magicLoadDelay(_ milliseconds: UInt64) -> AvatarView {
-        var view = self
-        view.loadDelay = milliseconds
-        return view
-    }
 }
 
 // MARK: - Preview

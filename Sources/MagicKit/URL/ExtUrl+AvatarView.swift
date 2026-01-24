@@ -95,7 +95,6 @@ public extension URL {
     /// 
     /// - Returns: 配置好的头像视图
     func makeAvatarView(verbose: Bool = false) -> AvatarView {
-        os_log("🌉 URL.makeAvatarView: \(self.lastPathComponent)")
         return AvatarView(url: self, verbose: verbose)
     }
 }

@@ -30,7 +30,7 @@ public extension URL {
     ) -> AnyCancellable {
         if checkIsICloud(verbose: false) {
             if verbose {
-            os_log("\(self.t)👀 [\(caller)] Start monitoring iCloud directory: \(self.shortPath())")
+            os_log("\(self.t)👀 (\(caller)) Start monitoring iCloud directory: \(self.shortPath())")
             }
             return onICloudDirectoryChanged(
                 verbose: verbose,

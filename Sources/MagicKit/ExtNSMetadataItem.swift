@@ -47,6 +47,11 @@ public extension NSMetadataItem {
     
     /// 文件是否已下载完成
     var isDownloaded: Bool {
+        // 先检查进度（进度达到 100% 视为已下载，这比状态更新快）
+        if downloadProgress >= 1.0 {
+            return true
+        }
+
         guard let downloadingStatus = value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String else {
             return true // 本地文件或无法获取状态，视为已下载
         }
