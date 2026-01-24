@@ -2,13 +2,13 @@ import Foundation
 
 extension AvatarView {
     /// 头像视图相关错误
-    enum ViewError: LocalizedError {
+    public enum ViewError: LocalizedError {
         case invalidURL
         case fileNotFound
         case thumbnailGenerationFailed(Error)
         case downloadFailed(Error?)
 
-        var errorDescription: String? {
+        public var errorDescription: String? {
             switch self {
             case .invalidURL:
                 return "无效的URL"
@@ -25,7 +25,7 @@ extension AvatarView {
             }
         }
 
-        var underlyingError: Error? {
+        public var underlyingError: Error? {
             switch self {
             case .invalidURL, .fileNotFound:
                 return nil

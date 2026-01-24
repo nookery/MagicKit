@@ -84,15 +84,6 @@ public extension AvatarView {
         return view
     }
     
-    /// 设置是否显示右键菜单
-    /// - Parameter enabled: 是否启用右键菜单
-    /// - Returns: 修改后的视图
-    func magicContextMenu(_ enabled: Bool) -> AvatarView {
-        var view = self
-        view.showContextMenu = enabled
-        return view
-    }
-    
     /// 设置缩略图加载延迟时间
     ///
     /// 用于优化列表滚动性能。设置延迟后，只有在视图可见超过指定时间后才会开始加载缩略图。
@@ -121,8 +112,8 @@ public extension AvatarView {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("基础样式") {
-    AvatarBasicPreview()
-        .frame(width: 500, height: 600)
-}
+    #Preview("基础样式") {
+        AvatarDemoView()
+            .frame(width: 500, height: 600)
+    }
 #endif

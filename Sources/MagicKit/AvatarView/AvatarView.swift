@@ -31,7 +31,7 @@ public struct AvatarView: View, SuperLog {
     public static let emoji = "🚉"
 
     /// 视图状态管理器，管理缩略图、加载状态和错误状态
-    @StateObject private var state = ViewState()
+    @StateObject var state = ViewState()
 
     /// 全局下载进度订阅
     @State private var progressCancellable: AnyCancellable? = nil
@@ -53,12 +53,6 @@ public struct AvatarView: View, SuperLog {
 
     /// 视图背景色
     var backgroundColor: Color = .blue.opacity(0.1)
-
-    /// 是否显示右键菜单
-    var showContextMenu: Bool = true
-
-    /// 控制图片选择器是否显示
-    @State private var isImagePickerPresented = false
 
     // MARK: - Computed Properties
 
@@ -134,61 +128,6 @@ public struct AvatarView: View, SuperLog {
         .overlay {
             if state.error != nil {
                 shape.strokeBorder(color: Color.red.opacity(0.5))
-            }
-        }
-        .contextMenu {
-            if showContextMenu && url.isFileURL {
-                Button("设置封面") {
-                    isImagePickerPresented = true
-                }
-
-                Divider()
-            }
-        }
-        .fileImporter(
-            isPresented: $isImagePickerPresented,
-            allowedContentTypes: [.image],
-            allowsMultipleSelection: false
-        ) { result in
-            switch result {
-            case let .success(files):
-                if let selectedURL = files.first {
-                    Task {
-                        do {
-                            if self.verbose { os_log("\(self.t)🎨 开始设置封面：\(selectedURL.lastPathComponent)") }
-
-                            // 获取文件的安全访问权限
-                            guard selectedURL.startAccessingSecurityScopedResource() else {
-                                let accessError = NSError(domain: "AvatarView", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法获取文件访问权限"])
-                                if self.verbose { os_log(.error, "\(self.t)🎨 无法获取文件访问权限") }
-                                state.setError(ViewError.thumbnailGenerationFailed(accessError))
-                                return
-                            }
-
-                            defer {
-                                // 完成后释放访问权限
-                                selectedURL.stopAccessingSecurityScopedResource()
-                            }
-
-                            let imageData = try Data(contentsOf: selectedURL)
-                            try await url.writeCoverToMediaFile(
-                                imageData: imageData,
-                                imageType: "image/jpeg",
-                                verbose: verbose
-                            )
-                            // 重新加载缩略图
-                            state.reset()
-                            await loadThumbnail()
-                            if self.verbose { os_log("\(self.t)🎨 封面设置成功") }
-                        } catch {
-                            if self.verbose { os_log(.error, "\(self.t)🎨 设置封面失败: \(error.localizedDescription)") }
-                            state.setError(ViewError.thumbnailGenerationFailed(error))
-                        }
-                    }
-                }
-            case let .failure(error):
-                if self.verbose { os_log(.error, "\(self.t)🎨 选择图片失败: \(error.localizedDescription)") }
-                state.setError(ViewError.thumbnailGenerationFailed(error))
             }
         }
         .task(id: url) { await onTask() }
@@ -392,8 +331,8 @@ extension AvatarView {
 // MARK: - Preview
 
 #if DEBUG
-#Preview("基础样式") {
-    AvatarBasicPreview()
-        .frame(width: 500, height: 600)
-}
+    #Preview("基础样式") {
+        AvatarDemoView()
+            .frame(width: 500, height: 600)
+    }
 #endif
