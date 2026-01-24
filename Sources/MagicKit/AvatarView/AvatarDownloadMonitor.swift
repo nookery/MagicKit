@@ -211,67 +211,91 @@ public final class AvatarDownloadMonitor: SuperLog {
         publisher: CurrentValueSubject<Double, Never>,
         verbose: Bool
     ) async -> Task<Void, Never> {
-        return Task.detached(priority: .utility) { [weak self] in
+        // 必须在 MainActor 上创建和管理 NSMetadataQuery
+        return Task { @MainActor in
             // 如果已经完成了，直接发送 1.0 并退出
             if url.isDownloaded {
-                await MainActor.run {
-                    publisher.send(1.0)
-                }
+                publisher.send(1.0)
                 return
             }
+
+            if verbose {
+                os_log("\(Self.t)🔍 开始创建 NSMetadataQuery 监听: \(url.lastPathComponent)")
+            }
+
+            let query = NSMetadataQuery()
+            query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope, NSMetadataQueryUbiquitousDataScope]
+            // 使用文件名匹配
+            query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemFSNameKey, url.lastPathComponent)
+
+            // 监听更新通知
+            let observer = NotificationCenter.default.addObserver(
+                forName: .NSMetadataQueryDidUpdate,
+                object: query,
+                queue: .main
+            ) { [weak query] _ in
+                guard let query = query else { return }
+                guard let item = query.results.first as? NSMetadataItem else { return }
+                
+                // 获取下载进度
+                if let percent = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double {
+                    let progress = percent / 100.0
+                    publisher.send(min(progress, 1.0))
+                    
+                    if verbose {
+                        os_log("\(Self.t)⏬ 进度更新: \(Int(percent))% - \(url.lastPathComponent)")
+                    }
+                }
+                
+                // 检查是否下载完成
+                let status = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String
+                if status == NSMetadataUbiquitousItemDownloadingStatusCurrent {
+                    publisher.send(1.0)
+                    if verbose {
+                        os_log("\(Self.t)✅ 下载完成(Query): \(url.lastPathComponent)")
+                    }
+                }
+            }
             
-            // 进度日志节流控制
-            var lastLoggedProgress: Double = 0
-            var lastLogTime = Date()
-
-            // 轮询检查下载进度（每 1 秒检查一次，降低 I/O 频率）
-            let pollInterval: UInt64 = 1000000000 // 1 秒
-
-            while !Task.isCancelled {
-                let progress = url.getDownloadProgress(verbose: false)
-                do {
-                    try await Task.sleep(nanoseconds: pollInterval)
-                } catch {
-                    // 任务被取消
-                    break
-                }
-
-                await MainActor.run {
-                    publisher.send(progress)
-                }
-
-                // 决定是否输出进度日志
-                var shouldLog = false
-                if progress >= 1.0 {
-                    shouldLog = true
-                } else {
-                    let now = Date()
-                    let timeSinceLastLog = now.timeIntervalSince(lastLogTime)
-                    let progressChange = progress - lastLoggedProgress
-
-                    // 每1秒或每5%输出一次
-                    if timeSinceLastLog >= 1 || progressChange >= 0.05 {
-                        shouldLog = true
-                        lastLogTime = now
-                        lastLoggedProgress = progress
+            // 监听初始结果收集完成
+            let finishGatheringObserver = NotificationCenter.default.addObserver(
+                forName: .NSMetadataQueryDidFinishGathering,
+                object: query,
+                queue: .main
+            ) { [weak query] _ in
+                guard let query = query else { return }
+                query.enableUpdates()
+                
+                if let item = query.results.first as? NSMetadataItem {
+                    if let percent = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double {
+                         let progress = percent / 100.0
+                         publisher.send(min(progress, 1.0))
                     }
+                } else if verbose {
+                    os_log("\(Self.t)⚠️ Query 未找到文件: \(url.lastPathComponent)")
                 }
+            }
 
-                if shouldLog, verbose {
-                    let percentage = Int(progress * 100)
-                    if progress >= 1.0 {
-                        os_log("\(AvatarDownloadMonitor.t)✅ 下载完成: \(url.lastPathComponent)")
-                    } else {
-                        if url.checkIsDownloading() {
-                            os_log("\(AvatarDownloadMonitor.t)⏬ 下载中: \(url.lastPathComponent) - \(percentage)%")
+            // 启动查询
+            query.start()
+            
+            // 保持任务运行直到被取消
+            do {
+                try await withTaskCancellationHandler {
+                    // 挂起任务直到被取消
+                    try await Task.sleep(nanoseconds: 365 * 24 * 60 * 60 * 1_000_000_000)
+                } onCancel: {
+                    Task { @MainActor in
+                        if verbose {
+                            os_log("\(Self.t)🛑 停止监听: \(url.lastPathComponent)")
                         }
+                        query.stop()
+                        NotificationCenter.default.removeObserver(observer)
+                        NotificationCenter.default.removeObserver(finishGatheringObserver)
                     }
                 }
-
-                // 下载完成，退出循环
-                if progress >= 1.0 {
-                    break
-                }
+            } catch {
+                // 任务取消时会抛出错误
             }
         }
     }
