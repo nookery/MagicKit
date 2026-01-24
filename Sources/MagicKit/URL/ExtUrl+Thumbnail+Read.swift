@@ -107,7 +107,7 @@ extension URL {
         ) else {
             return nil
         }
-        return result.image
+        return result.toSwiftUIImage()
     }
 
     /// 获取文件的缩略图（原生图片格式，内部使用）
