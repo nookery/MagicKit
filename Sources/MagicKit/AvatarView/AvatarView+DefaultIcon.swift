@@ -7,6 +7,14 @@ extension AvatarView {
         let shape: AvatarViewShape
         let size: CGSize
         let backgroundColor: Color
+        
+        var padding: CGFloat {
+            if case .circle = shape {
+                return self.size.width * 0.2
+            }
+
+            return self.size.width * 0.0
+        }
 
         init(
             url: URL,
@@ -25,7 +33,7 @@ extension AvatarView {
                 .resizable()
                 .scaledToFit()
                 .foregroundStyle(.secondary)
-                .padding(4)
+                .padding(padding)
                 .frame(width: size.width, height: size.height)
                 .background(backgroundColor)
                 .clipShape(shape)
