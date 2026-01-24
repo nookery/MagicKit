@@ -11,10 +11,10 @@ extension AvatarView {
         var padding: CGFloat {
             // 如果是圆形
             if case .circle = shape {
-                return self.size.width * 0.2
+                return self.size.width * 0.0
             }
 
-            return self.size.width * 0.1
+            return self.size.width * 0.0
         }
 
         init(image: Image, shape: AvatarViewShape = .circle, size: CGSize, backgroundColor: Color = .blue.opacity(0.1)) {

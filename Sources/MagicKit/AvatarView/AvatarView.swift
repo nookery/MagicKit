@@ -119,6 +119,7 @@ public struct AvatarView: View, SuperLog {
             } else if let error = state.error {
                 ErrorView(
                     error: error,
+                    url: url,
                     shape: shape,
                     size: size,
                     backgroundColor: backgroundColor

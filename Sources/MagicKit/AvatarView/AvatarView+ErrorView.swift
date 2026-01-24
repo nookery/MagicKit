@@ -5,11 +5,13 @@ extension AvatarView {
     /// 错误指示视图组件
     struct ErrorView: View {
         let error: Error
+        let url: URL
         let shape: AvatarViewShape
         let size: CGSize
         let backgroundColor: Color
         @State private var showError = false
-        @State private var copied = false
+        @State private var errorCopied = false
+        @State private var urlCopied = false
         @State private var isHovered = false
 
         var body: some View {
@@ -39,25 +41,56 @@ extension AvatarView {
 
                         Divider()
 
-                        Button(action: {
-                            error.copy()
-                            copied = true
+                        Text("文件 URL")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
 
-                            // 2秒后重置复制状态
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                copied = false
+                        Text(url.absoluteString)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(.primary)
+                            .lineLimit(3)
+                            .textSelection(.enabled)
+
+                        Divider()
+
+                        HStack(spacing: 12) {
+                            Button(action: {
+                                error.copy()
+                                errorCopied = true
+
+                                // 2秒后重置复制状态
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    errorCopied = false
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: errorCopied ? .iconCheckmark : .iconCopy)
+                                    Text(errorCopied ? "已复制" : "复制错误")
+                                }
+                                .foregroundStyle(errorCopied ? .green : .accentColor)
                             }
-                        }) {
-                            HStack {
-                                Image(systemName: copied ? .iconCheckmark : .iconCopy)
-                                Text(copied ? "已复制" : "复制错误信息")
+                            .buttonStyle(.borderless)
+
+                            Button(action: {
+                                url.absoluteString.copy()
+                                urlCopied = true
+
+                                // 2秒后重置复制状态
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    urlCopied = false
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: urlCopied ? .iconCheckmark : .iconCopy)
+                                    Text(urlCopied ? "已复制" : "复制 URL")
+                                }
+                                .foregroundStyle(urlCopied ? .green : .accentColor)
                             }
-                            .foregroundStyle(copied ? .green : .accentColor)
+                            .buttonStyle(.borderless)
                         }
-                        .buttonStyle(.borderless)
                     }
                     .padding()
-                    .frame(minWidth: 200, maxWidth: 300)
+                    .frame(minWidth: 250, maxWidth: 400)
                 }
                 .onTapGesture {
                     showError = true
@@ -76,6 +109,7 @@ extension AvatarView {
         AvatarView
             .ErrorView(
                 error: URLError(.badURL),
+                url: URL(string: "https://example.com/test.jpg")!,
                 shape: .circle,
                 size: CGSize(width: 100, height: 100),
                 backgroundColor: .blue.opacity(0.1)
