@@ -112,11 +112,11 @@ public struct AvatarView: View, SuperLog {
     public var body: some View {
         Group {
             if isDownloading && downloadProgress < 1 {
-                DownloadProgressView(progress: downloadProgress)
+                DownloadingView(progress: downloadProgress)
             } else if let thumbnail = state.thumbnail {
-                ThumbnailImageView(image: thumbnail)
+                ThumbnailView(image: thumbnail)
             } else if let error = state.error {
-                ErrorIndicatorView(error: error)
+                ErrorView(error: error)
             } else if state.isLoading {
                 ProgressView()
                     .controlSize(.small)
@@ -245,7 +245,7 @@ extension AvatarView {
                 let image = try await capturedUrl.thumbnail(
                     size: capturedSize,
                     verbose: false,
-                    reason: "AvatarView.loadThumbnail"
+                    reason: self.className + ".loadThumbnail"
                 )
 
                 if let image = image {
@@ -392,7 +392,8 @@ extension AvatarView {
 // MARK: - Preview
 
 #if DEBUG
-    #Preview("头像视图") {
-        AvatarDemoView()
-    }
+#Preview("基础样式") {
+    AvatarBasicPreview()
+        .frame(width: 500, height: 600)
+}
 #endif

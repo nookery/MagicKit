@@ -99,8 +99,10 @@ public extension URL {
 }
 
 // MARK: - Preview
+
 #if DEBUG
-#Preview("头像视图") {
-    AvatarDemoView()
+#Preview("基础样式") {
+    AvatarBasicPreview()
+        .frame(width: 500, height: 600)
 }
 #endif

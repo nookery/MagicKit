@@ -3,7 +3,7 @@ import SwiftUI
 
 extension AvatarView {
     /// 错误指示视图组件
-    struct ErrorIndicatorView: View {
+    struct ErrorView: View {
         let error: Error
         @State private var showError = false
         @State private var copied = false
@@ -56,7 +56,8 @@ extension AvatarView {
 #if DEBUG
     #Preview {
         AvatarView
-            .ErrorIndicatorView(error: URLError(.badURL))
+            .ErrorView(error: URLError(.badURL))
             .frame(width: 100, height: 100)
+            .magicCentered()
     }
 #endif

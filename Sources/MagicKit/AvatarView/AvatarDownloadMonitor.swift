@@ -143,11 +143,14 @@ public final class AvatarDownloadMonitor: SuperLog {
             return existing.publisher.eraseToAnyPublisher()
         }
 
-        // 创建新的监听器
-        let publisher = CurrentValueSubject<Double, Never>(0.0)
+        // 先查询初始进度，避免发送错误的初始值
+        let initialProgress = await queryProgress(for: url)
+
+        // 使用正确的初始值创建监听器
+        let publisher = CurrentValueSubject<Double, Never>(initialProgress)
 
         // 创建监听任务（轻量级轮询，使用 resourceValues 查询）
-        let monitorTask = await createMonitorTask(for: url, publisher: publisher)
+        let monitorTask = await createMonitorTask(for: url, publisher: publisher, skipInitialQuery: true)
 
         let info = MonitorInfo(
             publisher: publisher,
@@ -208,13 +211,24 @@ public final class AvatarDownloadMonitor: SuperLog {
 
     /// 创建监听任务
     /// 使用轻量级轮询而非持续的 NotificationCenter 监听
+    /// - Parameters:
+    ///   - url: 要监听的文件 URL
+    ///   - publisher: 进度发布者
+    ///   - skipInitialQuery: 是否跳过初始进度查询（已在调用方查询过）
     private func createMonitorTask(
         for url: URL,
-        publisher: CurrentValueSubject<Double, Never>
+        publisher: CurrentValueSubject<Double, Never>,
+        skipInitialQuery: Bool = false
     ) async -> Task<Void, Never> {
         return Task.detached(priority: .utility) { [weak self] in
             // 使用单次 I/O 检查文件状态
-            let initialProgress = await self?.queryProgress(for: url) ?? 1.0
+            let initialProgress: Double
+            if skipInitialQuery {
+                // 跳过查询，使用 publisher 的当前值（已在调用方设置）
+                initialProgress = await MainActor.run { publisher.value }
+            } else {
+                initialProgress = await self?.queryProgress(for: url) ?? 1.0
+            }
 
             // 如果已经完成（本地文件或已下载的 iCloud 文件），直接返回
             if initialProgress >= 1.0 {
@@ -229,9 +243,11 @@ public final class AvatarDownloadMonitor: SuperLog {
                 return
             }
 
-            // 发送初始进度
-            await MainActor.run {
-                publisher.send(initialProgress)
+            // 发送初始进度（如果跳过了初始查询，publisher 已经有了正确的初始值，不需要再发送）
+            if !skipInitialQuery {
+                await MainActor.run {
+                    publisher.send(initialProgress)
+                }
             }
 
             // 进度日志节流控制
