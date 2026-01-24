@@ -15,8 +15,6 @@ import SwiftUI
 /// - 将非 UI 操作移到后台线程执行，避免阻塞主线程
 public final class AvatarDownloadMonitor: SuperLog {
     public static let emoji = "📥"
-    /// 是否输出详细日志
-    public static let verbose = true
 
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
@@ -110,7 +108,7 @@ public final class AvatarDownloadMonitor: SuperLog {
     ///
     /// - Parameter url: 要监听的文件 URL
     /// - Returns: 进度发布者，发送 0-1 之间的值
-    public func subscribe(url: URL) async -> AnyPublisher<Double, Never> {
+    public func subscribe(url: URL, verbose: Bool) async -> AnyPublisher<Double, Never> {
         // 检查是否已存在监听器
         if let existing = await store.get(url) {
             // 已存在，增加引用计数
@@ -121,7 +119,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             switch result {
             case let .inUse(info, count):
                 newCount = count
-                if Self.verbose {
+                if verbose {
                     os_log("\(Self.t)🔺 增加引用 [引用: \(info.refCount), 总数: \(count)]: \(url.lastPathComponent)")
                 }
             case let .removed(_, count):
@@ -138,13 +136,13 @@ public final class AvatarDownloadMonitor: SuperLog {
         }
 
         // 先查询初始进度，避免发送错误的初始值
-        let initialProgress = await queryProgress(for: url)
+        let initialProgress = url.downloadProgress
 
         // 使用正确的初始值创建监听器
         let publisher = CurrentValueSubject<Double, Never>(initialProgress)
 
         // 创建监听任务（轻量级轮询，使用 resourceValues 查询）
-        let monitorTask = await createMonitorTask(for: url, publisher: publisher, skipInitialQuery: true)
+        let monitorTask = await createMonitorTask(for: url, publisher: publisher, verbose: verbose)
 
         let info = MonitorInfo(
             publisher: publisher,
@@ -160,7 +158,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             self.activeMonitorCount = newCount
         }
 
-        if Self.verbose {
+        if verbose {
             os_log("\(Self.t)➕ 创建监听器 [总数: \(newCount)]: \(url.lastPathComponent)")
         }
 
@@ -208,59 +206,20 @@ public final class AvatarDownloadMonitor: SuperLog {
     /// - Parameters:
     ///   - url: 要监听的文件 URL
     ///   - publisher: 进度发布者
-    ///   - skipInitialQuery: 是否跳过初始进度查询（已在调用方查询过）
     private func createMonitorTask(
         for url: URL,
         publisher: CurrentValueSubject<Double, Never>,
-        skipInitialQuery: Bool = false
+        verbose: Bool
     ) async -> Task<Void, Never> {
         return Task.detached(priority: .utility) { [weak self] in
-            // 使用单次 I/O 检查文件状态
-            let initialProgress: Double
-            if skipInitialQuery {
-                // 跳过查询，使用 publisher 的当前值（已在调用方设置）
-                initialProgress = await MainActor.run { publisher.value }
-            } else {
-                initialProgress = await self?.queryProgress(for: url) ?? 1.0
-            }
-
-            // 如果已经完成（本地文件或已下载的 iCloud 文件），直接返回
-            if initialProgress >= 1.0 {
+            // 如果已经完成了，直接发送 1.0 并退出
+            if url.isDownloaded {
                 await MainActor.run {
                     publisher.send(1.0)
                 }
                 return
             }
             
-            // 如果不在下载中，直接返回
-            if url.checkIsDownloading() == false {
-                return
-            }
-
-            // 💡 关键：强制清理并重新获取最新进度
-            var mutableUrl = url
-            mutableUrl.removeAllCachedResourceValues()
-            let refreshedProgress = await self?.queryProgress(for: mutableUrl) ?? 0.0
-
-            // 如果已经完成了，直接发送 1.0 并退出
-            if refreshedProgress >= 1.0 {
-                await MainActor.run {
-                    publisher.send(1.0)
-                }
-                return
-            }
-
-            if Self.verbose {
-                os_log("\(Self.t)监听到未完成文件，开始轮询: \(url.lastPathComponent)")
-            }
-
-            // 发送初始进度（如果跳过了初始查询，publisher 已经有了正确的初始值，不需要再发送）
-            if !skipInitialQuery {
-                await MainActor.run {
-                    publisher.send(initialProgress)
-                }
-            }
-
             // 进度日志节流控制
             var lastLoggedProgress: Double = 0
             var lastLogTime = Date()
@@ -269,10 +228,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             let pollInterval: UInt64 = 1000000000 // 1 秒
 
             while !Task.isCancelled {
-                // 💡 关键：每次轮询前清理缓存并获取最新进度
-                var mutableUrl = url
-                mutableUrl.removeAllCachedResourceValues()
-                let progress = await self?.queryProgress(for: mutableUrl) ?? 0.0
+                let progress = url.getDownloadProgress(verbose: false)
                 do {
                     try await Task.sleep(nanoseconds: pollInterval)
                 } catch {
@@ -293,22 +249,20 @@ public final class AvatarDownloadMonitor: SuperLog {
                     let timeSinceLastLog = now.timeIntervalSince(lastLogTime)
                     let progressChange = progress - lastLoggedProgress
 
-                    // 每3秒或每5%输出一次
-                    if timeSinceLastLog >= 3.0 || progressChange >= 0.05 {
+                    // 每1秒或每5%输出一次
+                    if timeSinceLastLog >= 1 || progressChange >= 0.05 {
                         shouldLog = true
                         lastLogTime = now
                         lastLoggedProgress = progress
                     }
                 }
 
-                if shouldLog, Self.verbose {
+                if shouldLog, verbose {
                     let percentage = Int(progress * 100)
                     if progress >= 1.0 {
-                        await MainActor.run {
-                            os_log("\(AvatarDownloadMonitor.t)✅ 下载完成: \(url.lastPathComponent)")
-                        }
+                        os_log("\(AvatarDownloadMonitor.t)✅ 下载完成: \(url.lastPathComponent)")
                     } else {
-                        await MainActor.run {
+                        if url.checkIsDownloading() {
                             os_log("\(AvatarDownloadMonitor.t)⏬ 下载中: \(url.lastPathComponent) - \(percentage)%")
                         }
                     }
@@ -320,61 +274,5 @@ public final class AvatarDownloadMonitor: SuperLog {
                 }
             }
         }
-    }
-
-    private nonisolated func queryProgress(for url: URL) async -> Double {
-        // 使用单次 resourceValues 调用，获取所有需要的属性
-        // 避免了之前的多次 I/O 调用（checkIsICloud + checkIsDownloaded）
-        var mutableUrl = url
-        mutableUrl.removeAllCachedResourceValues()
-
-        guard let resources = try? mutableUrl.resourceValues(forKeys: [
-            .isUbiquitousItemKey,
-            .ubiquitousItemDownloadingStatusKey,
-            URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey"),
-            .fileSizeKey,
-            .fileAllocatedSizeKey,
-        ]) else {
-            // 无法获取资源信息，可能是本地文件
-            return 1.0
-        }
-
-        // 如果不是 iCloud 文件，直接返回已完成
-        guard resources.isUbiquitousItem == true else {
-            return 1.0
-        }
-
-        // 优先检查百分比（这比 DownloadingStatus 刷新得更快）
-        if let percent = resources.allValues[URLResourceKey(rawValue: NSMetadataUbiquitousItemPercentDownloadedKey)] as? Double, percent >= 100.0 {
-            if let status = resources.ubiquitousItemDownloadingStatus, status == .current {
-                return 1.0
-            }
-            return 0.99
-        }
-
-        // 备选检查下载状态
-        if let status = resources.ubiquitousItemDownloadingStatus {
-            if status == .current {
-                return 1.0
-            }
-        }
-
-        // 使用文件大小计算下载进度
-        if let totalSize = resources.fileSize,
-           let downloadedSize = resources.fileAllocatedSize,
-           totalSize > 0 {
-            let progress = min(1.0, Double(downloadedSize) / Double(totalSize))
-            // 💡 关键修复：如果字节下载完了但状态还没变成 .current，返回 0.99
-            // 这样监听逻辑会继续运行，直到状态变为 .current
-            if progress >= 1.0 {
-                if Self.verbose {
-                    os_log("\(Self.t)字节已满但状态非 .current，保持 0.99: \(url.lastPathComponent)")
-                }
-                return 0.99
-            }
-            return progress
-        }
-
-        return 0.0
     }
 }

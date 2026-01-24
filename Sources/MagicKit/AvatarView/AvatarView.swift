@@ -87,16 +87,12 @@ public struct AvatarView: View, SuperLog {
         } else {
             // 检查 URL 格式
             guard url.isNetworkURL else {
-                os_log(.error, "\(Self.t)无效的 URL: \(url)")
                 _state = StateObject(wrappedValue: ViewState())
                 state.setError(ViewError.invalidURL)
                 return
             }
         }
     }
-
-    /// 加载延迟时间（毫秒），用于防止快速滚动时触发过多缩略图加载
-    var loadDelay: UInt64 = 150
 
     // MARK: - Body
 
@@ -137,7 +133,7 @@ public struct AvatarView: View, SuperLog {
                 )
             }
         }
-        .task(id: url) { await onTask() }
+        .task(id: url) { await onAppear() }
         .onChange(of: state.needsReload) {
             // 下载完成后触发重新加载缩略图
             if state.needsReload {
@@ -152,15 +148,6 @@ public struct AvatarView: View, SuperLog {
 // MARK: - Actions
 
 extension AvatarView {
-    /// 检查是否可以跳过延迟（缓存可用时不需要延迟）
-    /// - Returns: 如果可以跳过延迟返回 true
-    private func canSkipDelay() async -> Bool {
-        // 在后台线程检查文件状态
-        return await Task.detached(priority: .utility) { [url] in
-            url.isDownloaded || url.isNotiCloud
-        }.value
-    }
-
     /// 异步加载文件的缩略图
     /// 根据文件类型和状态决定是否需要生成或加载缩略图
     private func loadThumbnail() async {
@@ -226,7 +213,7 @@ extension AvatarView {
 
     /// 设置下载进度监控器
     /// 仅对iCloud文件启动监控
-    private func setupDownloadMonitor() async {
+    private func setupDownloadMonitor(verbose: Bool) async {
         guard monitorDownload else {
             return
         }
@@ -253,7 +240,7 @@ extension AvatarView {
 
         // 创建新订阅
         let cancellable = await AvatarDownloadMonitor.shared
-            .subscribe(url: capturedUrl)
+            .subscribe(url: capturedUrl, verbose: verbose)
             .receive(on: DispatchQueue.main)
             .sink { [capturedState, capturedUrl] progress in
                 // 更新进度状态
@@ -280,41 +267,14 @@ extension AvatarView {
 extension AvatarView {
     /// 处理视图出现时的事件
     /// 优化策略：对于已下载/本地文件跳过延迟直接加载（因为会从缓存读取）
-    private func onTask() async {
-        // 如果已有缩略图，无需加载
-        if state.thumbnail != nil {
-            // 仍然需要设置下载监控
-            await setupDownloadMonitor()
-            return
-        }
-
-        // 检查是否可以跳过延迟（已下载或本地文件可以从缓存快速加载）
-        let skipDelay = await canSkipDelay()
-
-        if !skipDelay {
-            os_log("\(Self.t)等候延迟加载 (\(loadDelay)ms)")
-            // 需要延迟加载（未下载的 iCloud 文件等）
-            do {
-                try await Task.sleep(nanoseconds: loadDelay * 1000000)
-            } catch {
-                os_log("\(Self.t)延迟加载被取消")
-                // 任务被取消
-                return
-            }
-
-            guard !Task.isCancelled else {
-                os_log("\(Self.t)延迟加载后任务已取消")
-                return
-            }
-        }
+    private func onAppear() async {
+        // 下载进度监控
+        await setupDownloadMonitor(verbose: self.verbose)
 
         // 加载缩略图
-        if state.error == nil {
+        if state.error == nil, state.thumbnail == nil {
             await loadThumbnail()
         }
-
-        // 对 iCloud 文件启用下载进度监控
-        await setupDownloadMonitor()
     }
 
     /// 处理视图消失时的事件
