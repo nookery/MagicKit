@@ -19,21 +19,12 @@ public final class AvatarDownloadMonitor: SuperLog {
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
 
-    /// 专门用于处理 MetadataQuery 更新的后台队列
-    private static let processingQueue: OperationQueue = {
-        let queue = OperationQueue()
-        queue.name = "com.magickit.avatardownload.processing"
-        queue.maxConcurrentOperationCount = 1
-        queue.qualityOfService = .userInitiated
-        return queue
-    }()
-
     /// 监听器信息
     private struct MonitorInfo {
         let publisher: CurrentValueSubject<Double, Never>
         var refCount: Int
-        /// 用于取消监听的任务
-        var monitorTask: Task<Void, Never>?
+        /// 用于取消监听
+        var cancellable: AnyCancellable?
     }
 
     /// 监听器字典 [URL: MonitorInfo] - 使用 actor 确保线程安全
@@ -145,18 +136,29 @@ public final class AvatarDownloadMonitor: SuperLog {
         }
 
         // 先查询初始进度，避免发送错误的初始值
-        let initialProgress = url.downloadProgress
+        let initialProgress = url.getDownloadProgressSnapshot()
 
         // 使用正确的初始值创建监听器
         let publisher = CurrentValueSubject<Double, Never>(initialProgress)
 
-        // 创建监听任务（轻量级轮询，使用 resourceValues 查询）
-        let monitorTask = await createMonitorTask(for: url, publisher: publisher, verbose: verbose)
+        // 使用 URL 扩展方法创建监听
+        let cancellable = url.onDownloading(
+            verbose: verbose,
+            caller: "AvatarDownloadMonitor",
+            updateInterval: 0.1 // 10Hz 更新频率，保证 UI 流畅
+        ) { progress in
+            publisher.send(progress)
+            
+            if progress >= 1.0 {
+                // 下载完成，发送 1.0
+                publisher.send(1.0)
+            }
+        }
 
         let info = MonitorInfo(
             publisher: publisher,
             refCount: 1,
-            monitorTask: monitorTask
+            cancellable: cancellable
         )
 
         await store.set(info, for: url)
@@ -199,7 +201,7 @@ public final class AvatarDownloadMonitor: SuperLog {
         case let .removed(removedInfo, count):
             newCount = count
             // 引用计数归零，监听器已从 store 中移除，取消任务
-            removedInfo.monitorTask?.cancel()
+            removedInfo.cancellable?.cancel()
             if verbose {
                 os_log("\(Self.t)🗑️ 移除监听器 [剩余: \(count)]: \(url.lastPathComponent)")
             }
@@ -207,109 +209,6 @@ public final class AvatarDownloadMonitor: SuperLog {
 
         await MainActor.run {
             self.activeMonitorCount = newCount
-        }
-    }
-
-    /// 创建监听任务
-    /// 使用轻量级轮询而非持续的 NotificationCenter 监听
-    /// - Parameters:
-    ///   - url: 要监听的文件 URL
-    ///   - publisher: 进度发布者
-    private func createMonitorTask(
-        for url: URL,
-        publisher: CurrentValueSubject<Double, Never>,
-        verbose: Bool
-    ) async -> Task<Void, Never> {
-        // 必须在 MainActor 上创建和管理 NSMetadataQuery
-        return Task { @MainActor in
-            // 如果已经完成了，直接发送 1.0 并退出
-            if url.isDownloaded {
-                publisher.send(1.0)
-                return
-            }
-
-            if verbose {
-                os_log("\(Self.t)🔍 开始创建 NSMetadataQuery 监听: \(url.lastPathComponent)")
-            }
-
-            let query = NSMetadataQuery()
-            // 关键优化：将 Query 的操作队列设置为后台队列，移出主线程
-            query.operationQueue = AvatarDownloadMonitor.processingQueue
-            query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope, NSMetadataQueryUbiquitousDataScope]
-            // 使用文件名匹配
-            query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemFSNameKey, url.lastPathComponent)
-
-            // 监听更新通知
-            // 注意：设置了 operationQueue 后，Notification 会在 operationQueue 上回调
-            let observer = NotificationCenter.default.addObserver(
-                forName: .NSMetadataQueryDidUpdate,
-                object: query,
-                queue: nil // nil 表示使用 posted queue（即 operationQueue）
-            ) { [weak query] _ in
-                guard let query = query else { return }
-                guard let item = query.results.first as? NSMetadataItem else { return }
-                
-                // 获取下载进度
-                if let percent = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double {
-                    let progress = percent / 100.0
-                    publisher.send(min(progress, 1.0))
-                    
-                    if verbose {
-                        os_log("\(Self.t)⏬ 进度更新: \(Int(percent))% - \(url.lastPathComponent)")
-                    }
-                }
-                
-                // 检查是否下载完成
-                let status = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String
-                if status == NSMetadataUbiquitousItemDownloadingStatusCurrent {
-                    publisher.send(1.0)
-                    if verbose {
-                        os_log("\(Self.t)✅ 下载完成(Query): \(url.lastPathComponent)")
-                    }
-                }
-            }
-            
-            // 监听初始结果收集完成
-            let finishGatheringObserver = NotificationCenter.default.addObserver(
-                forName: .NSMetadataQueryDidFinishGathering,
-                object: query,
-                queue: nil // nil 表示使用 posted queue（即 operationQueue）
-            ) { [weak query] _ in
-                guard let query = query else { return }
-                // 必须在 query 所在的 operationQueue 上调用 enableUpdates，这里已经在 queue 上了
-                query.enableUpdates()
-                
-                if let item = query.results.first as? NSMetadataItem {
-                    if let percent = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double {
-                         let progress = percent / 100.0
-                         publisher.send(min(progress, 1.0))
-                    }
-                } else if verbose {
-                    os_log("\(Self.t)⚠️ Query 未找到文件: \(url.lastPathComponent)")
-                }
-            }
-
-            // 启动查询
-            query.start()
-            
-            // 保持任务运行直到被取消
-            do {
-                try await withTaskCancellationHandler {
-                    // 挂起任务直到被取消
-                    try await Task.sleep(nanoseconds: 365 * 24 * 60 * 60 * 1_000_000_000)
-                } onCancel: {
-                    Task { @MainActor in
-                        if verbose {
-                            os_log("\(Self.t)🛑 停止监听: \(url.lastPathComponent)")
-                        }
-                        query.stop()
-                        NotificationCenter.default.removeObserver(observer)
-                        NotificationCenter.default.removeObserver(finishGatheringObserver)
-                    }
-                }
-            } catch {
-                // 任务取消时会抛出错误
-            }
         }
     }
 }

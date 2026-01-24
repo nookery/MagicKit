@@ -59,7 +59,7 @@ public struct ThumbnailGenerator {
         // 如果是 iCloud 文件且未下载，返回下载图标
         let isiCloud = url.checkIsICloud(verbose: false)
         let isNotDownloaded = url.isNotDownloaded
-        let progress = url.downloadProgress
+        let progress = url.getDownloadProgressSnapshot()
 
         if isiCloud && isNotDownloaded && progress < 1.0 {
             let image = Image.PlatformImage.fromSystemIcon(.iconICloudDownload)

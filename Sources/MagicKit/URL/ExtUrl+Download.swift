@@ -422,10 +422,6 @@ public extension URL {
         }
     }
 
-    var downloadProgress: Double {
-        getDownloadProgressSnapshot(verbose: false)
-    }
-
     /// 获取文件的下载进度快照
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
@@ -464,14 +460,12 @@ public extension URL {
                 return 0.0
             }
             
-            // 🔍 调试：输出所有获取到的属性
+            // 所有获取到的属性
             let status = resources.ubiquitousItemDownloadingStatus
             let isDownloading = resources.ubiquitousItemIsDownloading
             let percent = resources.allValues[percentKey] as? Double
             let fileSize = resources.fileSize
             let allocatedSize = resources.fileAllocatedSize
-            
-            os_log("\(self.t)🔍 <\(self.title)> status=\(status?.rawValue ?? "nil") | isDownloading=\(String(describing: isDownloading)) | percent=\(String(describing: percent)) | fileSize=\(String(describing: fileSize)) | allocated=\(String(describing: allocatedSize))")
             
             // 优先检查下载状态
             if let status = status, status == .current {
