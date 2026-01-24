@@ -107,27 +107,35 @@ public struct AvatarView: View, SuperLog {
         Group {
             if isDownloading && downloadProgress < 1 {
                 DownloadingView(progress: downloadProgress)
+                    .frame(width: size.width, height: size.height)
+                    .background(backgroundColor)
             } else if let thumbnail = state.thumbnail {
-                ThumbnailView(image: thumbnail)
+                ThumbnailView(
+                    image: thumbnail,
+                    shape: shape,
+                    size: size,
+                    backgroundColor: backgroundColor
+                )
             } else if let error = state.error {
-                ErrorView(error: error)
+                ErrorView(
+                    error: error,
+                    shape: shape,
+                    size: size,
+                    backgroundColor: backgroundColor
+                )
             } else if state.isLoading {
                 ProgressView()
                     .controlSize(.small)
+                    .frame(width: size.width, height: size.height)
+                    .background(backgroundColor)
             } else {
                 url.fastDefaultImage
                     .resizable()
                     .scaledToFit()
                     .foregroundStyle(.secondary)
                     .padding(4)
-            }
-        }
-        .frame(width: size.width, height: size.height)
-        .background(backgroundColor)
-        .clipShape(shape)
-        .overlay {
-            if state.error != nil {
-                shape.strokeBorder(color: Color.red.opacity(0.5))
+                    .frame(width: size.width, height: size.height)
+                    .background(backgroundColor)
             }
         }
         .task(id: url) { await onTask() }
@@ -332,7 +340,7 @@ extension AvatarView {
 
 #if DEBUG
     #Preview("基础样式") {
-        AvatarDemoView()
+        AvatarBasicPreview()
             .frame(width: 500, height: 600)
     }
 #endif
