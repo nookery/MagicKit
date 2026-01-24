@@ -6,6 +6,9 @@ extension AvatarView {
         /// 缩略图
         @Published public var thumbnail: Image?
 
+        /// 是否为系统图标
+        @Published public var isSystemIcon: Bool = false
+
         /// 错误状态
         @Published public var error: Error?
 
@@ -21,6 +24,7 @@ extension AvatarView {
         /// 重置所有状态
         public func reset() {
             thumbnail = nil
+            isSystemIcon = false
             error = nil
             isLoading = false
             autoDownloadProgress = 0
@@ -41,6 +45,12 @@ extension AvatarView {
             self.thumbnail = image
         }
 
+        /// 设置缩略图和图标类型
+        public func setThumbnail(_ image: Image?, isSystemIcon: Bool) {
+            self.thumbnail = image
+            self.isSystemIcon = isSystemIcon
+        }
+
         /// 设置下载进度
         public func setProgress(_ progress: Double) {
             self.autoDownloadProgress = progress
@@ -57,4 +67,4 @@ extension AvatarView {
             needsReload = false
         }
     }
-} 
+}

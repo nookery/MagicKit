@@ -232,7 +232,8 @@ private struct FileCopyProgressView: View, SuperLog {
             }
             
             // 加载缩略图
-            if let thumb = try? await source.thumbnail(size: CGSize(width: 80, height: 80), verbose: verbose, reason: self.className + ".performCopyOperation") {
+            if let result = try? await source.thumbnail(size: CGSize(width: 80, height: 80), verbose: verbose, reason: self.className + ".performCopyOperation"),
+               let thumb = result.toSwiftUIImage() {
                 await setThumbnail(thumb)
             }
             

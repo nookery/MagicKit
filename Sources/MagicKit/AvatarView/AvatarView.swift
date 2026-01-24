@@ -112,6 +112,7 @@ public struct AvatarView: View, SuperLog {
             } else if let thumbnail = state.thumbnail {
                 ThumbnailView(
                     image: thumbnail,
+                    isSystemIcon: state.isSystemIcon,
                     shape: shape,
                     size: size,
                     backgroundColor: backgroundColor
@@ -190,14 +191,15 @@ extension AvatarView {
             await capturedState.setLoading(true)
 
             do {
-                let image = try await capturedUrl.thumbnail(
+                let result = try await capturedUrl.thumbnail(
                     size: capturedSize,
                     verbose: false,
                     reason: self.className + ".loadThumbnail"
                 )
 
-                if let image = image {
-                    await capturedState.setThumbnail(image)
+                if let result = result,
+                   let image = result.toSwiftUIImage() {
+                    await capturedState.setThumbnail(image, isSystemIcon: result.isSystemIcon)
                     await capturedState.setError(nil)
                 }
             } catch URLError.cancelled {

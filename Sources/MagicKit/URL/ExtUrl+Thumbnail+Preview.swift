@@ -126,7 +126,8 @@
 
             Task {
                 do {
-                    if let thumbnail = try await url.thumbnail(size: CGSize(width: 200, height: 200), useDefaultIcon: useDefaultIcon, verbose: true, reason: "loadVideoThumbnail") {
+                    if let result = try await url.thumbnail(size: CGSize(width: 200, height: 200), useDefaultIcon: useDefaultIcon, verbose: true, reason: "loadVideoThumbnail"),
+                       let thumbnail = result.toSwiftUIImage() {
                         await MainActor.run {
                             videoThumbnail = thumbnail
                         }
