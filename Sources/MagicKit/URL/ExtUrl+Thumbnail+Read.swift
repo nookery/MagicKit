@@ -99,13 +99,15 @@ extension URL {
         verbose: Bool,
         reason: String
     ) async throws -> Image? {
-        let result: ThumbnailResult? = try await thumbnail(
+        guard let result: ThumbnailResult = try await thumbnail(
             size: size,
             useDefaultIcon: useDefaultIcon,
             verbose: verbose,
             reason: reason
-        )
-        return result?.image
+        ) else {
+            return nil
+        }
+        return result.image
     }
 
     /// 获取文件的缩略图（原生图片格式，内部使用）
