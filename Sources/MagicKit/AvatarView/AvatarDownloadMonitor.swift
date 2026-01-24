@@ -19,6 +19,15 @@ public final class AvatarDownloadMonitor: SuperLog {
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
 
+    /// 专门用于处理 MetadataQuery 更新的后台队列
+    private static let processingQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.magickit.avatardownload.processing"
+        queue.maxConcurrentOperationCount = 1
+        queue.qualityOfService = .userInitiated
+        return queue
+    }()
+
     /// 监听器信息
     private struct MonitorInfo {
         let publisher: CurrentValueSubject<Double, Never>
@@ -224,15 +233,18 @@ public final class AvatarDownloadMonitor: SuperLog {
             }
 
             let query = NSMetadataQuery()
+            // 关键优化：将 Query 的操作队列设置为后台队列，移出主线程
+            query.operationQueue = AvatarDownloadMonitor.processingQueue
             query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope, NSMetadataQueryUbiquitousDataScope]
             // 使用文件名匹配
             query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemFSNameKey, url.lastPathComponent)
 
             // 监听更新通知
+            // 注意：设置了 operationQueue 后，Notification 会在 operationQueue 上回调
             let observer = NotificationCenter.default.addObserver(
                 forName: .NSMetadataQueryDidUpdate,
                 object: query,
-                queue: .main
+                queue: nil // nil 表示使用 posted queue（即 operationQueue）
             ) { [weak query] _ in
                 guard let query = query else { return }
                 guard let item = query.results.first as? NSMetadataItem else { return }
@@ -261,9 +273,10 @@ public final class AvatarDownloadMonitor: SuperLog {
             let finishGatheringObserver = NotificationCenter.default.addObserver(
                 forName: .NSMetadataQueryDidFinishGathering,
                 object: query,
-                queue: .main
+                queue: nil // nil 表示使用 posted queue（即 operationQueue）
             ) { [weak query] _ in
                 guard let query = query else { return }
+                // 必须在 query 所在的 operationQueue 上调用 enableUpdates，这里已经在 queue 上了
                 query.enableUpdates()
                 
                 if let item = query.results.first as? NSMetadataItem {
