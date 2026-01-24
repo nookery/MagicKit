@@ -1,4 +1,5 @@
 import Foundation
+import AppKit
 
 public extension URL {
     // MARK: - 音频示例 (MP3/WAV)
@@ -356,15 +357,17 @@ public extension URL {
         return tempFile
     }
     
-    /// 临时目录中的图片文件（从 sample_jpg_earth 复制）
+    /// 临时目录中的图片文件（程序生成）
     static var sample_temp_jpg: URL {
         let tempFile = FileManager.default.temporaryDirectory
             .appendingPathComponent("magic_kit_test.jpg")
-        
+
         if !FileManager.default.fileExists(atPath: tempFile.path) {
-            try? FileManager.default.copyRemoteFile(from: sample_web_jpg_earth, to: tempFile)
+            // 生成一个测试图片
+            let testImage = NSImage.testImage()
+            testImage.writeToURL(tempFile, compressionFactor: 0.8)
         }
-        
+
         return tempFile
     }
     
@@ -428,7 +431,9 @@ public extension URL {
             try? htmlFormContent.write(to: htmlFormFile, atomically: true, encoding: .utf8)
             
             let imageFile = tempFolder.appendingPathComponent("test.jpg")
-            try? FileManager.default.copyRemoteFile(from: sample_web_jpg_earth, to: imageFile)
+            // 生成测试图片
+            let testImage = NSImage.testImage()
+            testImage.writeToURL(imageFile, compressionFactor: 0.8)
             
             let videoFile = tempFolder.appendingPathComponent("test.mp4")
             try? FileManager.default.copyRemoteFile(from: sample_web_mp4_bunny, to: videoFile)

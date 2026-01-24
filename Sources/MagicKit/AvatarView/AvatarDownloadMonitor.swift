@@ -14,9 +14,9 @@ import SwiftUI
 /// - 使用轮询机制，每秒检查一次文件状态
 /// - 将非 UI 操作移到后台线程执行，避免阻塞主线程
 public final class AvatarDownloadMonitor: SuperLog {
-    nonisolated(unsafe) public static let emoji = "📥"
+    public nonisolated(unsafe) static let emoji = "📥"
     /// 是否输出详细日志
-    nonisolated(unsafe) public static let verbose = false
+    public nonisolated(unsafe) static let verbose = false
 
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
@@ -101,7 +101,7 @@ public final class AvatarDownloadMonitor: SuperLog {
 
     /// 主线程上的活跃监听器数量（用于 UI 观察）
     @MainActor
-    private(set) public var activeMonitorCount: Int = 0
+    public private(set) var activeMonitorCount: Int = 0
 
     private init() {
         if Self.verbose {
@@ -143,11 +143,14 @@ public final class AvatarDownloadMonitor: SuperLog {
             return existing.publisher.eraseToAnyPublisher()
         }
 
-        // 创建新的监听器
-        let publisher = CurrentValueSubject<Double, Never>(0.0)
+        // 先查询初始进度，避免发送错误的初始值
+        let initialProgress = await queryProgress(for: url)
+
+        // 使用正确的初始值创建监听器
+        let publisher = CurrentValueSubject<Double, Never>(initialProgress)
 
         // 创建监听任务（轻量级轮询，使用 resourceValues 查询）
-        let monitorTask = await createMonitorTask(for: url, publisher: publisher)
+        let monitorTask = await createMonitorTask(for: url, publisher: publisher, skipInitialQuery: true)
 
         let info = MonitorInfo(
             publisher: publisher,
@@ -208,13 +211,24 @@ public final class AvatarDownloadMonitor: SuperLog {
 
     /// 创建监听任务
     /// 使用轻量级轮询而非持续的 NotificationCenter 监听
+    /// - Parameters:
+    ///   - url: 要监听的文件 URL
+    ///   - publisher: 进度发布者
+    ///   - skipInitialQuery: 是否跳过初始进度查询（已在调用方查询过）
     private func createMonitorTask(
         for url: URL,
-        publisher: CurrentValueSubject<Double, Never>
+        publisher: CurrentValueSubject<Double, Never>,
+        skipInitialQuery: Bool = false
     ) async -> Task<Void, Never> {
         return Task.detached(priority: .utility) { [weak self] in
             // 使用单次 I/O 检查文件状态
-            let initialProgress = await self?.queryProgress(for: url) ?? 1.0
+            let initialProgress: Double
+            if skipInitialQuery {
+                // 跳过查询，使用 publisher 的当前值（已在调用方设置）
+                initialProgress = await MainActor.run { publisher.value }
+            } else {
+                initialProgress = await self?.queryProgress(for: url) ?? 1.0
+            }
 
             // 如果已经完成（本地文件或已下载的 iCloud 文件），直接返回
             if initialProgress >= 1.0 {
@@ -223,15 +237,17 @@ public final class AvatarDownloadMonitor: SuperLog {
                 }
                 return
             }
-            
+
             // 如果不在下载中，直接返回
             if url.checkIsDownloading() == false {
                 return
             }
 
-            // 发送初始进度
-            await MainActor.run {
-                publisher.send(initialProgress)
+            // 发送初始进度（如果跳过了初始查询，publisher 已经有了正确的初始值，不需要再发送）
+            if !skipInitialQuery {
+                await MainActor.run {
+                    publisher.send(initialProgress)
+                }
             }
 
             // 进度日志节流控制
@@ -239,7 +255,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             var lastLogTime = Date()
 
             // 轮询检查下载进度（每 1 秒检查一次，降低 I/O 频率）
-            let pollInterval: UInt64 = 1_000_000_000 // 1 秒
+            let pollInterval: UInt64 = 1000000000 // 1 秒
 
             while !Task.isCancelled {
                 // 等待下一次轮询
@@ -293,7 +309,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             }
         }
     }
-    
+
     /// 查询文件下载进度
     /// 使用单次 resourceValues 调用获取所有需要的属性，减少 I/O
     private nonisolated func queryProgress(for url: URL) async -> Double {
@@ -303,31 +319,31 @@ public final class AvatarDownloadMonitor: SuperLog {
             .isUbiquitousItemKey,
             .ubiquitousItemDownloadingStatusKey,
             .fileSizeKey,
-            .fileAllocatedSizeKey
+            .fileAllocatedSizeKey,
         ]) else {
             // 无法获取资源信息，可能是本地文件
             return 1.0
         }
-        
+
         // 如果不是 iCloud 文件，直接返回已完成
         guard resources.isUbiquitousItem == true else {
             return 1.0
         }
-        
+
         // 检查下载状态
         if let status = resources.ubiquitousItemDownloadingStatus {
             if status == .current {
                 return 1.0
             }
         }
-        
+
         // 使用文件大小计算下载进度
         if let totalSize = resources.fileSize,
            let downloadedSize = resources.fileAllocatedSize,
            totalSize > 0 {
             return min(1.0, Double(downloadedSize) / Double(totalSize))
         }
-        
+
         return 0.0
     }
 }

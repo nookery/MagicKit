@@ -16,7 +16,6 @@ struct AvatarSection: View {
             .magicAvatarShape(avatarShape)
             .magicBackground(avatarBackgroundColor)
             .magicDownloadMonitor(monitorDownload)
-            .magicContextMenu(false)
             .overlay(
                 RoundedRectangle(cornerRadius: 0)
                     .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4]))
