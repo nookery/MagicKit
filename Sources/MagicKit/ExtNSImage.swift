@@ -5,6 +5,7 @@
 //  NSImage 扩展，提供图片生成和转换功能
 //
 
+#if canImport(AppKit)
 import AppKit
 import SwiftUI
 
@@ -134,4 +135,6 @@ public extension NSImage {
         .frame(width: 300)
         .frame(height: 800)
     }
+#endif
+
 #endif
