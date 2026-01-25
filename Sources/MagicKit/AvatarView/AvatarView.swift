@@ -99,9 +99,12 @@ public struct AvatarView: View, SuperLog {
     public var body: some View {
         Group {
             if isDownloading && downloadProgress < 1 {
-                DownloadingView(progress: downloadProgress)
-                    .frame(width: size.width, height: size.height)
-                    .background(backgroundColor)
+                DownloadingView(
+                    progress: downloadProgress,
+                    shape: shape,
+                    size: size,
+                    backgroundColor: backgroundColor
+                )
             } else if let thumbnail = state.thumbnail {
                 ThumbnailView(
                     image: thumbnail,

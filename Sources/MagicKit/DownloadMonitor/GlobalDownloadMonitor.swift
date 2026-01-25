@@ -8,7 +8,7 @@ import OSLog
 /// 负责维护唯一的 NSMetadataQuery 并分发事件
 final class GlobalDownloadMonitor: SuperLog {
     public nonisolated static let emoji = "👂"
-    public nonisolated static let verbose = true
+    public nonisolated static let verbose = false
 
     static let shared = GlobalDownloadMonitor()
     

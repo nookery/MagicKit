@@ -4,6 +4,21 @@ extension AvatarView {
     /// 下载进度视图组件
     struct DownloadingView: View {
         let progress: Double
+        let shape: AvatarViewShape
+        let size: CGSize
+        let backgroundColor: Color
+
+        init(
+            progress: Double,
+            shape: AvatarViewShape = .circle,
+            size: CGSize,
+            backgroundColor: Color = .blue.opacity(0.1)
+        ) {
+            self.progress = progress
+            self.shape = shape
+            self.size = size
+            self.backgroundColor = backgroundColor
+        }
 
         var body: some View {
             ZStack {
@@ -22,14 +37,33 @@ extension AvatarView {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+            .frame(width: size.width, height: size.height)
+            .background(backgroundColor)
+            .clipShape(shape)
         }
     }
 }
 
 #if DEBUG
-    #Preview {
-        AvatarView.DownloadingView(progress: 0.75)
-            .frame(width: 100, height: 100)
-            .magicCentered()
+    #Preview("圆形进度") {
+        AvatarView.DownloadingView(
+            progress: 0.75,
+            shape: .circle,
+            size: CGSize(width: 100, height: 100),
+            backgroundColor: .blue.opacity(0.1)
+        )
+        .magicCentered()
+        .frame(width: 200, height: 200)
+    }
+
+    #Preview("圆角矩形进度") {
+        AvatarView.DownloadingView(
+            progress: 0.45,
+            shape: .roundedRectangle(cornerRadius: 12),
+            size: CGSize(width: 100, height: 100),
+            backgroundColor: .green.opacity(0.1)
+        )
+        .magicCentered()
+        .frame(width: 200, height: 200)
     }
 #endif
