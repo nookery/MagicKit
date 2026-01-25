@@ -110,7 +110,7 @@ public enum ThumbnailSource: Sendable {
 }
 
 /// 文件类型分类
-public enum FileType: Sendable {
+public enum FileType: Sendable, CustomStringConvertible {
     /// 图片文件
     case image
 
@@ -128,4 +128,15 @@ public enum FileType: Sendable {
 
     /// 未知类型
     case unknown
+
+    public var description: String {
+        switch self {
+        case .image: return "image"
+        case .video: return "video"
+        case .audio: return "audio"
+        case .folder: return "folder"
+        case .document: return "document"
+        case .unknown: return "unknown"
+        }
+    }
 }

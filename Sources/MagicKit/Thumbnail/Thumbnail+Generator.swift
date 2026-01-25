@@ -1,16 +1,9 @@
-//
-//  Thumbnail+Generator.swift
-//  MagicKit
-//
-//  缩略图生成器
-//
-
 import Foundation
 import OSLog
 import SwiftUI
 
-    /// 缩略图生成器
-    /// 负责根据文件类型生成相应的缩略图
+/// 缩略图生成器
+/// 负责根据文件类型生成相应的缩略图
 public struct ThumbnailGenerator {
     /// 要生成缩略图的 URL
     public let url: URL
@@ -51,10 +44,6 @@ public struct ThumbnailGenerator {
     /// 生成缩略图
     /// - Returns: 缩略图结果，如果无法生成则返回 nil
     public func generate() async throws -> ThumbnailResult? {
-        if verbose {
-            os_log("\(url.t)🐛 (\(reason)) 获取缩略图")
-        }
-
         // 如果是网络 URL，返回下载图标
         if url.isNetworkURL {
             let image = Image.PlatformImage.fromSystemIcon(.iconICloudDownload)
@@ -68,7 +57,11 @@ public struct ThumbnailGenerator {
         }
 
         // 如果是 iCloud 文件且未下载，返回下载图标
-        if url.checkIsICloud(verbose: false) && url.isNotDownloaded {
+        let isiCloud = url.checkIsICloud(verbose: false)
+        let isNotDownloaded = url.isNotDownloaded
+        let progress = url.getDownloadProgressSnapshot()
+
+        if isiCloud && isNotDownloaded && progress < 1.0 {
             let image = Image.PlatformImage.fromSystemIcon(.iconICloudDownload)
             return ThumbnailResult(
                 image: image,
@@ -105,7 +98,6 @@ public struct ThumbnailGenerator {
         // 如果无法识别类型，返回默认文档图标
         if useDefaultIcon,
            let image = Image.PlatformImage.fromSystemIcon(url.icon) {
-            if verbose { os_log("\(url.t)<\(url.title)>使用默认系统图标") }
             return ThumbnailResult(
                 image: image,
                 isSystemIcon: true,
@@ -114,8 +106,6 @@ public struct ThumbnailGenerator {
                 isCached: false
             )
         }
-
-        if verbose { os_log("\(url.t)无法识别文件类型，返回 nil") }
 
         return nil
     }

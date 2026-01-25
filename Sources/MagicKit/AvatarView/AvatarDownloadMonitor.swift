@@ -14,9 +14,7 @@ import SwiftUI
 /// - 使用轮询机制，每秒检查一次文件状态
 /// - 将非 UI 操作移到后台线程执行，避免阻塞主线程
 public final class AvatarDownloadMonitor: SuperLog {
-    public nonisolated(unsafe) static let emoji = "📥"
-    /// 是否输出详细日志
-    public nonisolated(unsafe) static let verbose = false
+    public static let emoji = "📥"
 
     /// 单例实例
     public static let shared = AvatarDownloadMonitor()
@@ -25,8 +23,8 @@ public final class AvatarDownloadMonitor: SuperLog {
     private struct MonitorInfo {
         let publisher: CurrentValueSubject<Double, Never>
         var refCount: Int
-        /// 用于取消监听的任务
-        var monitorTask: Task<Void, Never>?
+        /// 用于取消监听
+        var cancellable: AnyCancellable?
     }
 
     /// 监听器字典 [URL: MonitorInfo] - 使用 actor 确保线程安全
@@ -103,12 +101,6 @@ public final class AvatarDownloadMonitor: SuperLog {
     @MainActor
     public private(set) var activeMonitorCount: Int = 0
 
-    private init() {
-        if Self.verbose {
-            os_log("\(Self.t)🚀 全局下载监控器初始化")
-        }
-    }
-
     /// 订阅指定 URL 的下载进度
     ///
     /// 如果该 URL 已有监听器，增加引用计数并返回现有发布者。
@@ -116,7 +108,7 @@ public final class AvatarDownloadMonitor: SuperLog {
     ///
     /// - Parameter url: 要监听的文件 URL
     /// - Returns: 进度发布者，发送 0-1 之间的值
-    public func subscribe(url: URL) async -> AnyPublisher<Double, Never> {
+    public func subscribe(url: URL, verbose: Bool) async -> AnyPublisher<Double, Never> {
         // 检查是否已存在监听器
         if let existing = await store.get(url) {
             // 已存在，增加引用计数
@@ -127,7 +119,18 @@ public final class AvatarDownloadMonitor: SuperLog {
             switch result {
             case let .inUse(info, count):
                 newCount = count
-                if Self.verbose {
+                // 关键修复：即使是现有的监听器，也强制检查一次最新状态
+                // 避免因为 Query 延迟或漏掉通知导致状态滞后
+                let currentSnapshot = url.getDownloadProgressSnapshot()
+                if currentSnapshot != info.publisher.value {
+                    // 如果状态不一致（例如已下载完成但 publisher 还在 0.9），强制更新
+                     if verbose {
+                        os_log("\(Self.t)🔄 修正状态 [Old: \(info.publisher.value) -> New: \(currentSnapshot)]: \(url.lastPathComponent)")
+                     }
+                    info.publisher.send(currentSnapshot)
+                }
+                
+                if verbose {
                     os_log("\(Self.t)🔺 增加引用 [引用: \(info.refCount), 总数: \(count)]: \(url.lastPathComponent)")
                 }
             case let .removed(_, count):
@@ -144,18 +147,29 @@ public final class AvatarDownloadMonitor: SuperLog {
         }
 
         // 先查询初始进度，避免发送错误的初始值
-        let initialProgress = await queryProgress(for: url)
+        let initialProgress = url.getDownloadProgressSnapshot()
 
         // 使用正确的初始值创建监听器
         let publisher = CurrentValueSubject<Double, Never>(initialProgress)
 
-        // 创建监听任务（轻量级轮询，使用 resourceValues 查询）
-        let monitorTask = await createMonitorTask(for: url, publisher: publisher, skipInitialQuery: true)
+        // 使用 URL 扩展方法创建监听
+        let cancellable = url.onDownloading(
+            verbose: verbose,
+            caller: self.className,
+            updateInterval: 0.1 // 10Hz 更新频率，保证 UI 流畅
+        ) { progress in
+            publisher.send(progress)
+            
+            if progress >= 1.0 {
+                // 下载完成，发送 1.0
+                publisher.send(1.0)
+            }
+        }
 
         let info = MonitorInfo(
             publisher: publisher,
             refCount: 1,
-            monitorTask: monitorTask
+            cancellable: cancellable
         )
 
         await store.set(info, for: url)
@@ -166,7 +180,7 @@ public final class AvatarDownloadMonitor: SuperLog {
             self.activeMonitorCount = newCount
         }
 
-        if Self.verbose {
+        if verbose {
             os_log("\(Self.t)➕ 创建监听器 [总数: \(newCount)]: \(url.lastPathComponent)")
         }
 
@@ -178,7 +192,7 @@ public final class AvatarDownloadMonitor: SuperLog {
     /// 减少引用计数，当引用计数归零时清理该 URL 的监听器。
     ///
     /// - Parameter url: 要取消订阅的文件 URL
-    public func unsubscribe(url: URL) async {
+    public func unsubscribe(url: URL, verbose: Bool) async {
         let result = await store.updateRefCount(for: url, increment: false)
 
         // 更新主线程上的计数
@@ -191,15 +205,15 @@ public final class AvatarDownloadMonitor: SuperLog {
         case let .inUse(info, count):
             newCount = count
             // 还有其他订阅者，只是减少了引用计数
-            if Self.verbose {
+            if verbose {
                 os_log("\(Self.t)🔻 减少引用 [引用: \(info.refCount), 总数: \(count)]: \(url.lastPathComponent)")
             }
 
         case let .removed(removedInfo, count):
             newCount = count
             // 引用计数归零，监听器已从 store 中移除，取消任务
-            removedInfo.monitorTask?.cancel()
-            if Self.verbose {
+            removedInfo.cancellable?.cancel()
+            if verbose {
                 os_log("\(Self.t)🗑️ 移除监听器 [剩余: \(count)]: \(url.lastPathComponent)")
             }
         }
@@ -207,143 +221,5 @@ public final class AvatarDownloadMonitor: SuperLog {
         await MainActor.run {
             self.activeMonitorCount = newCount
         }
-    }
-
-    /// 创建监听任务
-    /// 使用轻量级轮询而非持续的 NotificationCenter 监听
-    /// - Parameters:
-    ///   - url: 要监听的文件 URL
-    ///   - publisher: 进度发布者
-    ///   - skipInitialQuery: 是否跳过初始进度查询（已在调用方查询过）
-    private func createMonitorTask(
-        for url: URL,
-        publisher: CurrentValueSubject<Double, Never>,
-        skipInitialQuery: Bool = false
-    ) async -> Task<Void, Never> {
-        return Task.detached(priority: .utility) { [weak self] in
-            // 使用单次 I/O 检查文件状态
-            let initialProgress: Double
-            if skipInitialQuery {
-                // 跳过查询，使用 publisher 的当前值（已在调用方设置）
-                initialProgress = await MainActor.run { publisher.value }
-            } else {
-                initialProgress = await self?.queryProgress(for: url) ?? 1.0
-            }
-
-            // 如果已经完成（本地文件或已下载的 iCloud 文件），直接返回
-            if initialProgress >= 1.0 {
-                await MainActor.run {
-                    publisher.send(1.0)
-                }
-                return
-            }
-
-            // 如果不在下载中，直接返回
-            if url.checkIsDownloading() == false {
-                return
-            }
-
-            // 发送初始进度（如果跳过了初始查询，publisher 已经有了正确的初始值，不需要再发送）
-            if !skipInitialQuery {
-                await MainActor.run {
-                    publisher.send(initialProgress)
-                }
-            }
-
-            // 进度日志节流控制
-            var lastLoggedProgress: Double = 0
-            var lastLogTime = Date()
-
-            // 轮询检查下载进度（每 1 秒检查一次，降低 I/O 频率）
-            let pollInterval: UInt64 = 1000000000 // 1 秒
-
-            while !Task.isCancelled {
-                // 等待下一次轮询
-                do {
-                    try await Task.sleep(nanoseconds: pollInterval)
-                } catch {
-                    // 任务被取消
-                    break
-                }
-
-                let progress = await self?.queryProgress(for: url) ?? 1.0
-
-                await MainActor.run {
-                    publisher.send(progress)
-                }
-
-                // 决定是否输出进度日志
-                var shouldLog = false
-                if progress >= 1.0 {
-                    shouldLog = true
-                } else {
-                    let now = Date()
-                    let timeSinceLastLog = now.timeIntervalSince(lastLogTime)
-                    let progressChange = progress - lastLoggedProgress
-
-                    // 每3秒或每5%输出一次
-                    if timeSinceLastLog >= 3.0 || progressChange >= 0.05 {
-                        shouldLog = true
-                        lastLogTime = now
-                        lastLoggedProgress = progress
-                    }
-                }
-
-                if shouldLog, AvatarDownloadMonitor.verbose {
-                    let percentage = Int(progress * 100)
-                    if progress >= 1.0 {
-                        await MainActor.run {
-                            os_log("\(AvatarDownloadMonitor.t)✅ 下载完成: \(url.lastPathComponent)")
-                        }
-                    } else {
-                        await MainActor.run {
-                            os_log("\(AvatarDownloadMonitor.t)⏬ 下载中: \(url.lastPathComponent) - \(percentage)%")
-                        }
-                    }
-                }
-
-                // 下载完成，退出循环
-                if progress >= 1.0 {
-                    break
-                }
-            }
-        }
-    }
-
-    /// 查询文件下载进度
-    /// 使用单次 resourceValues 调用获取所有需要的属性，减少 I/O
-    private nonisolated func queryProgress(for url: URL) async -> Double {
-        // 使用单次 resourceValues 调用，获取所有需要的属性
-        // 避免了之前的多次 I/O 调用（checkIsICloud + checkIsDownloaded）
-        guard let resources = try? url.resourceValues(forKeys: [
-            .isUbiquitousItemKey,
-            .ubiquitousItemDownloadingStatusKey,
-            .fileSizeKey,
-            .fileAllocatedSizeKey,
-        ]) else {
-            // 无法获取资源信息，可能是本地文件
-            return 1.0
-        }
-
-        // 如果不是 iCloud 文件，直接返回已完成
-        guard resources.isUbiquitousItem == true else {
-            return 1.0
-        }
-
-        // 检查下载状态
-        if let status = resources.ubiquitousItemDownloadingStatus {
-            if status == .current {
-                return 1.0
-            }
-        }
-
-        // 使用文件大小计算下载进度
-        if let totalSize = resources.fileSize,
-           let downloadedSize = resources.fileAllocatedSize,
-           totalSize > 0 {
-            return min(1.0, Double(downloadedSize) / Double(totalSize))
-        }
-
-        return 0.0
     }
 }

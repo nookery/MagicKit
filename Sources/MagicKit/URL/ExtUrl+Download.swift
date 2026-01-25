@@ -1,11 +1,11 @@
 import Foundation
+import MagicUI
 import OSLog
 import SwiftUI
-import MagicUI
 
 public extension URL {
     /// 获取文件的状态信息
-    /// 
+    ///
     /// 这个属性返回文件的当前状态描述，例如：
     /// - "远程文件"：表示文件是一个网络 URL
     /// - "本地文件"：表示文件存储在本地
@@ -32,11 +32,11 @@ public extension URL {
     /// 下载方式
     enum DownloadMethod {
         /// 轮询方式
-        case polling(updateInterval: TimeInterval = 0.5)  // 默认 0.5 秒
+        case polling(updateInterval: TimeInterval = 0.5) // 默认 0.5 秒
         /// 使用 NSMetadataQuery
         case query
     }
-    
+
     /// 下载 iCloud 文件
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false
@@ -44,9 +44,9 @@ public extension URL {
     ///   - method: 下载方式，默认为 .polling
     ///   - onProgress: 下载进度回调
     func download(
-        verbose: Bool = false, 
-        reason: String, 
-        method: DownloadMethod = .polling(), 
+        verbose: Bool = false,
+        reason: String,
+        method: DownloadMethod = .polling(),
         onProgress: ((Double) -> Void)? = nil
     ) async throws {
         // 通用的检查和日志
@@ -56,11 +56,11 @@ public extension URL {
             }
             return
         }
-        
+
         if verbose {
             os_log("\(self.t)🛫 (\(reason)) <\(self.title)> 开始下载")
         }
-        
+
         // 如果不需要进度回调，直接使用简单的下载方式
         guard let onProgress = onProgress else {
             try await FileManager.default.startDownloadingUbiquitousItem(at: self)
@@ -69,16 +69,16 @@ public extension URL {
             }
             return
         }
-        
+
         // 需要进度回调时，根据方法选择具体的下载实现
         switch method {
-        case .polling(let updateInterval):
+        case let .polling(updateInterval):
             try await downloadWithPolling(verbose: verbose, updateInterval: updateInterval, onProgress: onProgress)
         case .query:
             try await downloadWithQuery(verbose: verbose, onProgress: onProgress)
         }
     }
-    
+
     /// 下载状态相关属性
     /// ⚠️ 注意：此属性会访问文件系统，可能需要 1-5 毫秒
     /// 建议在后台线程调用，或使用 `checkIsDownloaded()` 函数
@@ -86,18 +86,21 @@ public extension URL {
         checkIsDownloaded(verbose: false)
     }
 
-    /// 检查文件是否已下载（明确标注为耗时操作）
+    /// 检查文件是否已下载
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 如果文件已下载返回 true，否则返回 false
     /// - Note: 此函数会访问文件系统，建议在后台线程调用
     /// - Performance: ~1-5ms for iCloud files, ~0.1μs for local files
     func checkIsDownloaded(verbose: Bool = false) -> Bool {
-        // 使用单次 I/O 获取所有需要的属性
-        // 这比先调用 checkIsICloud 再调用 resourceValues 效率高得多
-        guard let resources = try? self.resourceValues(forKeys: [
+        // 💡 关键：强制清理 URL 的内部资源属性缓存，确保获取到磁盘上的最新状态
+        var mutableSelf = self
+        mutableSelf.removeAllCachedResourceValues()
+
+        guard let resources = try? mutableSelf.resourceValues(forKeys: [
             .isUbiquitousItemKey,
-            .ubiquitousItemDownloadingStatusKey
+            .ubiquitousItemDownloadingStatusKey,
+            URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey"),
         ]) else {
             // 无法获取资源，可能是本地文件
             return true
@@ -105,6 +108,11 @@ public extension URL {
 
         // 如果不是 iCloud 文件，视为本地文件
         guard resources.isUbiquitousItem == true else {
+            return true
+        }
+
+        // 先检查进度，100% 进度视为已下载
+        if let progress = resources.allValues[URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey")] as? Double, progress >= 100.0 {
             return true
         }
 
@@ -117,27 +125,25 @@ public extension URL {
         }
 
         let isDownloaded = status == .current
-        if verbose {
-            if isDownloaded {
-                os_log("\(self.t)<\(self.title)>iCloud 文件已下载 ✅")
-            } else {
-                os_log("\(self.t)<\(self.title)>iCloud 文件未下载 ⏳")
-            }
-        }
         return isDownloaded
     }
 
-    /// 检查文件是否正在下载（明确标注为耗时操作）
+    /// 检查文件是否正在下载
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 如果文件是 iCloud 文件且正在下载返回 true，否则返回 false
     /// - Note: 此函数会访问文件系统，建议在后台线程调用
     /// - Performance: ~1-5ms for iCloud files
     func checkIsDownloading(verbose: Bool = false) -> Bool {
+        // 💡 关键：清理 URL 缓存，确保获取最新状态
+        var mutableSelf = self
+        mutableSelf.removeAllCachedResourceValues()
+        
         // 使用单次 I/O 获取所有需要的属性
-        guard let resources = try? self.resourceValues(forKeys: [
+        guard let resources = try? mutableSelf.resourceValues(forKeys: [
             .isUbiquitousItemKey,
-            .ubiquitousItemDownloadingStatusKey
+            .ubiquitousItemDownloadingStatusKey,
+            .ubiquitousItemIsDownloadingKey,
         ]) else {
             if verbose {
                 os_log("\(self.t)<\(self.title)>无法获取文件资源 ❌")
@@ -147,32 +153,23 @@ public extension URL {
 
         // 如果不是 iCloud 文件，肯定不在下载
         guard resources.isUbiquitousItem == true else {
-            if verbose {
-                os_log("\(self.t)<\(self.title)>不是 iCloud 文件，未在下载 ❌")
-            }
             return false
         }
 
-        // 检查下载状态
-        guard let status = resources.ubiquitousItemDownloadingStatus else {
-            if verbose {
-                os_log("\(self.t)<\(self.title)>iCloud 文件下载状态为空 ❌")
-            }
-            return false
+        // 优先使用 isDownloading 属性
+        if let isDownloading = resources.ubiquitousItemIsDownloading, isDownloading {
+            return true
         }
 
-        // 使用原始字符串比较，因为 Apple 的 API 在不同系统版本中可能有差异
-        let isDownloading = status.rawValue == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
-        if verbose {
-            if isDownloading {
-                os_log("\(self.t)<\(self.title)>iCloud 文件正在下载 ⏬")
-            } else {
-                os_log("\(self.t)<\(self.title)>iCloud 文件未在下载 ⏸️")
-            }
+        // 备选：检查下载状态字符串
+        if let status = resources.ubiquitousItemDownloadingStatus {
+            // 使用原始字符串比较，因为 Apple 的 API 在不同系统版本中可能有差异
+            return status.rawValue == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
         }
-        return isDownloading
+
+        return false
     }
-    
+
     var isNotDownloaded: Bool {
         !isDownloaded
     }
@@ -212,7 +209,7 @@ public extension URL {
     var isLocal: Bool {
         isNotiCloud
     }
-    
+
     /// 创建下载按钮
     /// - Parameters:
     ///   - size: 按钮大小，默认为 28x28
@@ -234,7 +231,7 @@ public extension URL {
             destination: destination
         )
     }
-    
+
     /// 从本地驱动器中移除文件，但保留在 iCloud 中
     /// - Returns: 是否成功移除
     @discardableResult
@@ -245,12 +242,12 @@ public extension URL {
             os_log("\(self.t)不是 iCloud 文件，无法执行移除操作")
             return false
         }
-        
+
         guard isDownloaded else {
             os_log("\(self.t)文件未下载，无需移除")
             return true
         }
-        
+
         do {
             try FileManager.default.evictUbiquitousItem(at: self)
             os_log("\(self.t)文件已从本地成功移除")
@@ -260,7 +257,7 @@ public extension URL {
             throw error
         }
     }
-    
+
     /// 移动文件到目标位置，支持 iCloud 文件
     /// - Parameter destination: 目标位置
     /// - Throws: 移动过程中的错误
@@ -271,11 +268,11 @@ public extension URL {
             os_log("\(self.t)检测到 iCloud 文件未下载，开始下载")
             try await download(verbose: false, reason: "移动文件时，检测到 iCloud 文件未下载，开始下载")
         }
-        
+
         let coordinator = NSFileCoordinator()
         var coordinationError: NSError?
         var moveError: Error?
-        
+
         coordinator.coordinate(
             writingItemAt: self,
             options: .forMoving,
@@ -292,18 +289,18 @@ public extension URL {
                 os_log("\(self.t)移动文件失败: \(error.localizedDescription)")
             }
         }
-        
+
         // 检查移动过程中是否发生错误
         if let error = moveError {
             throw error
         }
-        
+
         // 检查协调过程中是否发生错误
         if let error = coordinationError {
             throw error
         }
     }
-    
+
     /// 使用轮询方式下载 iCloud 文件
     private func downloadWithPolling(
         verbose: Bool,
@@ -324,21 +321,21 @@ public extension URL {
                let downloadedSize = resources.fileAllocatedSize {
                 let progress = Double(downloadedSize) / Double(totalSize)
                 onProgress(progress)
-                
+
                 // 检查是否有下载错误
                 if let error = resources.ubiquitousItemDownloadingError {
                     throw error
                 }
             }
-            
-            try await Task.sleep(nanoseconds: UInt64(updateInterval * 1_000_000_000)) // 转换为纳秒
+
+            try await Task.sleep(nanoseconds: UInt64(updateInterval * 1000000000)) // 转换为纳秒
         }
-        
+
         if verbose {
             os_log("\(self.t)文件下载完成")
         }
     }
-    
+
     /// 使用 NSMetadataQuery 下载 iCloud 文件
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false
@@ -351,9 +348,9 @@ public extension URL {
             let query = NSMetadataQuery()
             query.searchScopes = [NSMetadataQueryUbiquitousDataScope]
             query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemURLKey, self.path)
-            
+
             var observers: [NSObjectProtocol] = []
-            
+
             let startObserver = NotificationCenter.default.addObserver(
                 forName: .NSMetadataQueryDidStartGathering,
                 object: query,
@@ -362,7 +359,7 @@ public extension URL {
                 if verbose {
                     os_log("\(self.t)查询开始")
                 }
-                
+
                 do {
                     try FileManager.default.startDownloadingUbiquitousItem(at: self)
                 } catch {
@@ -371,29 +368,29 @@ public extension URL {
                 }
             }
             observers.append(startObserver)
-            
+
             let updateObserver = NotificationCenter.default.addObserver(
                 forName: .NSMetadataQueryDidUpdate,
                 object: query,
                 queue: .main
             ) { _ in
                 guard let item = query.results.first as? NSMetadataItem else { return }
-                
+
                 let downloadStatus = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String
                 let isDownloading = downloadStatus == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
-                
+
                 if isDownloading {
                     // 现在一定会计算进度
                     if let downloadedSize = item.value(forAttribute: "NSMetadataUbiquitousItemDownloadedSizeKey") as? NSNumber,
                        let totalSize = item.value(forAttribute: "NSMetadataUbiquitousItemTotalSizeKey") as? NSNumber {
                         let progress = Double(truncating: downloadedSize) / Double(truncating: totalSize)
                         onProgress(progress)
-                        
+
                         if verbose {
                             os_log("\(self.t)下载进度：\(progress * 100)%")
                         }
                     }
-                    
+
                     if let error = item.value(forAttribute: NSMetadataUbiquitousItemDownloadingErrorKey) as? Error {
                         observers.forEach { NotificationCenter.default.removeObserver($0) }
                         query.stop()
@@ -409,7 +406,7 @@ public extension URL {
                 }
             }
             observers.append(updateObserver)
-            
+
             let finishObserver = NotificationCenter.default.addObserver(
                 forName: .NSMetadataQueryDidFinishGathering,
                 object: query,
@@ -420,32 +417,25 @@ public extension URL {
                 }
             }
             observers.append(finishObserver)
-            
+
             query.start()
         }
     }
-    
-    /// 获取文件的下载进度
-    /// ⚠️ 注意：此属性会访问文件系统，可能需要 1-5 毫秒
-    /// 建议在后台线程调用，或使用 `getDownloadProgress()` 函数
-    /// - Returns: 下载进度（0.0 到 1.0 之间）
-    ///   - 对于本地文件，返回 1.0
-    ///   - 对于 iCloud 文件，返回实际下载进度
-    ///   - 如果无法获取进度信息，返回 0.0
-    var downloadProgress: Double {
-        getDownloadProgress(verbose: false)
-    }
 
-    /// 获取文件的下载进度（明确标注为耗时操作）
+    /// 获取文件的下载进度快照
     /// - Parameters:
     ///   - verbose: 是否输出详细日志，默认为 false（避免频繁调用时产生大量日志）
     /// - Returns: 下载进度（0.0 到 1.0 之间）
     /// - Note: 此函数会访问文件系统，建议在后台线程调用
     /// - Performance: ~1-5ms for iCloud files, ~0.1μs for local files
-    func getDownloadProgress(verbose: Bool = false) -> Double {
+    func getDownloadProgressSnapshot(verbose: Bool = false) -> Double {
         if verbose {
             os_log("\(self.t)<\(self.title)>获取下载进度")
         }
+        
+        // 💡 关键：强制清理 URL 的内部资源属性缓存，确保获取到磁盘上的最新状态
+        var mutableSelf = self
+        mutableSelf.removeAllCachedResourceValues()
 
         // 如果是本地文件，直接返回 1.0
         if isLocal {
@@ -457,41 +447,57 @@ public extension URL {
 
         // 如果是 iCloud 文件，获取下载进度
         if checkIsICloud(verbose: false) {
-            guard let resources = try? self.resourceValues(forKeys: [
+            // 💡 使用 iCloud 专用属性获取下载进度
+            let percentKey = URLResourceKey(rawValue: "NSURLUbiquitousItemPercentDownloadedKey")
+            guard let resources = try? mutableSelf.resourceValues(forKeys: [
                 .fileSizeKey,
-                .fileAllocatedSizeKey
+                .fileAllocatedSizeKey,
+                .ubiquitousItemDownloadingStatusKey,
+                .ubiquitousItemIsDownloadingKey,
+                percentKey,
             ]) else {
-                if verbose {
-                    os_log("\(self.t)<\(self.title)>无法获取文件大小信息 ❌")
-                }
+                os_log("\(self.t)<\(self.title)>无法获取文件信息 ❌")
                 return 0.0
             }
+            
+            // 所有获取到的属性
+            let status = resources.ubiquitousItemDownloadingStatus
+            let isDownloading = resources.ubiquitousItemIsDownloading
+            let percent = resources.allValues[percentKey] as? Double
+            let fileSize = resources.fileSize
+            let allocatedSize = resources.fileAllocatedSize
+            
+            // 优先检查下载状态
+            if let status = status, status == .current {
+                return 1.0
+            }
+            
+            // 优先使用 iCloud 提供的百分比进度（更准确）
+            if let percent = percent, percent > 0 {
+                let progress = percent / 100.0
+                return min(progress, 1.0)
+            }
 
-            guard let totalSize = resources.fileSize,
-                  let downloadedSize = resources.fileAllocatedSize else {
-                if verbose {
-                    os_log("\(self.t)<\(self.title)>文件大小信息不完整 ❌")
-                }
+            // 降级方案：使用文件大小计算
+            guard let totalSize = fileSize, totalSize > 0,
+                  let downloadedSize = allocatedSize else {
                 return 0.0
             }
 
             let progress = Double(downloadedSize) / Double(totalSize)
-            if verbose {
-                let percentage = Int(progress * 100)
-                os_log("\(self.t)<\(self.title)>下载进度: \(percentage)% 📊")
-            }
             return progress
         }
 
         if verbose {
-            os_log("\(self.t)<\(self.title)>非本地文件，下载进度 0% ❌")
+            os_log("\(self.t)<\(self.title)>非本地文件，也非iCloud文件，返回下载进度 0% ")
         }
+
         return 0.0
     }
 }
 
 #if DEBUG
-#Preview {
-    DownloadButtonPreview()
-}
+    #Preview {
+        DownloadButtonPreview()
+    }
 #endif

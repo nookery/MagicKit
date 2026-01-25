@@ -31,7 +31,8 @@ public extension NSMetadataItem {
         guard let downloadingStatus = value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String else {
             return false
         }
-        return downloadingStatus == NSMetadataUbiquitousItemDownloadingStatusNotDownloaded
+        // 只要不是 Current，就认为是占位符或未就绪
+        return downloadingStatus != NSMetadataUbiquitousItemDownloadingStatusCurrent
     }
     
     /// 下载进度（0-1）
@@ -46,12 +47,23 @@ public extension NSMetadataItem {
     
     /// 文件是否已下载完成
     var isDownloaded: Bool {
-        downloadProgress >= 0.999 || isPlaceholder == false
+        // 先检查进度（进度达到 100% 视为已下载，这比状态更新快）
+        if downloadProgress >= 1.0 {
+            return true
+        }
+
+        guard let downloadingStatus = value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String else {
+            return true // 本地文件或无法获取状态，视为已下载
+        }
+        return downloadingStatus == NSMetadataUbiquitousItemDownloadingStatusCurrent
     }
     
     /// 文件是否正在下载
     var isDownloading: Bool {
-        isPlaceholder && downloadProgress > 0.0 && downloadProgress < 0.999
+        guard let downloadingStatus = value(forAttribute: NSMetadataUbiquitousItemDownloadingStatusKey) as? String else {
+            return false
+        }
+        return downloadingStatus == "NSMetadataUbiquitousItemDownloadingStatusDownloading"
     }
     
     /// 打印所有属性（调试用）

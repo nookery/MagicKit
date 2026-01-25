@@ -1,3 +1,4 @@
+import OSLog
 import SwiftUI
 
 // MARK: - URL Avatar View Extension
@@ -94,7 +95,7 @@ public extension URL {
     /// 
     /// - Returns: 配置好的头像视图
     func makeAvatarView(verbose: Bool = false) -> AvatarView {
-        AvatarView(url: self, verbose: verbose)
+        return AvatarView(url: self, verbose: verbose)
     }
 }
 

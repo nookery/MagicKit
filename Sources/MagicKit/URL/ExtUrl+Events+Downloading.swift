@@ -1,3 +1,4 @@
+
 import Foundation
 import Combine
 import SwiftUI
@@ -17,74 +18,60 @@ public extension URL {
         updateInterval: TimeInterval = 0.5,
         _ onProgress: @escaping (Double) -> Void
     ) -> AnyCancellable {
-        let queue = OperationQueue()
-        queue.maxConcurrentOperationCount = 1
-        queue.qualityOfService = .background
-        
-        let query = NSMetadataQuery()
-        query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        query.predicate = NSPredicate(format: "%K == %@", NSMetadataItemURLKey, self as NSURL)
-        query.operationQueue = queue
-        
         if verbose {
-            os_log("\(self.t)👂 [\(caller)] 开始监听下载进度 -> \(self.title)")
+            os_log("\(self.t)👂 (\(caller)) 开始监听下载进度 -> \(self.title)")
         }
         
-        var lastUpdateTime: TimeInterval = 0
-        // 保存 observer token 以便后续移除，避免内存泄漏
-        var observer: NSObjectProtocol?
-        
-        let task = Task {
-            let stream = AsyncStream<Notification> { continuation in
-                // 设置取消时的清理操作，确保移除 NotificationCenter 观察者
-                continuation.onTermination = { _ in
-                    if let obs = observer {
-                        NotificationCenter.default.removeObserver(obs)
-                        observer = nil
-                    }
-                }
-                
-                observer = NotificationCenter.default.addObserver(
-                    forName: .NSMetadataQueryDidUpdate,
-                    object: query,
-                    queue: queue
-                ) { notification in
-                    continuation.yield(notification)
-                }
-            }
-            
-            for await _ in stream {
-                if let item = query.results.first as? NSMetadataItem {
-                    let currentTime = Date().timeIntervalSince1970
-                    if currentTime - lastUpdateTime >= updateInterval {
-                        let progress = item.downloadProgress
-                        lastUpdateTime = currentTime
-                        onProgress(progress)
-                    }
-                    
-                    if item.isDownloaded {
-                        if verbose {
-                            os_log("\(self.t)下载完成 -> \(self.title)")
-                        }
-                        query.stop()
-                        break
-                    }
-                }
-            }
-        }
-        
-        query.start()
+        // 注册到全局监听器
+        let uuid = GlobalDownloadMonitor.shared.addSubscriber(
+            url: self,
+            updateInterval: updateInterval,
+            onProgress: onProgress
+        )
         
         return AnyCancellable {
             if verbose {
-                os_log("\(self.t)🔚 [\(caller)] 停止监听下载进度 -> \(self.title)")
+                os_log("\(self.t)🔚 (\(caller)) 停止监听下载进度(Global) -> \(self.title)")
             }
-            task.cancel()
-            query.stop()
-            // 确保移除观察者，防止内存泄漏
-            if let obs = observer {
-                NotificationCenter.default.removeObserver(obs)
-                observer = nil
+            GlobalDownloadMonitor.shared.removeSubscriber(url: self, uuid: uuid)
+        }
+    }
+
+    /// 监听文件下载完成事件
+    /// - Parameters:
+    ///   - verbose: 是否打印详细日志
+    ///   - caller: 调用者名称
+    ///   - onFinished: 下载完成回调
+    /// - Returns: 可用于取消监听的 AnyCancellable
+    func onDownloadFinished(
+        verbose: Bool,
+        caller: String,
+        _ onFinished: @escaping () -> Void
+    ) -> AnyCancellable {
+        if verbose {
+            os_log("\(self.t)👂 [\(caller)] 开始监听下载完成(Global) -> \(self.title)")
+        }
+        
+        // 直接复用 onDownloading 监听
+        // GlobalDownloadMonitor 会在下载完成（离开 query）时回调 1.0
+        return self.onDownloading(
+            verbose: false, // 内部不再打印详细进度日志，避免刷屏
+            caller: caller,
+            updateInterval: 1.0 // 对完成检测来说，频率不需要太高
+        ) { progress in
+            if progress >= 1.0 {
+                if verbose {
+                    os_log("\(self.t)[\(caller)] 下载完成(Global) -> \(self.title)")
+                }
+                
+                // 确保在主线程回调 (保持原有行为)
+                if Thread.isMainThread {
+                    onFinished()
+                } else {
+                    DispatchQueue.main.async {
+                        onFinished()
+                    }
+                }
             }
         }
     }
