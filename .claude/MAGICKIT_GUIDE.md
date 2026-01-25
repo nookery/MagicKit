@@ -180,8 +180,11 @@ do {
 
 1. **规划阶段** - 使用 `/plan` 命令规划复杂功能
 2. **开发阶段** - 遵循本指南的规范
-3. **检查阶段** - 使用 `/swift-check` 命令检查代码规范
-4. **提交阶段** - 使用 `/commit` 命令生成 commit message
+3. **构建验证** - ⚠️ **必须运行 macOS 和 iOS 两个平台的构建**（参见下方测试部分）
+4. **检查阶段** - 使用 `/swift-check` 命令检查代码规范
+5. **提交阶段** - 使用 `/commit` 命令生成 commit message
+
+**⚠️ 重要：构建验证是强制步骤，不能跳过！**
 
 ## 关键注意事项
 
@@ -239,15 +242,72 @@ dependencies: [
 
 ## 测试
 
+### ⚠️ 多平台构建验证（重要）
+
+**MagicKit 支持 macOS 和 iOS 两个平台，每次构建前必须验证两个平台的编译！**
+
 ```bash
-# 构建项目
+# 1. macOS 构建（默认）
 swift build
 
-# 运行测试
-swift test
+# 2. iOS 模拟器构建（必须验证）
+swift build \
+  --destination "generic/platform=iOS Simulator" \
+  -Xswiftc "-target" \
+  -Xswiftc "arm64-apple-ios17.0-simulator" \
+  -Xswiftc "-sdk" \
+  -Xswiftc "$(xcrun --sdk iphonesimulator --show-sdk-path)"
 
+# 3. 运行测试
+swift test
+```
+
+**为什么需要多平台验证？**
+
+- MagicKit 在 `Package.swift` 中声明了支持 `macOS(.v14)` 和 `iOS(.v17)`
+- 某些 API 是平台特定的（如 `AppKit` 仅在 macOS 可用）
+- 需要使用条件编译 `#if canImport(AppKit)` 来处理平台差异
+- 用户可能在 iOS 或 macOS 项目中使用 MagicKit
+
+**常见平台特定代码处理：**
+
+```swift
+// ✅ 正确：使用条件编译
+#if canImport(AppKit)
+import AppKit
+
+// macOS 专用代码
+public extension NSImage {
+    func someMethod() { }
+}
+#endif
+
+// ❌ 错误：直接导入平台特定框架
+import AppKit  // 在 iOS 上会导致编译错误
+```
+
+**构建验证时机：**
+
+- ✅ 修改代码后，提交前必须运行 macOS 和 iOS 构建
+- ✅ 特别是修改了导入语句或添加新文件时
+- ✅ 如果使用了平台特定的 API（如 AppKit、UIKit），必须验证两个平台
+
+**构建失败处理：**
+
+如果 iOS 构建失败：
+1. 检查是否使用了平台特定的框架
+2. 添加 `#if canImport(XXX)` 条件编译
+3. 确保依赖库也支持目标平台
+4. 某些依赖可能仅支持 macOS（如 MagicDevice），这是正常的
+
+### 其他测试命令
+
+```bash
 # 在 Xcode 中打开
 open Package.swift
+
+# 清理构建
+swift package clean
 ```
 
 ## 常见命令
