@@ -1,5 +1,8 @@
 import Foundation
+
+#if canImport(AppKit)
 import AppKit
+#endif
 
 public extension URL {
     // MARK: - 音频示例 (MP3/WAV)
@@ -356,7 +359,8 @@ public extension URL {
         
         return tempFile
     }
-    
+
+    #if canImport(AppKit)
     /// 临时目录中的图片文件（程序生成）
     static var sample_temp_jpg: URL {
         let tempFile = FileManager.default.temporaryDirectory
@@ -370,7 +374,8 @@ public extension URL {
 
         return tempFile
     }
-    
+    #endif
+
     /// 临时目录中的 PDF 文件（从 sample_pdf_swift_guide 复制）
     static var sample_temp_pdf: URL {
         let tempFile = FileManager.default.temporaryDirectory
@@ -429,12 +434,14 @@ public extension URL {
             </html>
             """
             try? htmlFormContent.write(to: htmlFormFile, atomically: true, encoding: .utf8)
-            
+
+            #if canImport(AppKit)
             let imageFile = tempFolder.appendingPathComponent("test.jpg")
             // 生成测试图片
             let testImage = NSImage.testImage()
             testImage.writeToURL(imageFile, compressionFactor: 0.8)
-            
+            #endif
+
             let videoFile = tempFolder.appendingPathComponent("test.mp4")
             try? FileManager.default.copyRemoteFile(from: sample_web_mp4_bunny, to: videoFile)
             
