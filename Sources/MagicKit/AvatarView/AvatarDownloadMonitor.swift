@@ -119,6 +119,17 @@ public final class AvatarDownloadMonitor: SuperLog {
             switch result {
             case let .inUse(info, count):
                 newCount = count
+                // 关键修复：即使是现有的监听器，也强制检查一次最新状态
+                // 避免因为 Query 延迟或漏掉通知导致状态滞后
+                let currentSnapshot = url.getDownloadProgressSnapshot()
+                if currentSnapshot != info.publisher.value {
+                    // 如果状态不一致（例如已下载完成但 publisher 还在 0.9），强制更新
+                     if verbose {
+                        os_log("\(Self.t)🔄 修正状态 [Old: \(info.publisher.value) -> New: \(currentSnapshot)]: \(url.lastPathComponent)")
+                     }
+                    info.publisher.send(currentSnapshot)
+                }
+                
                 if verbose {
                     os_log("\(Self.t)🔺 增加引用 [引用: \(info.refCount), 总数: \(count)]: \(url.lastPathComponent)")
                 }
@@ -144,7 +155,7 @@ public final class AvatarDownloadMonitor: SuperLog {
         // 使用 URL 扩展方法创建监听
         let cancellable = url.onDownloading(
             verbose: verbose,
-            caller: "AvatarDownloadMonitor",
+            caller: self.className,
             updateInterval: 0.1 // 10Hz 更新频率，保证 UI 流畅
         ) { progress in
             publisher.send(progress)
