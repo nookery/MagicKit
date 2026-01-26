@@ -7,7 +7,6 @@ struct DownloadButtonView: View, SuperLog {
     let url: URL
     let size: CGFloat
     let showLabel: Bool
-    let shape: MagicButton.Shape
     let destination: URL?
     
     @State var isDownloading: Bool
@@ -18,7 +17,6 @@ struct DownloadButtonView: View, SuperLog {
         url: URL,
         size: CGFloat = 28,
         showLabel: Bool = false,
-        shape: MagicButton.Shape = .circle,
         destination: URL? = nil,
         isDownloading: Bool = false,
         progress: Double = 0,
@@ -27,7 +25,6 @@ struct DownloadButtonView: View, SuperLog {
         self.url = url
         self.size = size
         self.showLabel = showLabel
-        self.shape = shape
         self.destination = destination
         self._isDownloading = State(initialValue: isDownloading)
         self._progress = State(initialValue: progress)
@@ -41,14 +38,6 @@ struct DownloadButtonView: View, SuperLog {
             return .iconICloudDownloadAlt
         } else {
             return .iconDownload
-        }
-    }
-
-    private var buttonStyle: MagicButton.Style {
-        if url.isDownloaded {
-            return .primary
-        } else {
-            return .secondary
         }
     }
 
@@ -74,17 +63,16 @@ struct DownloadButtonView: View, SuperLog {
                     .frame(width: size * 0.8, height: size * 0.8)
                     .frame(width: size, height: size)
             } else {
-                MagicButton(
-                    icon: buttonIcon,
-                    title: showLabel ? buttonLabel : nil,
-                    style: buttonStyle,
-                    size: size <= 32 ? .small : (size <= 40 ? .regular : .large),
-                    shape: shape,
-                    disabledReason: buttonDisabled ? buttonLabel : nil,
-                    action: {_ in
-                        handleButtonTap()
+                Button(action: handleButtonTap) {
+                    HStack(spacing: 4) {
+                        Image(systemName: buttonIcon)
+                        if showLabel {
+                            Text(buttonLabel)
+                        }
                     }
-                )
+                    .frame(width: size, height: size)
+                }
+                .disabled(buttonDisabled)
                 .symbolEffect(.bounce, value: url.isDownloaded)
             }
             
@@ -124,9 +112,3 @@ struct DownloadButtonView: View, SuperLog {
         }
     }
 }
-
-#if DEBUG
-#Preview {
-    DownloadButtonPreview()
-}
-#endif

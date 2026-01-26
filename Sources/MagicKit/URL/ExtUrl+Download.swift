@@ -220,14 +220,12 @@ public extension URL {
     func makeDownloadButton(
         size: CGFloat = 28,
         showLabel: Bool = false,
-        shape: MagicButton.Shape = .circle,
         destination: URL? = nil
     ) -> some View {
         DownloadButtonView(
             url: self,
             size: size,
             showLabel: showLabel,
-            shape: shape,
             destination: destination
         )
     }
@@ -495,9 +493,3 @@ public extension URL {
         return 0.0
     }
 }
-
-#if DEBUG
-    #Preview {
-        DownloadButtonPreview()
-    }
-#endif

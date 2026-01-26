@@ -89,42 +89,6 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
         shared.clearLogs()
     }
 
-    /// 获取日志视图
-    /// - Parameters:
-    ///   - title: 视图标题
-    ///   - onClose: 关闭回调
-    /// - Returns: 日志视图
-    public static func logView(
-        title: String = "Logs",
-        onClose: (() -> Void)? = nil
-    ) -> MagicLogView {
-        shared.logView(title: title, onClose: onClose)
-    }
-
-    /// 获取一个带日志视图弹出框的按钮
-    /// - Parameters:
-    ///   - icon: 按钮图标
-    ///   - title: 按钮标题
-    ///   - style: 按钮样式
-    ///   - size: 按钮大小
-    ///   - shape: 按钮形状
-    /// - Returns: 日志按钮
-    public static func logButton(
-        icon: String = "doc.text.magnifyingglass",
-        title: String? = nil,
-        style: MagicButton.Style = .secondary,
-        size: MagicButton.Size = .regular,
-        shape: MagicButton.Shape = .circle
-    ) -> MagicButton {
-        shared.logButton(
-            icon: icon,
-            title: title,
-            style: style,
-            size: size,
-            shape: shape
-        )
-    }
-
     // MARK: - Public Methods
 
     /// 添加一条信息日志
@@ -164,50 +128,6 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
         logs.removeAll()
     }
 
-    /// 获取日志视图
-    /// - Parameters:
-    ///   - title: 视图标题
-    ///   - onClose: 关闭回调
-    /// - Returns: 日志视图
-    public func logView(
-        title: String = "Logs",
-        onClose: (() -> Void)? = nil
-    ) -> MagicLogView {
-        MagicLogView(
-            title: title,
-            logger: self,
-            onClose: onClose
-        )
-    }
-
-    /// 获取一个带日志视图弹出框的按钮
-    /// - Parameters:
-    ///   - icon: 按钮图标
-    ///   - title: 按钮标题
-    ///   - style: 按钮样式
-    ///   - size: 按钮大小
-    ///   - shape: 按钮形状
-    /// - Returns: 日志按钮
-    public func logButton(
-        icon: String = "doc.text.magnifyingglass",
-        title: String? = nil,
-        style: MagicButton.Style = .secondary,
-        size: MagicButton.Size = .regular,
-        shape: MagicButton.Shape = .circle
-    ) -> MagicButton {
-        MagicButton(
-            icon: icon,
-            title: title,
-            style: style,
-            size: size,
-            shape: shape,
-            popoverContent: AnyView(
-                logView()
-                    .frame(width: 600, height: 400)
-            )
-        )
-    }
-
     // MARK: - Private Methods
 
     private func addLog(_ entry: MagicLogEntry) {
@@ -241,30 +161,3 @@ public class MagicLogger: ObservableObject, @unchecked Sendable {
         os_log(level, "\(Thread.currentQosDescription) | \(title) | \(entry.originalMessage.withContextEmoji)")
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-#Preview("MagicLogger") {
-    VStack(spacing: 20) {
-        // 测试日志按钮
-        MagicLogger.logButton()
-
-        // 使用 shared 实例的日志视图
-        MagicLogger.logView()
-            .frame(height: 300)
-    }
-    .padding()
-    .onAppear {
-        // 清除之前的日志
-        MagicLogger.clearLogs()
-
-        // 添加一些测试日志
-        MagicLogger.info("Application started")
-        MagicLogger.debug("Debug message")
-        MagicLogger.warning("Warning message")
-        MagicLogger.error("Error message")
-    }
-    
-}
-#endif
