@@ -240,32 +240,8 @@ Modified files:
 
 ## MagicKit 项目约定
 
-### Commit Message 风格
-
-MagicKit 使用带有 Emoji 前缀的 Conventional Commits：
-
-```text
-✨ feat(thumbnail): add PDF thumbnail support
-
-feat(avatarview): add error state handling
-
-🐛 fix(url): resolve iCloud download status detection
-
-♻️ refactor(cache): improve cache key generation
-
-⚡ perf(avatarview): lazy load thumbnails
-
-📝 docs(readme): update installation instructions
-
-✅ test(thumbnail): add PDF thumbnail tests
-
-🎨 chore(format): apply swift-format
-```
-
 ### 常用 Scope
 
-- `avatarview` - AvatarView 组件及扩展
-- `thumbnail` - 缩略图生成系统
 - `url` - URL 扩展（下载、复制等）
 - `cache` - 缓存系统
 - `ui` - 通用 UI 组件
@@ -296,18 +272,22 @@ MagicKit 使用 **Semantic Versioning**（语义化版本）：
 
 1. 在提交代码前，评估是否需要更新版本号
 2. 如果需要更新，先单独提交版本号变更：
+
    ```bash
    # 编辑 package.json，手动更新版本号
    # 然后提交
    git add package.json
    git commit -m "chore: bump version to 1.4.0"
    ```
+
 3. 再提交代码更改：
+
    ```bash
    git commit -m "feat(feature): add new feature"
    ```
 
 **注意事项**：
+
 - ⚠️ **不要**在同一个 commit 中既修改代码又更新版本号
 - ⚠️ **不要**在 `dev` 分支上手动创建 tag
 - ⚠️ **只**在确定需要发布时才更新版本号
