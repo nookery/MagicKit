@@ -26,6 +26,7 @@ extension Text {
     .padding()
 }
 
+#if DEBUG
 #Preview("KeyValue Extensions - With Icons") {
     VStack(spacing: 16) {
         Text("姓名")
@@ -42,7 +43,9 @@ extension Text {
     }
     .padding()
 }
+#endif
 
+#if DEBUG
 #Preview("KeyValue Extensions - Complex") {
     VStack(spacing: 20) {
         // 用户信息组
@@ -91,4 +94,5 @@ extension Text {
     }
     .padding()
 }
+#endif
 #endif

@@ -303,6 +303,8 @@ private struct ApplyShadowView<Content: View>: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     MagicShadowPreviews()
 }
+#endif

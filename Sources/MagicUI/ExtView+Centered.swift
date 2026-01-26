@@ -30,6 +30,7 @@ extension View {
             .background(Color.gray.opacity(0.1))
     }
 
+    #if DEBUG
     #Preview("Magic Centered - Button") {
         Button(action: {}) {
             Text("Click Me")
@@ -43,7 +44,9 @@ extension View {
         .frame(width: 300, height: 200)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic Centered - Image") {
         Image(systemName: "star.fill")
             .resizable()
@@ -54,7 +57,9 @@ extension View {
             .frame(width: 300, height: 200)
             .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic Centered - VStack") {
         VStack(spacing: 20) {
             Text("Title")
@@ -68,4 +73,5 @@ extension View {
         .frame(width: 300, height: 400)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 #endif

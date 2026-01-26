@@ -421,6 +421,7 @@ public extension Color {
     }
 }
 
+#if DEBUG
 #Preview("Color Usage Examples") {
     VStack(spacing: 20) {
         Text("Color Usage Examples")
@@ -460,7 +461,9 @@ public extension Color {
     }
     .padding()
 }
+#endif
 
+#if DEBUG
 #Preview("Color Gradient") {
     VStack(spacing: 20) {
         Text("Gradient Examples")
@@ -497,6 +500,7 @@ public extension Color {
     }
     .padding()
 }
+#endif
 
 // MARK: - Helper Views
 

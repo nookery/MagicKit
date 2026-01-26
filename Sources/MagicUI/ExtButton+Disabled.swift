@@ -43,7 +43,9 @@ public extension View {
     }
 }
 
+#if DEBUG
 #Preview("Button Disabled with Reason") {
     DisabledWithReasonPreviews()
         .frame(width: 500, height: 700)
 }
+#endif

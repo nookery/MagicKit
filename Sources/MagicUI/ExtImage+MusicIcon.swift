@@ -76,8 +76,10 @@ struct MusicIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     IconPreviewHelper(title: "Music Icon") {
         Image.makeMusicIcon()
     }
 }
+#endif

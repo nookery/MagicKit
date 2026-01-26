@@ -343,6 +343,7 @@ public extension Text {
     .frame(width: 550)
 }
 
+#if DEBUG
 #Preview("Quick Usage Examples") {
     VStack(spacing: 20) {
         Text("Quick Usage Examples")
@@ -382,7 +383,9 @@ public extension Text {
     .frame(height: 750)
     .frame(width: 550)
 }
+#endif
 
+#if DEBUG
 #Preview("Text Style Demo") {
     VStack(spacing: 20) {
         Text("Text Style Demo")
@@ -409,5 +412,6 @@ public extension Text {
     .frame(height: 750)
     .frame(width: 550)
 }
+#endif
 
 #endif

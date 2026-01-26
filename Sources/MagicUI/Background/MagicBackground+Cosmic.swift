@@ -243,6 +243,7 @@ extension MagicBackground {
 }
 
 // 添加预览
+#if DEBUG
 #Preview("Cosmic Themes") {
     TabView {
         // 宇宙主题
@@ -288,6 +289,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

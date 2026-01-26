@@ -1,7 +1,6 @@
-#if DEBUG
+#if DEBUG && os(macOS)
 import SwiftUI
 
-#if DEBUG && os(macOS)
     struct ShellGitLogPreview: View {
         @State private var logPage: Int = 0
         @State private var logSize: Int = 10
@@ -122,11 +121,9 @@ import SwiftUI
             }
         }
     }
-#endif
 
 // MARK: - Preview
 
-#if DEBUG && os(macOS)
     #Preview("ShellGitLogPreview") {
         ShellGitLogPreview()
     }
@@ -134,6 +131,5 @@ import SwiftUI
     #Preview("ShellGitLogPreview2") {
         ShellGitLogPreview2()
     }
-#endif
 
 #endif

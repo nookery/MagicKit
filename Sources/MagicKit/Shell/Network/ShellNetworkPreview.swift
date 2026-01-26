@@ -113,8 +113,10 @@
         }
     }
 
+    #if DEBUG
     #Preview("ShellNetwork Demo") {
         ShellNetworkPreviewView()
     }
+    #endif
 
 #endif

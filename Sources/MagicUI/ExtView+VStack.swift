@@ -70,6 +70,7 @@ public extension View {
             .background(Color.gray.opacity(0.1))
     }
 
+    #if DEBUG
     #Preview("Magic VStack Center - Custom Spacing") {
         VStack {
             Text("Title")
@@ -82,7 +83,9 @@ public extension View {
         .frame(width: 300, height: 600)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic VStack Center - Leading Alignment") {
         VStack(alignment: .leading) {
             Text("Left Aligned")
@@ -94,7 +97,9 @@ public extension View {
         .frame(width: 300, height: 200)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic VStack Center - No Spacers") {
         Text("No Spacers")
             .font(.title2)
@@ -102,4 +107,5 @@ public extension View {
             .frame(width: 300, height: 200)
             .background(Color.gray.opacity(0.1))
     }
+    #endif
 #endif

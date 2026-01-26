@@ -39,8 +39,10 @@ struct TestView: View {
     }
 }
 
+#if DEBUG
 #Preview() {
     PopoverExample()
         .frame(height: 500)
         .frame(width: 500)
 }
+#endif

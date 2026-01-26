@@ -51,6 +51,7 @@ extension AvatarView {
             .frame(width: 500, height: 600)
     }
 
+    #if DEBUG
     #Preview {
         AvatarView.ThumbnailView(
             image: .code,
@@ -62,4 +63,5 @@ extension AvatarView {
         .magicCentered()
         .frame(width: 500, height: 600)
     }
+    #endif
 #endif

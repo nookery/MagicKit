@@ -367,8 +367,10 @@ struct TimeComponentView: View {
     }
 }
 
+#if DEBUG
 #Preview("MagicApp 功能演示") {
     MagicAppDemoView()
 }
+#endif
 
 #endif

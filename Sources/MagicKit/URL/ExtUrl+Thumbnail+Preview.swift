@@ -181,8 +181,10 @@
         }
     }
 
+    #if DEBUG
     #Preview {
         ThumbnailPreview()
     }
+    #endif
 
 #endif

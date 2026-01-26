@@ -106,10 +106,12 @@ struct ShellProcessPreviewView: View {
     }
 }
 
+#if DEBUG
 #Preview("ShellProcess Demo") {
     ShellProcessPreviewView()
         
 }
+#endif
 #endif
 
 #endif

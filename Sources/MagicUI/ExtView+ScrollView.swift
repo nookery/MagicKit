@@ -77,6 +77,7 @@ public extension View {
         .background(Color.gray.opacity(0.1))
     }
 
+    #if DEBUG
     #Preview("Magic ScrollView - Horizontal") {
         HStack(spacing: 20) {
             ForEach(1..<11) { index in
@@ -93,7 +94,9 @@ public extension View {
         .frame(width: 300, height: 150)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic ScrollView - With Content Insets") {
         VStack(spacing: 15) {
             ForEach(1..<16) { index in
@@ -109,7 +112,9 @@ public extension View {
         .frame(width: 300, height: 400)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic ScrollView - No Indicators") {
         VStack(spacing: 10) {
             ForEach(1..<26) { index in
@@ -124,4 +129,5 @@ public extension View {
         .frame(width: 300, height: 350)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 #endif

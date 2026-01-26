@@ -163,58 +163,80 @@
 
     // MARK: - Preview
 
-    #if DEBUG
+        #if DEBUG
         #Preview("iPhone") {
             MagicContainerPreview.iPhonePreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("iPhoneSE") {
             MagicContainerPreview.iPhoneSEPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("MacBook 13 - 100%") {
             MagicContainerPreview.macBook13FullPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("MacBook 13 - 20%") {
             MagicContainerPreview.macBook13TwentyPercentPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("MacBook 13 - 10%") {
             MagicContainerPreview.macBook13TenPercentPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("iMac 27 - 100%") {
             MagicContainerPreview.iMac27FullPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("iMac 27 - 20%") {
             MagicContainerPreview.iMac27TwentyPercentPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("iMac 27 - 10%") {
             MagicContainerPreview.iMac27TenPercentPreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("iMac 27 - 缩放示例") {
             MagicContainerPreview.iMac27ScalePreview
         }
+        #endif
 
+        #if DEBUG
         #Preview("MacBook 13 - 缩放示例") {
             MagicContainerPreview.macBook13ScalePreview
         }
+        #endif
 
         // MARK: - App Preview
 
+        #if DEBUG
         #Preview("App - Large") {
             MagicContainerPreview.iPhonePreview
                 .frame(width: 600, height: 1000)
         }
+        #endif
 
+        #if DEBUG
         #Preview("App - Small") {
             MagicContainerPreview.iPhoneSEPreview
                 .frame(width: 600, height: 600)
         }
-    #endif
+        #endif
 
 #endif

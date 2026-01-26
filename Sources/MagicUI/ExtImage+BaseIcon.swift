@@ -1284,8 +1284,10 @@ public extension Image {
     }
 }
 
+#if DEBUG
 #Preview("Image图标演示") {
     NavigationStack {
         ImageExtensionDemoView()
     }
 }
+#endif

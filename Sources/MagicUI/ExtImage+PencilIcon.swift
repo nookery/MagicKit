@@ -52,8 +52,10 @@ struct PencilIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     IconPreviewHelper(title: "Pencil Icon") {
         Image.makePencilIcon()
     }
 }
+#endif

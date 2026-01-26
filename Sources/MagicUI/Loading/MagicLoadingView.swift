@@ -81,6 +81,7 @@ public struct MagicLoadingView: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("MagicLoadingView") {
     VStack(spacing: 20) {
         Text("加载动画样式")
@@ -113,3 +114,4 @@ public struct MagicLoadingView: View {
     .padding()
     
 }
+#endif

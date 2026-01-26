@@ -120,8 +120,10 @@ struct VideoPlayerIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     IconPreviewHelper(title: "Video Player Icon") {
         Image.makeVideoPlayerIcon()
     }
 }
+#endif

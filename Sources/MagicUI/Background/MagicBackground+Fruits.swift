@@ -140,6 +140,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Fruit Themes") {
     TabView {
         // 水果主题
@@ -189,6 +190,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

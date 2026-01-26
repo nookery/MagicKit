@@ -480,6 +480,8 @@ struct QualityConfirmationView: View {
 
 // MARK: - Preview Provider
 
+#if DEBUG
 #Preview {
     SettingExampleView()
 }
+#endif

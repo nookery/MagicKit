@@ -167,6 +167,7 @@ struct KidsEduIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack(spacing: 30) {
         IconPreviewHelper(title: "Kids Edu Icon") {
@@ -181,3 +182,4 @@ struct KidsEduIcon: View {
         }
     }
 }
+#endif

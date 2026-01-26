@@ -94,6 +94,7 @@ struct BookIcon: View {
 /// - 圆形形状
 /// - 矩形形状
 /// - 自定义圆角矩形形状
+#if DEBUG
 #Preview {
     // 预览项目之间具有一致间距的垂直堆栈
     VStack(spacing: 20) {
@@ -114,3 +115,4 @@ struct BookIcon: View {
         }
     }
 }
+#endif

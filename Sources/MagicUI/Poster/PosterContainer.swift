@@ -171,6 +171,7 @@ struct PosterContainer<Title: View, RightContent: View, Background: View>: View 
     .frame(height: 500)
 }
 
+#if DEBUG
 #Preview("App Store Hero - Custom") {
     PosterContainer(
         titleFontSize: 100,
@@ -207,4 +208,5 @@ struct PosterContainer<Title: View, RightContent: View, Background: View>: View 
     )
     .frame(height: 600)
 }
+#endif
 #endif

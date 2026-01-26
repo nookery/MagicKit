@@ -165,7 +165,9 @@ struct OpenPreivewView: View {
     }
 }
 
+#if DEBUG
 #Preview("Open Buttons") {
     OpenPreivewView()
 }
+#endif
 #endif

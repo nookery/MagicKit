@@ -53,7 +53,9 @@ struct ContentView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     ContentView()
         .modelContainer(for: Item.self, inMemory: true)
 }
+#endif

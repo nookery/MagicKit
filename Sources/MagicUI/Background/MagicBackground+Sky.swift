@@ -141,6 +141,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Sky Themes") {
     TabView {
         // 天空主题
@@ -177,6 +178,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

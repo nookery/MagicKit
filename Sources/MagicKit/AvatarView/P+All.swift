@@ -43,9 +43,11 @@
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("头像视图") {
     AvatarDemoView()
         .frame(width: 500, height: 700)
 }
+#endif
 
 #endif

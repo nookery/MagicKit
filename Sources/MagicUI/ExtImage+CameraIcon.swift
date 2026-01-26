@@ -99,8 +99,10 @@ struct CameraIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     IconPreviewHelper(title: "Camera Icon") {
         Image.makeCameraIcon()
     }
 }
+#endif

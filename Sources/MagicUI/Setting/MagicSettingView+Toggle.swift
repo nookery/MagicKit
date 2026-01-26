@@ -30,6 +30,7 @@ public struct MagicSettingToggle: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     VStack(spacing: 0) {
         MagicSettingToggle(
@@ -50,3 +51,4 @@ public struct MagicSettingToggle: View {
     .padding()
     .frame(width: 400)
 }
+#endif

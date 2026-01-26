@@ -30,8 +30,10 @@ struct IconPreviewHelper<Content: View>: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     IconPreviewHelper(title: "Book Icon") {
         Image.makeBookIcon()
     }
 }
+#endif

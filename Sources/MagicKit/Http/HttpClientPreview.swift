@@ -187,8 +187,10 @@ public struct HttpClientPreview: View {
     public init() {}
 }
 
+#if DEBUG
 #Preview {
     HttpClientPreview()
 }
+#endif
 
 #endif

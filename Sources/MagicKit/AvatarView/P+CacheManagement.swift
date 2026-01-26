@@ -63,8 +63,10 @@ public struct AvatarCacheManagementPreview: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("缓存管理") {
     AvatarCacheManagementPreview()
         .frame(width: 500, height: 300)
 }
+#endif
 #endif

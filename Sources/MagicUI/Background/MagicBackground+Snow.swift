@@ -155,6 +155,7 @@ private struct IceCrystal: View {
     }
 }
 
+#if DEBUG
 #Preview("Snow Themes") {
     TabView {
         // 雪景主题
@@ -193,6 +194,7 @@ private struct IceCrystal: View {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

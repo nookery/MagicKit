@@ -1,7 +1,6 @@
-#if DEBUG
+#if DEBUG && os(macOS)
 import SwiftUI
 
-#if DEBUG && os(macOS)
 struct ShellGitCorePreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -23,13 +22,9 @@ struct ShellGitCorePreview: View {
         }
     }
 }
-#endif
 
-#if DEBUG && os(macOS)
 #Preview("ShellGit+Core Demo") {
     ShellGitCorePreview()
         
-} 
-#endif
-
+}
 #endif

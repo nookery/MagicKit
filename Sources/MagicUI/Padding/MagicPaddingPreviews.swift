@@ -218,6 +218,8 @@ func comboDemo(_ title: String, _ v: CGFloat, _ h: CGFloat, _ color: Color) -> s
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     MagicPaddingPreviews()
 }
+#endif

@@ -58,6 +58,8 @@ struct AdvancedTooltipPreview: View {
     }
 }
 
+#if DEBUG
 #Preview("Advanced") {
     AdvancedTooltipPreview()
 }
+#endif

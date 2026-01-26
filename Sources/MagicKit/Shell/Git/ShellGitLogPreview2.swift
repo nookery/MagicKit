@@ -1,7 +1,6 @@
-#if DEBUG
+#if DEBUG && os(macOS)
 import SwiftUI
 
-#if DEBUG && os(macOS)
     struct ShellGitLogPreview2: View {
         @State private var repoPath: String? = nil
         @State private var isLoading: Bool = true
@@ -154,6 +153,5 @@ import SwiftUI
     #Preview("ShellGitLogPreview2") {
         ShellGitLogPreview2()
     }
-#endif
 
 #endif

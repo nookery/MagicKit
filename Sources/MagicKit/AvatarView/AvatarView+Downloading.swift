@@ -56,6 +56,7 @@ extension AvatarView {
         .frame(width: 200, height: 200)
     }
 
+    #if DEBUG
     #Preview("圆角矩形进度") {
         AvatarView.DownloadingView(
             progress: 0.45,
@@ -66,4 +67,5 @@ extension AvatarView {
         .magicCentered()
         .frame(width: 200, height: 200)
     }
+    #endif
 #endif

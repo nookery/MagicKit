@@ -470,8 +470,10 @@ public extension View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     MagicPaddingPreviews()
         .frame(height: 600)
         .frame(width: 500)
 }
+#endif

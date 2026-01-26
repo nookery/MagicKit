@@ -105,6 +105,7 @@ extension AvatarView {
             .frame(width: 500, height: 500)
     }
 
+    #if DEBUG
     #Preview {
         AvatarView
             .ErrorView(
@@ -116,4 +117,5 @@ extension AvatarView {
             )
             .magicCentered()
     }
+    #endif
 #endif

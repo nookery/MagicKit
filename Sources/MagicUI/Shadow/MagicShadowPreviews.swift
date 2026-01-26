@@ -198,6 +198,8 @@ struct MagicShadowPreviews: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     MagicShadowPreviews()
 }
+#endif

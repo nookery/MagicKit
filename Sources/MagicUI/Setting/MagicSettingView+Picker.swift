@@ -41,6 +41,7 @@ public struct MagicSettingPicker<T: Hashable>: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     VStack(spacing: 0) {
         MagicSettingPicker(
@@ -63,3 +64,4 @@ public struct MagicSettingPicker<T: Hashable>: View {
     .frame(width: 600)
     .padding()
 }
+#endif

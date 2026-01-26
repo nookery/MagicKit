@@ -94,6 +94,7 @@ fileprivate struct PressActionModifier: ViewModifier {
 }
 
 // MARK: - Preview
+#if DEBUG
 #Preview {
     VStack(spacing: 0) {
             // Basic row with text content
@@ -167,3 +168,4 @@ fileprivate struct PressActionModifier: ViewModifier {
         }
     
 }
+#endif

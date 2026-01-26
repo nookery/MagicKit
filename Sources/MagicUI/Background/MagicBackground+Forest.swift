@@ -114,6 +114,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Forest Themes") {
     TabView {
         // 森林主题
@@ -149,6 +150,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 
