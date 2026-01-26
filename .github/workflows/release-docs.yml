@@ -2,7 +2,7 @@ name: Deploy Documentation Site
 on:
   push:
     branches:
-      - main
+      - disabled
   workflow_dispatch:
 
 # 设置 GITHUB_TOKEN 的权限
