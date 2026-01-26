@@ -131,9 +131,6 @@ public extension String {
     /// 电池图标名称 (battery.100)
     static let iconBattery = "battery.100"
 
-    /// 蓝牙图标名称 (bluetooth)
-    static let iconBluetooth = "bluetooth"
-
     /// 加粗图标名称 (bold)
     static let iconBold = "bold"
 
@@ -159,13 +156,6 @@ public extension String {
 
     /// 日历应用图标名称 (calendar.badge.clock)
     static let iconCalendarApp = "calendar.badge.clock"
-
-    /// 日历应用填充图标名称 (calendar.badge.clock.fill)
-    /// 注意：此图标在某些 iOS 版本中可能不可用，使用 calendar.fill 作为替代
-    static let iconCalendarAppFill = "calendar.fill"
-
-    /// 日历填充图标名称 (calendar.fill)
-    static let iconCalendarFill = "calendar.fill"
 
     /// 图表图标名称 (chart.bar)
     static let iconChart = "chart.bar"
@@ -904,9 +894,6 @@ public extension String {
     /// 股市图标名称 (chart.line.uptrend.xyaxis)
     static let iconStocks = "chart.xyaxis.line"
 
-    /// 股市填充图标名称 (chart.xyaxis.line.fill)
-    static let iconStocksFill = "chart.xyaxis.line.fill"
-
     /// 删除线图标名称 (strikethrough)
     static let iconStrikethrough = "strikethrough"
 
@@ -956,9 +943,6 @@ public extension String {
 
     /// 表格合并图标名称 (tablecells.badge.ellipsis)
     static let iconTableMerge = "tablecells.badge.ellipsis"
-
-    /// 表格分割图标名称 (tablecells.split.2x2)
-    static let iconTableSplit = "tablecells.split.2x2"
 
     /// 终端图标名称 (terminal)
     static let iconTerminal = "terminal"
@@ -1037,9 +1021,6 @@ public extension String {
 
     /// 语音备忘录图标名称 (waveform)
     static let iconVoiceMemos = "waveform"
-
-    /// 语音备忘录填充图标名称 (waveform.fill)
-    static let iconVoiceMemosFill = "waveform.fill"
 
     /// 音量图标名称 (speaker.wave.2)
     static let iconVolume = "speaker.wave.2"

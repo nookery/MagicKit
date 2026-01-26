@@ -61,11 +61,6 @@ public extension Image {
         Image(systemName: .iconBattery)
     }
 
-    /// 蓝牙图标 (bluetooth)
-    static var bluetooth: Image {
-        Image(systemName: .iconBluetooth)
-    }
-
     /// 快退图标 (backward)
     static var backward: Image {
         Image(systemName: .iconBackward)
@@ -108,19 +103,9 @@ public extension Image {
         Image(systemName: .iconCalendar)
     }
 
-    /// 日历填充图标 (calendar.fill)
-    static var calendarFill: Image {
-        Image(systemName: .iconCalendarFill)
-    }
-
     /// 日历应用图标 (calendar.badge.clock)
     static var calendarApp: Image {
         Image(systemName: .iconCalendarApp)
-    }
-
-    /// 日历应用填充图标 (calendar.badge.clock.fill)
-    static var calendarAppFill: Image {
-        Image(systemName: .iconCalendarAppFill)
     }
 
     /// 图表图标 (chart.bar)
@@ -824,11 +809,6 @@ public extension Image {
         Image(systemName: .iconStocks)
     }
 
-    /// 股市填充图标 (chart.line.uptrend.xyaxis.fill)
-    static var stocksFill: Image {
-        Image(systemName: .iconStocksFill)
-    }
-
     /// 速度计图标 (gauge.medium)
     static var speedometer: Image {
         Image(systemName: .iconSpeedometer)
@@ -859,11 +839,6 @@ public extension Image {
     /// 表格合并图标 (tablecells.badge.ellipsis)
     static var tableMerge: Image {
         Image(systemName: .iconTableMerge)
-    }
-
-    /// 表格分割图标 (tablecells.split.horizontal)
-    static var tableSplit: Image {
-        Image(systemName: .iconTableSplit)
     }
 
     /// 文本文档图标 (doc.text)
@@ -948,11 +923,6 @@ public extension Image {
     /// 语音备忘录图标 (waveform)
     static var voiceMemos: Image {
         Image(systemName: .iconVoiceMemos)
-    }
-
-    /// 语音备忘录填充图标 (waveform.fill)
-    static var voiceMemosFill: Image {
-        Image(systemName: .iconVoiceMemosFill)
     }
 
     /// 音量图标 (speaker.wave.2)

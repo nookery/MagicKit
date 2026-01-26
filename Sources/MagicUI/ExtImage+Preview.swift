@@ -26,7 +26,6 @@ struct ImageExtensionDemoView: View {
             // MARK: - B
             ImageIconSection(title: "B", icons: [
                 ("电池", Image.battery, "battery"),
-                ("蓝牙", Image.bluetooth, "bluetooth"),
                 ("快退", Image.backward, "backward"),
                 ("快退填充", Image.backwardEndFill, "backwardEndFill"),
                 ("备份", Image.backup, "backup"),
@@ -40,9 +39,7 @@ struct ImageExtensionDemoView: View {
             // MARK: - C
             ImageIconSection(title: "C", icons: [
                 ("日历", Image.calendar, "calendar"),
-                ("日历填充", Image.calendarFill, "calendarFill"),
                 ("日历应用", Image.calendarApp, "calendarApp"),
-                ("日历应用填充", Image.calendarAppFill, "calendarAppFill"),
                 ("图表", Image.chart, "chart"),
                 ("勾选", Image.checkmark, "checkmark"),
                 ("勾选简单", Image.checkmarkSimple, "checkmarkSimple"),
@@ -259,7 +256,6 @@ struct ImageExtensionDemoView: View {
                 ("星标", Image.star, "star"),
                 ("星标填充", Image.starFill, "starFill"),
                 ("股市", Image.stocks, "stocks"),
-                ("股市填充", Image.stocksFill, "stocksFill"),
                 ("速度计", Image.speedometer, "speedometer"),
                 ("中速", Image.speedometerMedium, "speedometerMedium"),
                 ("高速", Image.speedometerHigh, "speedometerHigh"),
@@ -273,7 +269,6 @@ struct ImageExtensionDemoView: View {
                 ("表格", Image.table, "table"),
                 ("表格填充", Image.tableFill, "tableFill"),
                 ("表格合并", Image.tableMerge, "tableMerge"),
-                ("表格分割", Image.tableSplit, "tableSplit"),
                 ("工具栏", Image.toolbar, "toolbar"),
                 ("工具栏填充", Image.toolbarFill, "toolbarFill"),
                 ("顶部工具栏", Image.topToolbar, "topToolbar"),
@@ -305,7 +300,6 @@ struct ImageExtensionDemoView: View {
                 ("版本", Image.versionInfo, "versionInfo"),
                 ("视频文档", Image.videoDocument, "videoDocument"),
                 ("语音备忘录", Image.voiceMemos, "voiceMemos"),
-                ("语音备忘录填充", Image.voiceMemosFill, "voiceMemosFill"),
                 ("音量", Image.volume, "volume"),
                 ("音量填充", Image.volumeFill, "volumeFill"),
                 ("音量调节", Image.volumeSlider, "volumeSlider"),
