@@ -244,8 +244,10 @@ private struct ErrorHandlingPreview: View {
     }
 }
 
+#if DEBUG
 #Preview("Copy View") {
     CopyViewPreviewContainer()
 }
+#endif
 
 #endif

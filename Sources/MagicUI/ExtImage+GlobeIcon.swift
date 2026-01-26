@@ -159,6 +159,7 @@ struct GlobeIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     VStack(spacing: 30) {
         IconPreviewHelper(title: "Globe Icon") {
@@ -173,3 +174,4 @@ struct GlobeIcon: View {
         }
     }
 }
+#endif

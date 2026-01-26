@@ -146,6 +146,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("River Themes") {
     TabView {
         // 河流主题
@@ -183,6 +184,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

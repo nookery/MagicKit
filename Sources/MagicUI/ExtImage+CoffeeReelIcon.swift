@@ -168,6 +168,7 @@ struct CoffeeReelIcon: View {
  * 咖啡卷图标预览
  * 展示不同配置下的咖啡卷图标效果
  */
+#if DEBUG
 #Preview("Coffee Reel Icon") {
     TabView {
         // 默认配置：绿色背景，白色盘子
@@ -265,3 +266,4 @@ struct CoffeeReelIcon: View {
         }
     }
 }
+#endif

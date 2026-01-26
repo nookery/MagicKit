@@ -391,8 +391,10 @@ struct ImageDemoItem: View {
     }
 }
 
+#if DEBUG
 #Preview("Image图标演示") {
     NavigationStack {
         ImageExtensionDemoView()
     }
 }
+#endif

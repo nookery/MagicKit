@@ -1,7 +1,6 @@
-#if DEBUG
+#if DEBUG && os(macOS)
 import SwiftUI
 
-#if DEBUG && os(macOS)
 struct ShellFilePreviewView: View {
     var body: some View {
         VStack(spacing: 20) {
@@ -71,12 +70,9 @@ struct ShellFilePreviewView: View {
         .padding()
     }
 }
-#endif
 
-#if DEBUG && os(macOS)
 #Preview("ShellFile Demo") {
     ShellFilePreviewView()
 }
-#endif
 
 #endif

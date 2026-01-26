@@ -202,6 +202,7 @@ public extension View {
     .background(Color.gray.opacity(0.1))
 }
 
+#if DEBUG
 #Preview("MagicFeature - Compact") {
     MagicFeature.compact(
         title: "轻量级",
@@ -213,7 +214,9 @@ public extension View {
     .frame(width: 400, height: 80)
     .background(Color.gray.opacity(0.1))
 }
+#endif
 
+#if DEBUG
 #Preview("MagicFeature - Large") {
     MagicFeature.large(
         title: "强大功能",
@@ -225,7 +228,9 @@ public extension View {
     .frame(width: 600, height: 150)
     .background(Color.gray.opacity(0.1))
 }
+#endif
 
+#if DEBUG
 #Preview("MagicFeature - Centered") {
     MagicFeature.centered(
         title: "居中展示",
@@ -237,7 +242,9 @@ public extension View {
     .frame(width: 500, height: 100)
     .background(Color.gray.opacity(0.1))
 }
+#endif
 
+#if DEBUG
 #Preview("MagicFeature - Custom") {
     MagicFeature(
         title: "自定义样式",
@@ -253,7 +260,9 @@ public extension View {
     .frame(width: 500, height: 100)
     .background(Color.gray.opacity(0.1))
 }
+#endif
 
+#if DEBUG
 #Preview("MagicFeature - Multiple Features") {
     VStack(spacing: 20) {
         MagicFeature(
@@ -281,4 +290,5 @@ public extension View {
     .frame(width: 500, height: 300)
     .background(Color.gray.opacity(0.1))
 }
+#endif
 #endif

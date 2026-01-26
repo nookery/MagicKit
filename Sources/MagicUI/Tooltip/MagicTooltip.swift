@@ -259,7 +259,9 @@ public extension View {
     }
 }
 
+#if DEBUG
 #Preview {
     TooltipPreviews()
         
 }
+#endif

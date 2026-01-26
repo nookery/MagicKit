@@ -34,6 +34,7 @@ public struct MagicSettingSlider<V: BinaryFloatingPoint>: View where V.Stride: B
 }
 
 // MARK: - Preview
+#if DEBUG
 #Preview {
     VStack(spacing: 0) {
             MagicSettingSlider(
@@ -59,3 +60,4 @@ public struct MagicSettingSlider<V: BinaryFloatingPoint>: View where V.Stride: B
         .frame(width: 400)
     
 }
+#endif

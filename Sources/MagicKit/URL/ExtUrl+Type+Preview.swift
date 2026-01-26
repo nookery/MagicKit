@@ -200,8 +200,10 @@ private struct FileTypeRow: View {
     }
 }
 
+#if DEBUG
 #Preview("File Types") {
     FileTypePreviewContainer()
 }
+#endif
 
 #endif

@@ -139,6 +139,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Ocean Themes") {
     TabView {
         // 海洋主题
@@ -176,6 +177,7 @@ extension MagicBackground {
     .frame(height: 700)
     .frame(width: 900)
 }
+#endif
 
 // MARK: - View Extensions
 

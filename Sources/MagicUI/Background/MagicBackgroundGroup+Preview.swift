@@ -53,8 +53,10 @@ extension BackgroundGroupPreview {
     }
 }
 
+#if DEBUG
 #Preview {
     BackgroundGroupPreview()
         .frame(width: 600)
         .frame(height: 800)
 }
+#endif

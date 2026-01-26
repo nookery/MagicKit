@@ -1,7 +1,7 @@
-#if DEBUG
+#if DEBUG && os(macOS)
+
 import SwiftUI
 
-#if DEBUG && os(macOS)
 struct ShellGitStashPreview: View {
     var body: some View {
         ShellGitExampleRepoView { repoPath in
@@ -47,15 +47,11 @@ struct ShellGitStashPreview: View {
         }
     }
 }
-#endif
 
 // MARK: - Preview
 
-#if DEBUG && os(macOS)
 #Preview("ShellGit+Stash Demo") {
     ShellGitStashPreview()
         
 } 
-#endif
-
 #endif

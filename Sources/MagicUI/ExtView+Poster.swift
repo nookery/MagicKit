@@ -112,6 +112,7 @@ public extension View {
             .frame(width: 800)
     }
 
+    #if DEBUG
     #Preview("Poster - With Background Only") {
         Text("我的应用")
             .font(.system(size: 50))
@@ -120,7 +121,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster - With Gradient Background") {
         Text("渐变背景")
             .font(.system(size: 50))
@@ -136,7 +139,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster - With Right Content") {
         Text("功能展示")
             .font(.system(size: 50))
@@ -153,7 +158,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster - With Preview View") {
         Text("预览视图")
             .font(.system(size: 50))
@@ -170,7 +177,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster - Hide Logo") {
         Text("无 Logo")
             .font(.system(size: 50))
@@ -179,7 +188,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster Chain - Basic") {
         Text("欢迎使用")
             .font(.system(size: 50))
@@ -189,7 +200,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster Chain - With Custom Content") {
         VStack {
             Text("我的应用")
@@ -210,7 +223,9 @@ public extension View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster Chain - Full Customization") {
         Text("创意设计工具")
             .font(.system(size: 40))
@@ -236,7 +251,9 @@ public extension View {
             .frame(height: 400)
             .frame(width: 800)
     }
+    #endif
 
+    #if DEBUG
     #Preview("Poster Chain - With Background Color") {
         VStack {
             Text("我的应用")
@@ -248,4 +265,5 @@ public extension View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    #endif
 #endif

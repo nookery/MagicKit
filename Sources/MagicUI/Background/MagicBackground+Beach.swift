@@ -158,6 +158,7 @@ private struct PalmTree: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Beach Themes") {
     TabView {
         // 海滩主题
@@ -193,6 +194,7 @@ private struct PalmTree: View {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

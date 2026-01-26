@@ -83,10 +83,13 @@ struct ShellSystemPreviewView: View {
     }
 }
 
+#if DEBUG
 #Preview("ShellSystem Demo") {
     ShellSystemPreviewView()
         
 } 
+#endif
+
 #endif
 
 #endif

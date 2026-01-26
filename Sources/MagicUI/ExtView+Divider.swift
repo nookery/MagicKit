@@ -130,9 +130,11 @@ public extension View {
         }
     }
 
+    #if DEBUG
     #Preview("Divider Extensions") {
         DividerExtensionPreview()
             .frame(height: 600)
             .frame(width: 400)
     }
+    #endif
 #endif

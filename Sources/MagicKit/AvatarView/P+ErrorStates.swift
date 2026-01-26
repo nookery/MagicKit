@@ -35,8 +35,10 @@ public struct AvatarErrorStatesPreview: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("错误状态") {
     AvatarErrorStatesPreview()
         .frame(width: 500, height: 200)
 }
+#endif
 #endif

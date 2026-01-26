@@ -430,6 +430,7 @@ extension MagicBackground {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("Basic Themes") {
     TabView {
         // 基础主题
@@ -504,3 +505,4 @@ extension MagicBackground {
     .frame(height: 700)
     .frame(width: 900)
 }
+#endif

@@ -132,6 +132,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Color Themes") {
     TabView {
         // 颜色主题
@@ -207,6 +208,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

@@ -42,8 +42,10 @@
 
     // MARK: - Preview
 
+    #if DEBUG
     #Preview("文件类型") {
         AvatarFileTypesPreview()
             .frame(width: 500, height: 300)
     }
+    #endif
 #endif

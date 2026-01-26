@@ -102,8 +102,10 @@ public struct AvatarDownloadStatusPreview: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview("下载状态") {
     AvatarDownloadStatusPreview()
         .frame(width: 500, height: 500)
 }
+#endif
 #endif

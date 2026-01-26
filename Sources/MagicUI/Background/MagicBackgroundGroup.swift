@@ -165,8 +165,10 @@ public struct MagicBackgroundGroup {
 // 使 BackgroundGroup 符合 View 协议
 extension MagicBackgroundGroup: View {}
 
+#if DEBUG
 #Preview {
     BackgroundGroupPreview()
         .frame(width: 600)
         .frame(height: 800)
 }
+#endif

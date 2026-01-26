@@ -70,6 +70,7 @@ public extension View {
             .background(Color.gray.opacity(0.1))
     }
 
+    #if DEBUG
     #Preview("Magic HStack Center - Custom Spacing") {
         HStack {
             Image(systemName: "star.fill")
@@ -84,7 +85,9 @@ public extension View {
         .frame(width: 300, height: 100)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic HStack Center - Top Alignment") {
         HStack(alignment: .top) {
             Text("Top")
@@ -96,7 +99,9 @@ public extension View {
         .frame(width: 300, height: 100)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic HStack Center - No Spacers") {
         Text("No Spacers")
             .font(.title2)
@@ -104,7 +109,9 @@ public extension View {
             .frame(width: 300, height: 100)
             .background(Color.gray.opacity(0.1))
     }
+    #endif
 
+    #if DEBUG
     #Preview("Magic HStack Center - Complex Layout") {
         HStack {
             Image(systemName: "heart.fill")
@@ -122,4 +129,5 @@ public extension View {
         .frame(width: 300, height: 100)
         .background(Color.gray.opacity(0.1))
     }
+    #endif
 #endif

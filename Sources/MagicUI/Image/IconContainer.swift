@@ -34,6 +34,7 @@ public struct IconContainer<Content: View>: View {
 }
 
 // 更新预览以展示新的形状选项
+#if DEBUG
 #Preview {
     VStack(spacing: 20) {
         // 圆形
@@ -63,3 +64,4 @@ public struct IconContainer<Content: View>: View {
         .frame(height: 50)
     }
 }
+#endif

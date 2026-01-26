@@ -105,8 +105,10 @@ struct NoteIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     IconPreviewHelper(title: "Note Icon") {
         Image.makeNoteIcon()
     }
 }
+#endif

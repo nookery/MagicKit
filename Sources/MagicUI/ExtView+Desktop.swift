@@ -21,6 +21,7 @@ public extension View {
         .frame(width: 1200, height: 800)
 }
 
+#if DEBUG
 #Preview("Desktop Layout - Small") {
     Text("Hello, World!")
         .font(.title)
@@ -28,4 +29,5 @@ public extension View {
         .inDesktop()
         .frame(width: 800, height: 600)
 }
+#endif
 #endif

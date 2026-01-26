@@ -133,6 +133,7 @@ extension View {
     .padding()
 }
 
+#if DEBUG
 #Preview("Loading Extensions - Skeleton") {
     VStack(spacing: 16) {
         Text("骨架屏效果")
@@ -154,7 +155,9 @@ extension View {
     }
     .padding()
 }
+#endif
 
+#if DEBUG
 #Preview("Loading Extensions - Combined") {
     VStack(spacing: 20) {
         Text("组合使用示例")
@@ -186,4 +189,5 @@ extension View {
     }
     .padding()
 }
+#endif
 #endif

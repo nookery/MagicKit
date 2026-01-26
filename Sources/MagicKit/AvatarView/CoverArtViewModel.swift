@@ -214,6 +214,7 @@ public enum CoverArtError: LocalizedError {
         }
     }
 
+    #if DEBUG
     #Preview("封面设置 ViewModel") {
         // ViewModel 通常在 View 中使用，这里仅用于展示 API
         Text("CoverArtViewModel")
@@ -222,4 +223,5 @@ public enum CoverArtError: LocalizedError {
                 vm.selectImage()
             }
     }
+    #endif
 #endif

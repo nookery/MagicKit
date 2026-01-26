@@ -186,6 +186,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Childhood Themes") {
     TabView {
         // 童年主题
@@ -236,6 +237,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

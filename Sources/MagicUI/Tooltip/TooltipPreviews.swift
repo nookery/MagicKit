@@ -124,7 +124,9 @@ struct TooltipPreviews: View {
     }
 }
 
+#if DEBUG
 #Preview {
     TooltipPreviews()
         
 }
+#endif

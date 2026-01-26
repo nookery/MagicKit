@@ -131,6 +131,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Music Themes") {
     TabView {
         // 音乐主题
@@ -178,6 +179,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 

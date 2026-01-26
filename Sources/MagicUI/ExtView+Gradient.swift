@@ -476,6 +476,7 @@ public extension View {
     }
 }
 
+#if DEBUG
 #Preview("Gradient Usage Examples") {
     VStack(spacing: 20) {
         Text("Gradient Usage Examples")
@@ -546,7 +547,9 @@ public extension View {
     }
     .padding()
 }
+#endif
 
+#if DEBUG
 #Preview("Season Gradients") {
     VStack(spacing: 20) {
         Text("Season Gradients")
@@ -585,6 +588,7 @@ public extension View {
     }
     .padding()
 }
+#endif
 
 // MARK: - Helper Views
 

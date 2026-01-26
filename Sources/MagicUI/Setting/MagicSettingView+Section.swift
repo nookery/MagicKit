@@ -45,6 +45,7 @@ public struct MagicSettingSection<Content: View>: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     VStack(spacing: 20) {
         // 默认左对齐标题（不设置对齐方式）
@@ -96,3 +97,4 @@ public struct MagicSettingSection<Content: View>: View {
     .frame(width: 500)
     .padding()
 }
+#endif

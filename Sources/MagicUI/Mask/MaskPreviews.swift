@@ -147,8 +147,10 @@ struct MaskPreviews: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     MaskPreviews()
         .frame(height: 700)
         .frame(width: 500)
 }
+#endif

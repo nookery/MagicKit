@@ -70,8 +70,10 @@
 
     // MARK: - Preview
 
+    #if DEBUG
     #Preview("基础样式") {
         AvatarBasicPreview()
             .frame(width: 500, height: 600)
     }
+    #endif
 #endif

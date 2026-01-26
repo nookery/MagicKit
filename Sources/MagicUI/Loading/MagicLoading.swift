@@ -86,6 +86,7 @@ public struct MagicLoading<LogoView: View>: View {
 
 // MARK: - Preview
 
+#if DEBUG
 #Preview {
     VStack(spacing: 40) {
         // 默认样式
@@ -142,3 +143,4 @@ public struct MagicLoading<LogoView: View>: View {
     .padding()
     
 }
+#endif

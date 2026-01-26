@@ -132,6 +132,7 @@ extension MagicBackground {
     }
 }
 
+#if DEBUG
 #Preview("Macaron Themes") {
     TabView {
         // 马卡龙主题
@@ -182,6 +183,7 @@ extension MagicBackground {
         }
     }
 }
+#endif
 
 // MARK: - View Extensions
 
