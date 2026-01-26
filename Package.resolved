@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nookery/MagicAlert.git",
       "state" : {
-        "revision" : "8a6e2513094744a651834a18ff6cc2600638be4a",
-        "version" : "0.0.3"
+        "revision" : "73156d25eee668ed481df28e587538ceda2ce978",
+        "version" : "0.0.4"
       }
     },
     {
