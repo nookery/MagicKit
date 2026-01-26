@@ -12,6 +12,7 @@ let package = Package(
     // 定义对外提供的库（可被其他项目导入）
     products: [
         .library(name: "MagicKit", targets: ["MagicKit"]),
+        .library(name: "MagicUI", targets: ["MagicUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-async-algorithms", from: "0.1.0"),  // Apple 的异步算法库
@@ -19,7 +20,6 @@ let package = Package(
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),  // ZIP 文件处理库
         .package(url: "https://github.com/nookery/MagicAlert.git", from: "0.0.1"),  // MagicAlert 通知库
         .package(url: "https://github.com/nookery/MagicDevice.git", from: "0.0.1"),  // MagicDevice 设备模块
-        .package(url: "https://github.com/nookery/MagicUI.git", from: "1.0.0"),  // MagicUI 组件库
     ],
     // 编译目标（模块）
     targets: [
@@ -28,13 +28,19 @@ let package = Package(
            dependencies: [
                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
                .product(name: "MagicAlert", package: "MagicAlert"),
-               .product(name: "MagicUI", package: "MagicUI"),
+               .target(name: "MagicUI"),  // 依赖本地的 MagicUI target
                "ID3TagEditor",
                "ZIPFoundation",
            ]
        ),
+       .target(
+           name: "MagicUI",
+           dependencies: [],
+           resources: [.process("Icons.xcassets")]  // 添加资源文件
+       ),
        .testTarget(
            name: "Tests",
            dependencies: ["MagicKit"]
-       )    ]
+       )
+    ]
 )
