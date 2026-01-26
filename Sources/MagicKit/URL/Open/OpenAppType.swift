@@ -190,24 +190,24 @@ public enum OpenAppType: String {
     }
     
     #else
-    /// 获取 MagicButtonIcon 类型的图标（iOS版本）
+    /// 获取 Image 类型的图标（iOS版本）
     /// - Parameter useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
-    /// - Returns: MagicButtonIcon
-    func magicButtonIcon(useRealIcon: Bool = false) -> MagicButtonIcon {
-        return .systemName(icon)
+    /// - Returns: SwiftUI Image
+    func magicButtonIcon(useRealIcon: Bool = false) -> Image {
+        return Image(systemName: icon)
     }
-    
-    /// 根据URL获取 MagicButtonIcon 类型的图标（用于auto类型，iOS版本）
+
+    /// 根据URL获取 Image 类型的图标（用于auto类型，iOS版本）
     /// - Parameters:
     ///   - url: URL对象
     ///   - useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
-    /// - Returns: MagicButtonIcon
-    func magicButtonIcon(for url: URL, useRealIcon: Bool = false) -> MagicButtonIcon {
+    /// - Returns: SwiftUI Image
+    func magicButtonIcon(for url: URL, useRealIcon: Bool = false) -> Image {
         if self == .auto {
             let iconName = url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
-            return .systemName(iconName)
+            return Image(systemName: iconName)
         }
-        return .systemName(icon)
+        return Image(systemName: icon)
     }
     #endif
 }
