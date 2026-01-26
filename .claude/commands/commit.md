@@ -15,13 +15,12 @@
      - 修改的文件类型（组件、扩展、工具类等）
      - 代码变更的性质（新增、修改、删除、重构等）
      - 影响范围和重要性
-   - **根据 commit 类型评估是否需要更新版本号**：
-     - **feat** (新功能): → 需要增加 MINOR 版本 (例如 1.3.4 → 1.4.0)
-     - **fix** (bug 修复): → 需要增加 PATCH 版本 (例如 1.3.4 → 1.3.5)
-     - **BREAKING CHANGE** (破坏性变更): → 需要增加 MAJOR 版本 (例如 1.3.4 → 2.0.0)
-     - **docs, chore, style, refactor, test**: → 通常不需要版本更新
-   - 如果需要版本更新，提醒用户先更新 `package.json` 中的版本号
-   - 当前版本号通过 `node -p "require('./package.json').version"` 查看
+   - **根据 commit 类型评估版本更新需求**（仅供参考，版本由 GitHub Actions 自动管理）：
+     - **feat** (新功能): → 会自动增加 MINOR 版本 (例如 1.3.4 → 1.4.0)
+     - **fix** (bug 修复): → 会自动增加 PATCH 版本 (例如 1.3.4 → 1.3.5)
+     - **BREAKING CHANGE** (破坏性变更): → 会自动增加 MAJOR 版本 (例如 1.3.4 → 2.0.0)
+     - **docs, chore, style, refactor, test**: → 通常不更新版本
+   - 当前版本号通过 `git describe --tags --abbrev=0` 查看最新的 git tag
 
 3. **查看提交历史**
    - 运行 `git log -10 --oneline` 查看最近 10 条提交
@@ -78,19 +77,18 @@
    - 展示更改的文件列表
    - 展示代码差异摘要
 
-6. **版本号检查（重要）**
-   - **评估是否需要更新版本号**：
-     - 如果 commit 类型是 `feat`，建议增加 MINOR 版本
-     - 如果 commit 类型是 `fix`，建议增加 PATCH 版本
-     - 如果有 BREAKING CHANGE，建议增加 MAJOR 版本
-     - 如果是 `docs`, `chore`, `style`, `refactor`, `test`，通常不需要更新
-   - **如果需要版本更新**：
-     - 显示当前版本号：`node -p "require('./package.json').version"`
-     - 提示用户更新 `package.json` 中的 version 字段
-     - 等待用户更新版本号后再执行 commit
-     - 版本号更新应单独 commit，格式为：`chore: bump version to x.x.x`
-   - **如果不需要版本更新**：
-     - 直接执行 commit
+6. **版本号检查（仅供参考）**
+   - **版本管理说明**：
+     - 版本号由 GitHub Actions 自动管理，基于 Conventional Commits 和 git tags
+     - 推送到 `main` 分支时，会根据 commit 类型自动计算并创建新版本标签
+     - 当前版本号通过 `git describe --tags --abbrev=0` 查看最新的 git tag
+   - **版本更新规则**（自动应用）：
+     - 如果 commit 类型是 `feat`，会自动增加 MINOR 版本
+     - 如果 commit 类型是 `fix`，会自动增加 PATCH 版本
+     - 如果有 BREAKING CHANGE，会自动增加 MAJOR 版本
+     - 如果是 `docs`, `chore`, `style`, `refactor`, `test`，通常不更新版本
+   - **执行 commit**：
+     - 直接执行 commit，无需手动管理版本号
 
 7. **执行确认**
    - 询问用户是否使用生成的 commit message
@@ -172,17 +170,12 @@ Modified files:
   + Sources/MagicKit/Thumbnail/ThumbnailGenerator.swift (modified)
   ~ Sources/MagicKit/URL/ExtUrl+Thumbnail+Read.swift (modified)
 
-⚠️  版本号检查：
-   当前版本: 1.3.4
+ℹ️  版本号信息：
+   当前版本: 1.3.4 (最新 git tag)
    Commit 类型: feat (新功能)
-   建议操作: 更新 MINOR 版本到 1.4.0
+   预期版本: 推送到 main 后会自动创建 1.4.0 标签
 
-   请先执行以下命令更新版本号：
-   1. 编辑 package.json，将 "version": "1.3.4" 改为 "version": "1.4.0"
-   2. git add package.json
-   3. git commit -m "chore: bump version to 1.4.0"
-
-   然后再提交此代码更改。
+   注意：版本号由 GitHub Actions 自动管理，无需手动更新。
 
 是否使用此 commit message？(y/n/edit)
 ```
@@ -252,8 +245,8 @@ Modified files:
 MagicKit 使用 **Semantic Versioning**（语义化版本）：
 
 - **版本号格式**：`MAJOR.MINOR.PATCH`（例如 1.3.4）
-- **版本号存储**：`package.json` 中的 `version` 字段
-- **自动发布**：推送到 `main` 分支时，GitHub Actions 自动增加 PATCH 版本并创建 Release
+- **版本号存储**：Git tags（例如 `1.3.4`）
+- **自动发布**：推送到 `main` 分支时，GitHub Actions 根据 Conventional Commits 自动计算版本并创建标签和 Release
 
 **版本更新规则**：
 
@@ -270,17 +263,13 @@ MagicKit 使用 **Semantic Versioning**（语义化版本）：
 
 **版本更新流程**：
 
-1. 在提交代码前，评估是否需要更新版本号
-2. 如果需要更新，先单独提交版本号变更：
-
-   ```bash
-   # 编辑 package.json，手动更新版本号
-   # 然后提交
-   git add package.json
-   git commit -m "chore: bump version to 1.4.0"
-   ```
-
-3. 再提交代码更改：
+1. 提交代码时使用 Conventional Commits 格式（feat, fix, BREAKING CHANGE 等）
+2. 推送到 `main` 分支后，GitHub Actions 会自动：
+   - 分析 commit 类型
+   - 计算下一个版本号
+   - 创建 git tag
+   - 创建 GitHub Release
+3. 无需手动管理版本号
 
    ```bash
    git commit -m "feat(feature): add new feature"
