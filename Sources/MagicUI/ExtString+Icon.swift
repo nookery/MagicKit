@@ -76,7 +76,7 @@ public extension String {
     static let iconApproval = "checkmark.circle.badge.questionmark"
 
     /// App Store图标名称 (app.store)
-    static let iconAppStore = "app.store"
+    static let iconAppStore = "storefront"
 
     /// 箭头循环图标名称 (arrow.clockwise)
     static let iconArrowClockwise = "arrow.clockwise"
@@ -131,9 +131,6 @@ public extension String {
     /// 电池图标名称 (battery.100)
     static let iconBattery = "battery.100"
 
-    /// 蓝牙图标名称 (bluetooth)
-    static let iconBluetooth = "bluetooth"
-
     /// 加粗图标名称 (bold)
     static let iconBold = "bold"
 
@@ -159,12 +156,6 @@ public extension String {
 
     /// 日历应用图标名称 (calendar.badge.clock)
     static let iconCalendarApp = "calendar.badge.clock"
-
-    /// 日历应用填充图标名称 (calendar.badge.clock.fill)
-    static let iconCalendarAppFill = "calendar.badge.clock.fill"
-
-    /// 日历填充图标名称 (calendar.fill)
-    static let iconCalendarFill = "calendar.fill"
 
     /// 图表图标名称 (chart.bar)
     static let iconChart = "chart.bar"
@@ -316,11 +307,11 @@ public extension String {
     /// 财务报表图标名称 (chart.bar.doc.horizontal)
     static let iconFinancialReport = "chart.bar.doc.horizontal"
 
-    /// FaceTime图标名称 (video.badge)
-    static let iconFaceTime = "video.badge"
+    /// FaceTime图标名称 (video.bubble)
+    static let iconFaceTime = "video.bubble"
 
-    /// FaceTime填充图标名称 (video.badge.fill)
-    static let iconFaceTimeFill = "video.badge.fill"
+    /// FaceTime填充图标名称 (video.bubble.fill)
+    static let iconFaceTimeFill = "video.bubble.fill"
 
     /// 通讯录填充图标名称 (person.crop.rectangle.fill)
     static let iconFaceTimeFillAlt = "person.crop.rectangle.fill"
@@ -901,10 +892,7 @@ public extension String {
     static let iconStatusSetting = "circle.fill"
 
     /// 股市图标名称 (chart.line.uptrend.xyaxis)
-    static let iconStocks = "chart.line.uptrend.xyaxis"
-
-    /// 股市填充图标名称 (chart.line.uptrend.xyaxis.fill)
-    static let iconStocksFill = "chart.line.uptrend.xyaxis.fill"
+    static let iconStocks = "chart.xyaxis.line"
 
     /// 删除线图标名称 (strikethrough)
     static let iconStrikethrough = "strikethrough"
@@ -956,9 +944,6 @@ public extension String {
     /// 表格合并图标名称 (tablecells.badge.ellipsis)
     static let iconTableMerge = "tablecells.badge.ellipsis"
 
-    /// 表格分割图标名称 (tablecells.split.horizontal)
-    static let iconTableSplit = "tablecells.split.horizontal"
-
     /// 终端图标名称 (terminal)
     static let iconTerminal = "terminal"
 
@@ -983,8 +968,9 @@ public extension String {
     /// 计时器图标名称 (timer)
     static let iconTimer = "timer"
 
-    /// 计时器填充图标名称 (timer.fill)
-    static let iconTimerFill = "timer.fill"
+    /// 计时器填充图标名称 (timer)
+    /// 注意：timer.fill 在某些版本不可用，使用 timer 替代
+    static let iconTimerFill = "timer"
 
     /// 清除图标名称 (trash)
     static let iconTrash = "trash"
@@ -1002,7 +988,8 @@ public extension String {
     static let iconToolbar = "sidebar.left"
 
     /// 工具栏填充图标 (sidebar.left.fill)
-    static let iconToolbarFill = "sidebar.left.fill"
+    /// 注意：sidebar.left.fill 在某些版本不可用，使用 rectangle.leadinghalf.filled 替代
+    static let iconToolbarFill = "rectangle.leadinghalf.filled"
 
     // MARK: U
 
@@ -1034,9 +1021,6 @@ public extension String {
 
     /// 语音备忘录图标名称 (waveform)
     static let iconVoiceMemos = "waveform"
-
-    /// 语音备忘录填充图标名称 (waveform.fill)
-    static let iconVoiceMemosFill = "waveform.fill"
 
     /// 音量图标名称 (speaker.wave.2)
     static let iconVolume = "speaker.wave.2"
