@@ -189,11 +189,10 @@ do {
 
 ### Git 分支管理
 
-MagicKit 使用 `main` + `dev` 双分支策略：
+MagicKit 使用 **GitHub Flow** 工作流：
 
-- **main** - 稳定发布版本（打版本标签）
-- **dev** - 日常开发集成分支
-- **feature/*** - 功能开发分支
+- **main** - 生产就绪，始终可部署（自动打版本标签）
+- **feature/*** - 功能开发分支（从 main 创建，通过 PR 合并回 main）
 
 详细的 Git 工作流程、提交规范、版本发布流程，请参阅：
 📘 **[Git 工作流程指南](.claude/GIT_WORKFLOW.md)**
