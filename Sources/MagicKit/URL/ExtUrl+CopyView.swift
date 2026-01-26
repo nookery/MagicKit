@@ -161,17 +161,17 @@ private struct FileCopyProgressView: View, SuperLog {
                         .foregroundStyle(.green)
                 }
                 
-                if !style.autoStart && !isCopying && !isCompleted {
-                    MagicButton(
-                        icon: "arrow.right.circle",
-                        title: "开始复制",
-                        style: .primary,
-                        size: .regular,
-                        shape: .rectangle
-                    ) {_ in 
-                        Task { performCopyOperation() }
-                    }
-                }
+//                if !style.autoStart && !isCopying && !isCompleted {
+//                    MagicButton(
+//                        icon: "arrow.right.circle",
+//                        title: "开始复制",
+//                        style: .primary,
+//                        size: .regular,
+//                        shape: .rectangle
+//                    ) {_ in 
+//                        Task { performCopyOperation() }
+//                    }
+//                }
             }
             .padding()
             .background(style.background.opacity(style.backgroundOpacity))

@@ -96,15 +96,6 @@ public struct MagicWebView: View {
                         logger.error("不支持的URL类型: \(url.absoluteString)")
                     }
             }
-
-            if showLogView {
-                Divider()
-                    .padding(.vertical, 4)
-
-                logger.logView()
-                    .frame(height: nil)
-                    .frame(maxHeight: .infinity)
-            }
         }
     }
 
