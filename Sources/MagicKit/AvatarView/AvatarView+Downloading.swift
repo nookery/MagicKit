@@ -38,6 +38,7 @@ extension AvatarView {
                     .foregroundStyle(.secondary)
             }
             .frame(width: size.width, height: size.height)
+            .padding()
             .background(backgroundColor)
             .clipShape(shape)
         }
