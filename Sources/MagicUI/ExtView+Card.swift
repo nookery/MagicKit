@@ -2,9 +2,9 @@ import SwiftUI
 
 public extension View {
     /// 将视图包装在材质背景的卡片中
-    /// - Parameter material: 材质类型，默认为 ultraThinMaterial
+    /// - Parameter material: 材质类型，默认为 regularMaterial
     /// - Returns: 包装在卡片中的视图
-    func inCard(_ material: Material = .ultraThinMaterial) -> some View {
+    func inCard(_ material: Material = .regularMaterial) -> some View {
         MagicCard(background: AnyView(Color.clear.background(material))) {
             self
         }
