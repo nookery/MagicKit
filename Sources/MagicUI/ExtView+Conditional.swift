@@ -116,3 +116,97 @@ extension View {
         }
     }
 }
+
+// MARK: - Platform Conditional View Modifier
+
+extension View {
+    /// 仅在 macOS 上显示视图
+    ///
+    /// ```swift
+    /// Text("macOS Feature")
+    ///     .ifMacOS()
+    /// ```
+    @ViewBuilder
+    public func ifMacOS() -> some View {
+        #if os(macOS)
+        self
+        #else
+        EmptyView()
+        #endif
+    }
+
+    /// 仅在 iOS 上显示视图
+    ///
+    /// ```swift
+    /// Text("iOS Feature")
+    ///     .ifiOS()
+    /// ```
+    @ViewBuilder
+    public func ifiOS() -> some View {
+        #if os(iOS)
+        self
+        #else
+        EmptyView()
+        #endif
+    }
+
+    /// 仅在 tvOS 上显示视图
+    ///
+    /// ```swift
+    /// Text("tvOS Feature")
+    ///     .iftvOS()
+    /// ```
+    @ViewBuilder
+    public func iftvOS() -> some View {
+        #if os(tvOS)
+        self
+        #else
+        EmptyView()
+        #endif
+    }
+
+    /// 仅在 watchOS 上显示视图
+    ///
+    /// ```swift
+    /// Text("watchOS Feature")
+    ///     .ifwatchOS()
+    /// ```
+    @ViewBuilder
+    public func ifwatchOS() -> some View {
+        #if os(watchOS)
+        self
+        #else
+        EmptyView()
+        #endif
+    }
+
+    /// 仅在 visionOS 上显示视图
+    ///
+    /// ```swift
+    /// Text("visionOS Feature")
+    ///     .ifvisionOS()
+    /// ```
+    @ViewBuilder
+    public func ifvisionOS() -> some View {
+        #if os(visionOS)
+        self
+        #else
+        EmptyView()
+        #endif
+    }
+
+    /// 仅在 macOS 或 iOS 上显示视图
+    ///
+    /// ```swift
+    /// Text("Apple Platform Feature")
+    ///     .ifAppleMobileOrDesktop()
+    /// ```
+    @ViewBuilder
+    public func ifAppleMobileOrDesktop() -> some View {
+        #if os(macOS) || os(iOS)
+        self
+        #else
+        EmptyView()
+        #endif
+    }
+}
