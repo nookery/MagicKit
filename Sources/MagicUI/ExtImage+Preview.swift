@@ -247,6 +247,8 @@ struct ImageExtensionDemoView: View {
                 ("分享", Image.share, "share"),
                 ("分享备选", Image.shareAlt, "shareAlt"),
                 ("排序", Image.sort, "sort"),
+                ("在Finder中显示", Image.showInFinder, "showInFinder"),
+                ("在Finder中显示填充", Image.showInFinderFill, "showInFinderFill"),
                 ("同步", Image.sync, "sync"),
                 ("同步圆形", Image.syncCircle, "syncCircle"),
                 ("同步圆形填充", Image.syncCircleFill, "syncCircleFill"),

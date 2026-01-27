@@ -764,6 +764,16 @@ public extension Image {
         Image(systemName: .iconSort)
     }
 
+    /// 在Finder中显示图标 (arrow.forward.circle)
+    static var showInFinder: Image {
+        Image(systemName: .iconShowInFinder)
+    }
+
+    /// 在Finder中显示填充图标 (arrow.forward.circle.fill)
+    static var showInFinderFill: Image {
+        Image(systemName: .iconShowInFinderFill)
+    }
+
     /// 同步图标 (arrow.triangle.2.circlepath)
     static var sync: Image {
         Image(systemName: .iconSync)
