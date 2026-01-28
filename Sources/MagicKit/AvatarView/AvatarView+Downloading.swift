@@ -21,7 +21,7 @@ extension AvatarView {
         }
         
         var padding: CGFloat {
-            return self.size.width * 0.2
+            return self.size.width * 0.1
         }
 
         var body: some View {
