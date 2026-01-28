@@ -19,6 +19,10 @@ extension AvatarView {
             self.size = size
             self.backgroundColor = backgroundColor
         }
+        
+        var padding: CGFloat {
+            return self.size.width * 0.2
+        }
 
         var body: some View {
             ZStack {
@@ -37,7 +41,7 @@ extension AvatarView {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
-            .padding()
+            .padding(padding)
             .frame(width: size.width, height: size.height)
             .background(backgroundColor)
             .clipShape(shape)
