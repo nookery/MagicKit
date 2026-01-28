@@ -37,6 +37,7 @@ extension AvatarView {
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
+            .padding()
             .frame(width: size.width, height: size.height)
             .background(backgroundColor)
             .clipShape(shape)
