@@ -20,7 +20,7 @@ public extension URL {
         if verbose {
             let sourcePath = (self.pathComponents.suffix(3)).joined(separator: "/")
             let destPath = (destination.pathComponents.suffix(3)).joined(separator: "/")
-            os_log("\(self.t)👷👷👷 开始复制文件 (\(caller)): .../\(sourcePath) -> .../\(destPath)")
+            os_log("\(self.t)👷 (\(caller)) 开始复制文件: .../\(sourcePath) -> .../\(destPath)")
         }
 
         // 只有在需要显示下载进度时才手动处理下载
@@ -34,11 +34,11 @@ public extension URL {
         }
         
         if verbose {
-            os_log("\(self.t)🚛🚛🚛 执行文件复制操作（如果未下载则自动下载），当前文件下载状态：\(self.isDownloaded)")
+            os_log("\(self.t)🚛 执行文件复制操作（自动下载），当前下载状态：\(self.isDownloaded)")
         }
         try FileManager.default.copyItem(at: self, to: destination)
         if verbose {
-            os_log("\(self.t)✅✅✅ 文件复制完成")
+            os_log("\(self.t)✅ 文件复制完成")
         }
     }
 }
