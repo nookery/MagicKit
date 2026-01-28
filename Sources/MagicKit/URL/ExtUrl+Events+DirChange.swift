@@ -30,7 +30,7 @@ public extension URL {
     ) -> AnyCancellable {
         if checkIsICloud(verbose: false) {
             if verbose {
-            os_log("\(self.t)👀 (\(caller)) Start monitoring iCloud directory: \(self.shortPath())")
+                os_log("\(self.t)👀 (\(caller)) Start monitoring iCloud directory: \(self.shortPath())")
             }
             return onICloudDirectoryChanged(
                 verbose: verbose,
@@ -182,18 +182,18 @@ public extension URL {
         let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
         let query = NSMetadataQuery()
         var cancellables = Set<AnyCancellable>()
-        
+
         // 添加进度更新节流控制
         actor ProgressThrottle {
             private var lastUpdateTime: [URL: Date] = [:]
             private var lastProgress: [URL: Double] = [:] // 记录上次的进度
             private let minInterval: TimeInterval = 0.5
-            
+
             func shouldUpdate(for url: URL, progress: Double) -> Bool {
                 let now = Date()
                 let lastTime = lastUpdateTime[url] ?? .distantPast
                 let previousProgress = lastProgress[url] ?? 0.0
-                
+
                 // 在以下情况下必须更新：
                 // 1. 首次更新 (lastProgress 为 0)
                 // 2. 达到 100% 时
@@ -203,38 +203,41 @@ public extension URL {
                 let isComplete = progress >= 1.0
                 let timeElapsed = now.timeIntervalSince(lastTime) >= minInterval
                 let significantChange = abs(progress - previousProgress) >= 0.05
-                
+
                 if isFirstUpdate || isComplete || timeElapsed || significantChange {
                     lastUpdateTime[url] = now
                     lastProgress[url] = progress
                     return true
                 }
-                
+
                 return false
             }
-            
+
             func reset(for url: URL) {
                 lastUpdateTime.removeValue(forKey: url)
                 lastProgress.removeValue(forKey: url)
             }
         }
-        
+
         let progressThrottle = ProgressThrottle()
-        
+
         // 配置查询参数
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
-        
+
+        // 确保路径以 "/" 结尾，避免前缀匹配到相似名称的目录
+        let normalizedPath = self.path.hasSuffix("/") ? self.path : self.path + "/"
+
         let predicates = [
-            // 匹配指定目录下的文件
-            NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, self.path + "/"),
-            
+            // 匹配指定目录下的文件（使用规范化的路径确保精确匹配）
+            NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, normalizedPath),
+
             // 排除目录本身
             NSPredicate(format: "%K != %@", NSMetadataItemPathKey, self.path),
-            
+
             // 排除系统文件和临时文件
-            NSPredicate(format: "NOT %K ENDSWITH %@", NSMetadataItemFSNameKey, ".DS_Store")
+            NSPredicate(format: "NOT %K ENDSWITH %@", NSMetadataItemFSNameKey, ".DS_Store"),
         ]
-        
+
         query.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         query.valueListAttributes = [
             NSMetadataItemURLKey,
@@ -250,17 +253,17 @@ public extension URL {
                           let isDownloading = item.value(forAttribute: NSMetadataUbiquitousItemIsDownloadingKey) as? Bool,
                           let percentDownloaded = item.value(forAttribute: NSMetadataUbiquitousItemPercentDownloadedKey) as? Double
                     else { continue }
-                    
+
                     let progress = max(0.0, min(1.0, percentDownloaded / 100))
-                    
+
                     if isDownloading || progress >= 1.0 { // 添加对完成状态的检查
                         // 检查是否应该更新进度
                         guard await progressThrottle.shouldUpdate(for: url, progress: progress) else { continue }
-                        
+
                         await MainActor.run {
                             onProgress(url, progress)
                         }
-                        
+
                         // 如果下载完成，重置节流状态
                         if progress >= 1.0 {
                             await progressThrottle.reset(for: url)
@@ -282,15 +285,43 @@ public extension URL {
                 // 处理常规文件变化
                 let urls: [URL]
                 if isInitial {
-                    urls = (query.results as? [NSMetadataItem] ?? [])
-                        .compactMap { item in
-                            // 安全地提取 URL，避免访问已删除文件的属性时崩溃
-                            (item.value(forAttribute: NSMetadataItemURLKey) as? URL)
+                    let allItems = query.results as? [NSMetadataItem] ?? []
+                    urls = allItems.compactMap { item in
+                        // 安全地提取 URL，避免访问已删除文件的属性时崩溃
+                        guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else { return nil }
+
+                        // 额外验证：确保 URL 确实在目标目录下
+                        let itemPath = url.path
+                        if !itemPath.hasPrefix(normalizedPath) {
+                            os_log(.error, "\(self.t)⚠️ [\(caller)] Filtered out mismatched path: \(itemPath)")
+                            os_log(.error, "\(self.t)⚠️ [\(caller)] Expected prefix: \(normalizedPath)")
+                            return nil
                         }
+
+                        return url
+                    }
+
+                    if verbose {
+                        logger.info("\(self.t)📊 [\(caller)] Initial fetch: found \(allItems.count) items, filtered to \(urls.count) valid items")
+                    }
                 } else {
                     urls = (changedItems ?? [])
                         .compactMap { item in
-                            (item.value(forAttribute: NSMetadataItemURLKey) as? URL)
+                            guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else { return nil }
+
+                            // 额外验证：确保 URL 确实在目标目录下
+                            let itemPath = url.path
+                            if !itemPath.hasPrefix(normalizedPath) {
+                                os_log(.error, "\(self.t)⚠️ [\(caller)] Filtered out mismatched changed path: \(itemPath)")
+                                os_log(.error, "\(self.t)⚠️ [\(caller)] Expected prefix: \(normalizedPath)")
+                                return nil
+                            }
+
+                            if verbose {
+                                logger.info("\(self.t)📝 [\(caller)] Changed file: \(url.lastPathComponent)")
+                            }
+
+                            return url
                         }
                 }
 
@@ -307,7 +338,6 @@ public extension URL {
 
                     for (index, item) in deletedItems.enumerated() {
                         do {
-                         
                             guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else {
                                 if verbose {
                                     logger.warning("\(self.t)⚠️ [\(caller)] Deleted item \(index): No URL available")
@@ -375,7 +405,7 @@ public extension URL {
         NotificationCenter.default.publisher(for: .NSMetadataQueryDidUpdate)
             .sink { [weak query] notification in
                 guard let query = query else { return }
-                
+
                 let changedItems = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
                 let deletedItems = notification.userInfo?[NSMetadataQueryUpdateRemovedItemsKey] as? [NSMetadataItem]
 
