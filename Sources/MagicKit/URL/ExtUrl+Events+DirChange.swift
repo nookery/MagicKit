@@ -63,17 +63,15 @@ public extension URL {
         caller: String,
         _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) async -> Void
     ) -> AnyCancellable {
-        let logger = Logger(subsystem: "MagicKit", category: "FileMonitor")
-
         // 创建文件监视器
         let fileDescriptor = Darwin.open(self.path, O_EVTONLY)
         if fileDescriptor < 0 {
-            logger.error("\(self.t)❌ [\(caller)] Failed to open file descriptor for \(self.path)")
+            os_log(.error, "\(self.t)❌ [\(caller)] Failed to open file descriptor for \(self.path)")
             return AnyCancellable {}
         }
 
         if verbose {
-            logger.info("\(self.t)🎯 [\(caller)] Successfully opened file descriptor for: \(self.lastPathComponent)")
+            os_log("\(self.t)🎯 [\(caller)] Successfully opened file descriptor for: \(self.lastPathComponent)")
         }
 
         let monitor = DispatchSource.makeFileSystemObjectSource(
@@ -83,7 +81,7 @@ public extension URL {
         )
 
         if verbose {
-            logger.info("[\(caller)] Start monitoring directory: \(self.lastPathComponent)")
+            os_log("[\(caller)] Start monitoring directory: \(self.lastPathComponent)")
         }
 
         // 使用 actor 来管理状态
@@ -101,13 +99,13 @@ public extension URL {
 
         @Sendable func scanDirectory() async throws {
             if verbose {
-                logger.info("\(self.t)🔍 [\(caller)] Scanning directory: \(self.lastPathComponent)")
+                os_log("\(self.t)� [\(caller)] eScanning directory: \(self.lastPathComponent)")
             }
 
             let fileManager = FileManager.default
 
             guard fileManager.fileExists(atPath: self.path) else {
-                logger.error("\(self.t)❌ [\(caller)] Directory does not exist: \(self.lastPathComponent)")
+                os_log(.error, "\(self.t)❌ [\(caller)] Directory does not exist: \(self.lastPathComponent)")
                 throw URLError(.fileDoesNotExist)
             }
 
@@ -118,9 +116,9 @@ public extension URL {
             )
 
             if verbose {
-                logger.info("\(self.t)📝 [\(caller)] Found \(urls.count) files in: \(self.lastPathComponent)")
+                os_log("\(self.t)📝 [\(caller)] Found \(urls.count) files in: \(self.lastPathComponent)")
                 urls.forEach { url in
-                    logger.info("\(self.t)📄 [\(caller)] File: \(url.lastPathComponent)")
+                    os_log("\(self.t)📄 [\(caller)] File: \(url.lastPathComponent)")
                 }
             }
 
@@ -148,7 +146,7 @@ public extension URL {
 
         return AnyCancellable {
             if verbose {
-                logger.info("[\(caller)] Stop monitoring directory: \(self.lastPathComponent)")
+                os_log("[\(caller)] Stop monitoring directory: \(self.lastPathComponent)")
             }
             task.cancel()
             monitor.cancel()
@@ -179,7 +177,6 @@ public extension URL {
         onDeleted: @escaping (_ urls: [URL]) -> Void = { _ in },
         _ onChange: @escaping (_ files: [URL], _ isInitialFetch: Bool, _ error: Error?) -> Void
     ) -> AnyCancellable {
-        let logger = Logger(subsystem: "MagicKit", category: "iCloudMonitor")
         let query = NSMetadataQuery()
         var cancellables = Set<AnyCancellable>()
 
@@ -225,14 +222,29 @@ public extension URL {
         query.searchScopes = [NSMetadataQueryUbiquitousDocumentsScope]
 
         // 确保路径以 "/" 结尾，避免前缀匹配到相似名称的目录
+        // 例如：监听 "audios_debug/" 时不会匹配到 "audios/" 目录下的文件
         let normalizedPath = self.path.hasSuffix("/") ? self.path : self.path + "/"
+        
+        // 获取父目录路径，用于更精确的过滤
+        let parentPath = (self.path as NSString).deletingLastPathComponent
+        let dirName = self.lastPathComponent
 
+        if verbose {
+            os_log("\(self.t)🔍 [\(caller)] Setting up query for path: \(normalizedPath)")
+            os_log("\(self.t)🔍 [\(caller)] Parent path: \(parentPath)")
+            os_log("\(self.t)🔍 [\(caller)] Directory name: \(dirName)")
+        }
+
+        // 关键修复：使用更严格的谓词组合
+        // 1. 路径必须以 "normalizedPath" 开头（精确匹配目录）
+        // 2. 路径长度必须大于目标目录（排除目录本身）
+        // 3. 确保路径分隔符正确（避免前缀误匹配）
         let predicates = [
-            // 匹配指定目录下的文件（使用规范化的路径确保精确匹配）
+            // 匹配指定目录下的文件
             NSPredicate(format: "%K BEGINSWITH %@", NSMetadataItemPathKey, normalizedPath),
 
-            // 排除目录本身
-            NSPredicate(format: "%K != %@", NSMetadataItemPathKey, self.path),
+            // 排除目录本身（路径长度必须更长）
+            NSPredicate(format: "%K.length > %d", NSMetadataItemPathKey, normalizedPath.count),
 
             // 排除系统文件和临时文件
             NSPredicate(format: "NOT %K ENDSWITH %@", NSMetadataItemFSNameKey, ".DS_Store"),
@@ -285,50 +297,32 @@ public extension URL {
                 // 处理常规文件变化
                 let urls: [URL]
                 if isInitial {
+                    // 初始查询的结果已经被谓词过滤，可以直接使用
                     let allItems = query.results as? [NSMetadataItem] ?? []
                     urls = allItems.compactMap { item in
-                        // 安全地提取 URL，避免访问已删除文件的属性时崩溃
+                        item.value(forAttribute: NSMetadataItemURLKey) as? URL
+                    }
+
+                    if verbose {
+                        os_log("\(self.t)📊 [\(caller)] Initial fetch: found \(allItems.count) items")
+                    }
+                } else {
+                    // 更新通知的 changedItems 已经在通知处理时被手动过滤
+                    urls = (changedItems ?? []).compactMap { item in
                         guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else { return nil }
 
-                        // 额外验证：确保 URL 确实在目标目录下
-                        let itemPath = url.path
-                        if !itemPath.hasPrefix(normalizedPath) {
-                            os_log(.error, "\(self.t)⚠️ [\(caller)] Filtered out mismatched path: \(itemPath)")
-                            os_log(.error, "\(self.t)⚠️ [\(caller)] Expected prefix: \(normalizedPath)")
-                            return nil
+                        if verbose {
+                            os_log("\(self.t)🍋 [\(caller)l] Changed file: \(url.lastPathComponent)")
                         }
 
                         return url
                     }
-
-                    if verbose {
-                        logger.info("\(self.t)📊 [\(caller)] Initial fetch: found \(allItems.count) items, filtered to \(urls.count) valid items")
-                    }
-                } else {
-                    urls = (changedItems ?? [])
-                        .compactMap { item in
-                            guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else { return nil }
-
-                            // 额外验证：确保 URL 确实在目标目录下
-                            let itemPath = url.path
-                            if !itemPath.hasPrefix(normalizedPath) {
-                                os_log(.error, "\(self.t)⚠️ [\(caller)] Filtered out mismatched changed path: \(itemPath)")
-                                os_log(.error, "\(self.t)⚠️ [\(caller)] Expected prefix: \(normalizedPath)")
-                                return nil
-                            }
-
-                            if verbose {
-                                logger.info("\(self.t)📝 [\(caller)] Changed file: \(url.lastPathComponent)")
-                            }
-
-                            return url
-                        }
                 }
 
                 // 处理删除的文件
                 if let deletedItems = deletedItems, !deletedItems.isEmpty {
                     if verbose {
-                        logger.info("\(self.t)🔍 [\(caller)] Processing \(deletedItems.count) deleted items")
+                        os_log("\(self.t)🔍 [\(caller)] Processing \(deletedItems.count) deleted items")
                     }
 
                     let fileManager = FileManager.default
@@ -340,20 +334,20 @@ public extension URL {
                         do {
                             guard let url = item.value(forAttribute: NSMetadataItemURLKey) as? URL else {
                                 if verbose {
-                                    logger.warning("\(self.t)⚠️ [\(caller)] Deleted item \(index): No URL available")
+                                    os_log(.error, "\(self.t)⚠️ [\(caller)] Deleted item \(index): No URL available")
                                 }
                                 continue
                             }
 
                             if verbose {
-                                logger.info("\(self.t)📍 [\(caller)] Deleted item \(index): \(url.lastPathComponent)")
+                                os_log("\(self.t)📍 [\(caller)] Deleted item \(index): \(url.lastPathComponent)")
                             }
 
                             // 验证文件是否确实不存在
                             let exists = fileManager.fileExists(atPath: url.path)
                             if exists {
                                 if verbose {
-                                    logger.warning("\(self.t)⚠️ [\(caller)] File still exists, skipping: \(url.lastPathComponent)")
+                                    os_log(.error, "\(self.t)⚠️ [\(caller)] File still exists, skipping: \(url.lastPathComponent)")
                                 }
                                 continue
                             }
@@ -361,11 +355,11 @@ public extension URL {
                             // 文件确实不存在，添加到删除列表
                             deletedUrls.append(url)
                             if verbose {
-                                logger.info("\(self.t)✅ [\(caller)] Confirmed deleted: \(url.lastPathComponent)")
+                                os_log("\(self.t)✅ [\(caller)] Confirmed deleted: \(url.lastPathComponent)")
                             }
                         } catch {
                             if verbose {
-                                logger.error("\(self.t)❌ [\(caller)] Error processing deleted item \(index): \(error.localizedDescription)")
+                                os_log(.error, "\(self.t)❌ [\(caller)] Error processing deleted item \(index): \(error.localizedDescription)")
                             }
                         }
                     }
@@ -373,7 +367,7 @@ public extension URL {
                     // 调用 onDeleted 回调
                     if !deletedUrls.isEmpty {
                         if verbose {
-                            logger.info("\(self.t)🗑️ [\(caller)] Calling onDeleted with \(deletedUrls.count) files")
+                            os_log("\(self.t)🗑️ [\(caller)] Calling onDeleted with \(deletedUrls.count) files")
                         }
 
                         // 关键：在主线程上异步调用 onDeleted 回调
@@ -382,22 +376,31 @@ public extension URL {
                             do {
                                 onDeleted(deletedUrls)
                                 if verbose {
-                                    logger.info("\(self.t)✅ [\(caller)] onDeleted callback completed successfully")
+                                    os_log("\(self.t)✅ [\(caller)] onDeleted callback completed successfully")
                                 }
                             } catch {
                                 if verbose {
-                                    logger.error("\(self.t)❌ [\(caller)] onDeleted callback failed: \(error.localizedDescription)")
+                                    os_log(.error, "\(self.t)❌ [\(caller)] onDeleted callback failed: \(error.localizedDescription)")
                                 }
                             }
                         }
                     } else {
                         if verbose {
-                            logger.info("\(self.t)ℹ️ [\(caller)] No valid deleted URLs to process")
+                            os_log("\(self.t)ℹ️ [\(caller)] No valid deleted URLs to process")
                         }
                     }
                 }
 
-                onChange(urls, isInitial, nil)
+                // 只有在有实际变化时才通知监听者
+                // 初始查询时总是通知（即使为空）
+                // 更新时只有在有文件变化时才通知
+                if isInitial || !urls.isEmpty {
+                    onChange(urls, isInitial, nil)
+                } else {
+                    if verbose {
+                        os_log("\(self.t)⏭️ [\(caller)] No file changes, skipping onChange callback")
+                    }
+                }
             }
         }
 
@@ -406,8 +409,53 @@ public extension URL {
             .sink { [weak query] notification in
                 guard let query = query else { return }
 
-                let changedItems = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
-                let deletedItems = notification.userInfo?[NSMetadataQueryUpdateRemovedItemsKey] as? [NSMetadataItem]
+                let rawChangedItems = notification.userInfo?[NSMetadataQueryUpdateChangedItemsKey] as? [NSMetadataItem]
+                let rawDeletedItems = notification.userInfo?[NSMetadataQueryUpdateRemovedItemsKey] as? [NSMetadataItem]
+
+                if verbose {
+                    os_log("\(self.t)🔔 [\(caller)] Query update notification received")
+                    os_log("\(self.t)🔔 [\(caller)] Raw changed items: \(rawChangedItems?.count ?? 0)")
+                    os_log("\(self.t)🔔 [\(caller)] Raw deleted items: \(rawDeletedItems?.count ?? 0)")
+                }
+
+                // 关键修复：手动应用谓词过滤 changedItems
+                // NSMetadataQuery 的更新通知不会自动应用谓词，需要手动过滤
+                let changedItems = rawChangedItems?.filter { item in
+                    guard let itemPath = item.value(forAttribute: NSMetadataItemPathKey) as? String else {
+                        return false
+                    }
+                    
+                    // 应用与查询相同的过滤条件
+                    let matchesPrefix = itemPath.hasPrefix(normalizedPath)
+                    let isNotDirectory = itemPath.count > normalizedPath.count
+                    let isNotDSStore = !(item.value(forAttribute: NSMetadataItemFSNameKey) as? String ?? "").hasSuffix(".DS_Store")
+                    
+                    let shouldInclude = matchesPrefix && isNotDirectory && isNotDSStore
+                    
+                    if verbose && !shouldInclude && rawChangedItems?.count ?? 0 > 0 {
+                        os_log("\(self.t)🚫 [\(caller)] Filtered out changed item: \(itemPath)")
+                        os_log("\(self.t)🚫 [\(caller)] Reason - Prefix match: \(matchesPrefix), Not dir: \(isNotDirectory), Not DS_Store: \(isNotDSStore)")
+                    }
+                    
+                    return shouldInclude
+                }
+                
+                // 同样过滤 deletedItems
+                let deletedItems = rawDeletedItems?.filter { item in
+                    guard let itemPath = item.value(forAttribute: NSMetadataItemPathKey) as? String else {
+                        return false
+                    }
+                    return itemPath.hasPrefix(normalizedPath) && itemPath.count > normalizedPath.count
+                }
+
+                if verbose && (changedItems?.count ?? 0) > 0 {
+                    os_log("\(self.t)✅ [\(caller)] Filtered changed items: \(changedItems?.count ?? 0)")
+                    changedItems?.forEach { item in
+                        if let path = item.value(forAttribute: NSMetadataItemPathKey) as? String {
+                            os_log("\(self.t)📄 [\(caller)] Valid changed item: \(path)")
+                        }
+                    }
+                }
 
                 handleDownloadProgress(changedItems ?? [])
                 processResults(isInitial: false, changedItems: changedItems, deletedItems: deletedItems)
@@ -417,6 +465,20 @@ public extension URL {
         NotificationCenter.default.publisher(for: .NSMetadataQueryDidFinishGathering)
             .sink { [weak query] _ in
                 guard let query = query else { return }
+                
+                if verbose {
+                    os_log("\(self.t)✅ [\(caller)]l Query finished gathering")
+                    os_log("\(self.t)🎉 [\(caller)] Total results: \(query.resultCount)")
+                    
+                    // 打印所有初始结果的路径
+                    for i in 0..<query.resultCount {
+                        if let item = query.result(at: i) as? NSMetadataItem,
+                           let path = item.value(forAttribute: NSMetadataItemPathKey) as? String {
+                            os_log("\(self.t)📄 [\(caller)] Initial item \(i): \(path)")
+                        }
+                    }
+                }
+                
                 processResults(isInitial: true)
             }
             .store(in: &cancellables)
@@ -428,7 +490,7 @@ public extension URL {
 
         return AnyCancellable {
             if verbose {
-                logger.info("[\(caller)] Stop monitoring: \(self.lastPathComponent)")
+                os_log("[\(caller)] Stop monitoring: \(self.lastPathComponent)")
             }
             query.stop()
             cancellables.removeAll()
