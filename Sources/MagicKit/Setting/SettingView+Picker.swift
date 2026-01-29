@@ -61,7 +61,6 @@ public struct MagicSettingPicker<T: Hashable>: View {
             selection: .constant("High")
         ) { $0 }
     }
-    .frame(width: 600)
     .padding()
 }
 #endif
