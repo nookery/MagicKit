@@ -31,7 +31,7 @@ public struct AvatarView: View, SuperLog {
     public static let emoji = "🚉"
 
     /// 视图状态管理器，管理缩略图、加载状态和错误状态
-    @StateObject var state = ViewState()
+    @StateObject var state: ViewState
 
     /// 全局下载进度订阅
     @State private var progressCancellable: AnyCancellable? = nil
@@ -72,26 +72,24 @@ public struct AvatarView: View, SuperLog {
     /// - Parameters:
     ///   - url: 要显示的文件URL
     ///   - size: 视图的尺寸，默认为 40x40
+    ///   - verbose: 是否启用详细日志输出
     public init(url: URL, size: CGSize = CGSize(width: 40, height: 40), verbose: Bool = false) {
         self.url = url
         self.size = size
         self.verbose = verbose
 
-        // 在初始化时进行基本的 URL 检查
-        if url.isFileURL {
-            // 检查本地文件是否存在
-            if url.isNotFileExist {
-                _state = StateObject(wrappedValue: ViewState())
-                state.setError(ViewError.fileNotFound)
+        // 计算初始错误状态
+        let initialError: ViewError? = {
+            if url.isFileURL && url.isNotFileExist {
+                return .fileNotFound
+            } else if !url.isFileURL && !url.isNetworkURL {
+                return .invalidURL
             }
-        } else {
-            // 检查 URL 格式
-            guard url.isNetworkURL else {
-                _state = StateObject(wrappedValue: ViewState())
-                state.setError(ViewError.invalidURL)
-                return
-            }
-        }
+            return nil
+        }()
+
+        // 一次性初始化 StateObject，避免访问未安装的 property wrapper
+        _state = StateObject(wrappedValue: ViewState(error: initialError))
     }
 
     // MARK: - Body

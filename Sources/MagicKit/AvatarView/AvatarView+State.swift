@@ -21,6 +21,12 @@ extension AvatarView {
         /// 标记是否需要重新加载缩略图（下载完成后触发）
         @Published public var needsReload = false
 
+        /// 创建一个新的视图状态实例
+        /// - Parameter error: 初始错误状态，默认为 nil
+        public init(error: Error? = nil) {
+            self.error = error
+        }
+
         /// 重置所有状态
         public func reset() {
             thumbnail = nil
