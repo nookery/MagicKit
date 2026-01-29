@@ -400,7 +400,6 @@ public struct SettingExampleView: View {
             }
         }
         .padding()
-        .frame(width: 600)
         .alert("Change Audio Device", isPresented: $showingDeviceConfirmation) {
             Button("Cancel", role: .cancel) {
                 pendingDevice = nil
@@ -420,6 +419,8 @@ public struct SettingExampleView: View {
                 Text("Are you sure you want to switch to \(device)?")
             }
         }
+        .infinite()
+        .inScrollView()
     }
 }
 
@@ -474,14 +475,20 @@ struct QualityConfirmationView: View {
             }
         }
         .padding()
-        .frame(width: 400)
     }
 }
 
 // MARK: - Preview Provider
 
-#if DEBUG
-#Preview {
+#if DEBUG && os(macOS)
+#Preview("Setting - macOS") {
+    SettingExampleView()
+        .frame(height: 600)
+}
+#endif
+
+#if DEBUG && os(iOS)
+#Preview("Setting - iPhone") {
     SettingExampleView()
 }
 #endif
