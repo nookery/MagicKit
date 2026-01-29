@@ -1,5 +1,5 @@
 import SwiftUI
-import MagicUI
+import MagicKit
 import Foundation
 import os
 
