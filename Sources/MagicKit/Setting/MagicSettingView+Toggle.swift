@@ -31,24 +31,24 @@ public struct MagicSettingToggle: View {
 // MARK: - Preview
 
 #if DEBUG
-#Preview {
-    VStack(spacing: 0) {
-        MagicSettingToggle(
-            title: "Enable Feature",
-            description: "Turn this on to enable the awesome feature",
-            icon: "star",
-            isOn: .constant(true)
-        )
+    #Preview {
+        VStack(spacing: 0) {
+            MagicSettingToggle(
+                title: "Enable Feature",
+                description: "Turn this on to enable the awesome feature",
+                icon: "star",
+                isOn: .constant(true)
+            )
 
-        Divider()
+            Divider()
 
-        MagicSettingToggle(
-            title: "Simple Toggle",
-            icon: "bell",
-            isOn: .constant(false)
-        )
+            MagicSettingToggle(
+                title: "Simple Toggle",
+                icon: "bell",
+                isOn: .constant(false)
+            )
+        }
+        .padding()
+        .frame(width: 400)
     }
-    .padding()
-    .frame(width: 400)
-}
 #endif
