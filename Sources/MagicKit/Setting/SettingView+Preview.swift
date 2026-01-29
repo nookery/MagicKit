@@ -72,18 +72,17 @@ public struct SettingExampleView: View {
                                 "Disable all data synchronization",
                             icon: mode == "Automatic" ? .iconCloudUpload :
                                 mode == "Manual" ? .iconArrowClockwise :
-                                .iconCloudSlash
+                                .iconCloudSlash,
+                            action: {
+                                if mode != selectedDataMode {
+                                    pendingDataMode = mode
+                                    showingDataModeConfirmation = true
+                                }
+                            }
                         ) {
                             if mode == selectedDataMode {
                                 Image(systemName: .iconCheckmarkSimple)
                                     .foregroundColor(.accentColor)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if mode != selectedDataMode {
-                                pendingDataMode = mode
-                                showingDataModeConfirmation = true
                             }
                         }
 
@@ -118,18 +117,17 @@ public struct SettingExampleView: View {
                             description: qualityDescriptions[mode],
                             icon: mode == "Standard" ? .iconSpeedometer :
                                 mode == "High" ? .iconSpeedometerMedium :
-                                .iconSpeedometerHigh
+                                .iconSpeedometerHigh,
+                            action: {
+                                if mode != selectedQualityMode {
+                                    pendingQualityMode = mode
+                                    showingQualitySheet = true
+                                }
+                            }
                         ) {
                             if mode == selectedQualityMode {
                                 Image(systemName: .iconCheckmarkSimple)
                                     .foregroundColor(.accentColor)
-                            }
-                        }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            if mode != selectedQualityMode {
-                                pendingQualityMode = mode
-                                showingQualitySheet = true
                             }
                         }
 
@@ -165,19 +163,18 @@ public struct SettingExampleView: View {
                                 ForEach(outputDevices, id: \.self) { device in
                                     MagicSettingRow(
                                         title: device,
-                                        icon: .iconAudioOutput
+                                        icon: .iconAudioOutput,
+                                        action: {
+                                            if device != selectedOutputDevice {
+                                                pendingDevice = device
+                                                isPendingInput = false
+                                                showingDeviceConfirmation = true
+                                            }
+                                        }
                                     ) {
                                         if device == selectedOutputDevice {
                                             Image(systemName: .iconCheckmarkSimple)
                                                 .foregroundColor(.accentColor)
-                                        }
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        if device != selectedOutputDevice {
-                                            pendingDevice = device
-                                            isPendingInput = false
-                                            showingDeviceConfirmation = true
                                         }
                                     }
 
@@ -192,19 +189,18 @@ public struct SettingExampleView: View {
                                 ForEach(inputDevices, id: \.self) { device in
                                     MagicSettingRow(
                                         title: device,
-                                        icon: .iconAudioInput
+                                        icon: .iconAudioInput,
+                                        action: {
+                                            if device != selectedInputDevice {
+                                                pendingDevice = device
+                                                isPendingInput = true
+                                                showingDeviceConfirmation = true
+                                            }
+                                        }
                                     ) {
                                         if device == selectedInputDevice {
                                             Image(systemName: .iconCheckmarkSimple)
                                                 .foregroundColor(.accentColor)
-                                        }
-                                    }
-                                    .contentShape(Rectangle())
-                                    .onTapGesture {
-                                        if device != selectedInputDevice {
-                                            pendingDevice = device
-                                            isPendingInput = true
-                                            showingDeviceConfirmation = true
                                         }
                                     }
 
