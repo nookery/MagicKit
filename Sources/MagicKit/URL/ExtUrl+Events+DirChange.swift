@@ -29,7 +29,8 @@ public extension URL {
     ) -> AnyCancellable {
         if checkIsICloud(verbose: false) {
             if verbose {
-                os_log("\(self.t)👀 (\(caller)) Start monitoring iCloud directory: \(self.shortPath())")
+                os_log("\(self.t)👀 (\(caller)) 开始监控 iCloud 目录")
+                os_log("\(self.t)  • 路径：\(self.shortPath())")
             }
 
             let monitor = ICloudDirectoryMonitor(
@@ -47,7 +48,8 @@ public extension URL {
             return monitor.start()
         } else {
             if verbose {
-                os_log("\(self.t)👀 (\(caller)) Start monitoring local directory: \(self.shortPath())")
+                os_log("\(self.t)👀 (\(caller)) 开始监控本地目录")
+                os_log("\(self.t)  • 路径：\(self.path())")
             }
 
             let monitor = LocalDirectoryMonitor(
