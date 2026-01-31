@@ -48,7 +48,7 @@ jobs:
             NOTES="## Release $VERSION\n\nInitial release"
           else
             NOTES="## Release $VERSION\n\n### Changes since $LAST_TAG\n"
-            NOTES="$NOTES\n$(git log ${LAST_TAG}..HEAD --pretty=format:'- %s' | head -20)"
+            NOTES="$NOTES\n$(git log ${LAST_TAG}..HEAD --no-merges --pretty=format:'- %s' | head -20)"
           fi
           echo -e "$NOTES" > changelog.md
           echo "### 📋 Release Notes" >> $GITHUB_STEP_SUMMARY

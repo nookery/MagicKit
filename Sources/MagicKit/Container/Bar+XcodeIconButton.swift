@@ -2,13 +2,13 @@ import SwiftUI
 
 extension MagicContainer {
     @ViewBuilder
-    var macAppStoreButton: some View {
+    var xcodeIconButton: some View {
         let containerSize = CGSize(width: containerWidth, height: containerHeight)
-        if containerSize.isWidthGreaterThanHeight {
-            Button(action: captureMacAppStoreView) {
+        if containerSize.isSquare {
+            Button(action: captureXcodeIcons) {
                 HStack {
-                    Image(systemName: "laptopcomputer")
-                    Text("macOS App Store")
+                    Image(systemName: "hammer")
+                    Text("Xcode 图标")
                 }
                 .padding(.vertical, 4)
             }
