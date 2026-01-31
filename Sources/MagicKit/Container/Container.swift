@@ -17,7 +17,7 @@ struct MagicContainer<Content: View>: View {
     let tipsBarHeight: CGFloat = 20
 
     @Environment(\.colorScheme) private var systemColorScheme
-    @State private var isDarkMode: Bool = false
+    @State var isDarkMode: Bool = false
 
     // MARK: - Initialization
 
@@ -39,28 +39,18 @@ struct MagicContainer<Content: View>: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            Toolbar(isDarkMode: $isDarkMode)
-                .frame(height: toolBarHeight)
-                .infiniteWidth()
+            toolBar
 
             content.frame(width: containerWidth, height: containerHeight)
                 .dashedBorder()
                 .scaleEffect(scale)
                 .frame(width: containerWidth * scale, height: containerHeight * scale)
 
-            TipsBar()
+            tipsBar
                 .frame(height: tipsBarHeight)
         }
         .background(.background)
         .environment(\.colorScheme, isDarkMode ? .dark : .light)
-        .environment(\.containerSize, CGSize(width: containerWidth, height: containerHeight))
-        .environment(\.containerScale, scale)
-        .environment(\.captureActions, CaptureActions(
-            capture: captureView,
-            iOSAppStore: captureAppStoreView,
-            macOSAppStore: captureMacAppStoreView,
-            xcodeIcons: captureXcodeIcons
-        ))
         .frame(width: containerWidth * scale, height: toolBarHeight + tipsBarHeight + containerHeight * scale)
         .onAppear {
             // 初始化时跟随系统主题

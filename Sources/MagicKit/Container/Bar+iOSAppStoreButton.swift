@@ -1,13 +1,11 @@
 import SwiftUI
 
-/// iOS App Store 截图按钮组件
-struct iOSAppStoreButton: View {
-    let action: () -> Void
-    let containerSize: CGSize
-    
-    var body: some View {
+extension MagicContainer {
+    @ViewBuilder
+    var iOSAppStoreButton: some View {
+        let containerSize = CGSize(width: containerWidth, height: containerHeight)
         if containerSize.isWidthLessThanHeight {
-            Button(action: action) {
+            Button(action: captureAppStoreView) {
                 HStack {
                     Image(systemName: "camera.aperture")
                     Text("iOS App Store")

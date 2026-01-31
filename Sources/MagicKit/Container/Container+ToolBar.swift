@@ -1,58 +1,40 @@
 import SwiftUI
 
 extension MagicContainer {
-    /// 工具栏组件
-    struct Toolbar: View {
-        @Binding var isDarkMode: Bool
-        @Environment(\.containerSize) private var containerSize
-        @Environment(\.containerScale) private var scale
-        @Environment(\.captureActions) private var actions
+    var toolBar: some View {
+        GeometryReader { proxy in
+            let height = proxy.size.height
+            VStack(spacing: 0) {
+                // Top row
+                HStack(spacing: 4) {
+                    Spacer()
 
-        var body: some View {
-            GeometryReader { proxy in
-                let height = proxy.size.height
-                VStack(spacing: 0) {
-                    // Top row
-                    HStack(spacing: 4) {
-                        Spacer()
+                    xcodeIconButton
 
-                        XcodeIconButton(
-                            action: actions.xcodeIcons,
-                            containerSize: containerSize
-                        )
+                    macAppStoreButton
 
-                        MacAppStoreButton(
-                            action: actions.macOSAppStore,
-                            containerSize: containerSize
-                        )
+                    iOSAppStoreButton
 
-                        iOSAppStoreButton(
-                            action: actions.iOSAppStore,
-                            containerSize: containerSize
-                        )
+                    screenshotButton
 
-                        ScreenshotButton(action: actions.capture)
+                    themeToggleButton
 
-                        ThemeToggleButton(isDarkMode: $isDarkMode)
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .frame(height: height * 0.7)
+                .frame(maxWidth: .infinity)
 
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .frame(height: height * 0.7)
-                    .frame(maxWidth: .infinity)
-
-                    // Bottom
-                    SizeInfoView(
-                        containerSize: containerSize,
-                        scale: scale
-                    )
+                // Bottom
+                sizeInfoView
                     .frame(height: height * 0.3)
                     .frame(maxWidth: .infinity)
-                }
-                .infinite()
-                .background(Color.secondary.opacity(0.1))
             }
+            .infinite()
+            .background(Color.secondary.opacity(0.1))
         }
+        .frame(height: toolBarHeight)
+        .infiniteWidth()
     }
 }
 
@@ -67,3 +49,4 @@ extension MagicContainer {
             .inMagicContainer(.iMac27, scale: 0.1)
     }
 #endif
+
