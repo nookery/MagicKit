@@ -15,11 +15,3 @@ struct ThemeToggleButton: View {
         .clipShape(Circle())
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
-#endif

@@ -18,11 +18,3 @@ struct MacAppStoreButton: View {
         }
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
-#endif

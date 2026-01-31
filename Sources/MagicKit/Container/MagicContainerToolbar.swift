@@ -50,11 +50,3 @@ struct MagicContainerToolbar: View {
         .background(Color.primary.opacity(0.05))
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-    #Preview("iPhone") {
-        MagicContainerPreview.iPhonePreview
-    }
-#endif

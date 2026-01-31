@@ -86,7 +86,7 @@ extension MagicContainer {
             let heightInt = Int(containerHeight)
             let title = "MagicContainer_\(Date().compactDateTime)_\(widthInt)x\(heightInt)"
             do {
-                try content.frame(width: containerWidth, height: containerHeight).snapshot(title: title, scale: 2.0)
+                try content.frame(width: containerWidth, height: containerHeight).snapshot(title: title, scale: 1)
                 MagicMessageProvider.shared.success("截图已保存到下载文件夹")
             } catch {
                 MagicMessageProvider.shared.error(error)
@@ -160,10 +160,3 @@ extension MagicContainer {
     }
 }
 
-// MARK: - Preview
-
-#if DEBUG
-    #Preview("iPhone") {
-        MagicContainerPreview.iPhonePreview
-    }
-#endif

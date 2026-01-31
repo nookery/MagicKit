@@ -36,11 +36,3 @@ struct SizeInfoView: View {
         .background(Color.primary.opacity(0.03))
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
-#endif

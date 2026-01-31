@@ -15,11 +15,3 @@ struct ScreenshotButton: View {
         .buttonStyle(.bordered)
     }
 }
-
-// MARK: - Preview
-
-#if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
-#endif
