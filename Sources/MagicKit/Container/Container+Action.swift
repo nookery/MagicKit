@@ -81,4 +81,136 @@ extension MagicContainer {
             alert_info("已生成macOS App Store所需的各种尺寸截图")
         #endif
     }
+
+    /// Xcode 图标集生成功能实现
+    func captureXcodeIcons() {
+        #if os(macOS)
+        Task {
+            await generateXcodeIconSet()
+        }
+        #endif
+    }
+
+    /// 生成 Xcode 图标集
+    @MainActor
+    func generateXcodeIconSet() async {
+        let tag = Date().compactDateTime
+
+        guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
+            alert_error("无权访问下载文件夹")
+            return
+        }
+
+        let folderName = "XcodeIcons-\(tag).appiconset"
+        let folderPath = downloadsURL.appendingPathComponent(folderName, isDirectory: true)
+
+        do {
+            try FileManager.default.createDirectory(at: folderPath, withIntermediateDirectories: true)
+        } catch {
+            alert_error("创建目录失败：\(error)")
+            return
+        }
+
+        // iOS 图标
+        await generateIOSIcon(folderPath: folderPath, tag: tag)
+
+        // macOS 图标
+        await generateMacOSIcons(folderPath: folderPath, tag: tag)
+
+        // Contents.json
+        await generateContentsJson(folderPath: folderPath, tag: tag)
+
+        alert_success("Xcode 图标集已生成到下载目录")
+    }
+
+    /// 生成 iOS 图标 (1024x1024)
+    @MainActor
+    func generateIOSIcon(folderPath: URL, tag: String) async {
+        let size = 1024
+        let fileName = "\(tag)-ios-1024x1024.png"
+        let saveTo = folderPath.appendingPathComponent(fileName)
+
+        do {
+            try await content
+                .frame(width: CGFloat(size), height: CGFloat(size))
+                .snapshot(path: saveTo, scale: 1.0)
+        } catch {
+            alert_error("生成 iOS 图标失败: \(error)")
+        }
+    }
+
+    /// 生成 macOS 图标 (1x 和 @2x)
+    @MainActor
+    func generateMacOSIcons(folderPath: URL, tag: String) async {
+        let sizes = [16, 32, 128, 256, 512]
+
+        for size in sizes {
+            // 1x 版本
+            let fileName = "\(tag)-macos-\(size)x\(size).png"
+            let saveTo = folderPath.appendingPathComponent(fileName)
+
+            do {
+                try await content
+                    .frame(width: CGFloat(size), height: CGFloat(size))
+                    .snapshot(path: saveTo, scale: 1.0)
+            } catch {
+                alert_error("生成 \(fileName) 失败: \(error)")
+            }
+
+            // @2x 版本
+            let doubleSize = size * 2
+            let retinaFileName = "\(tag)-macos-\(size)x\(size)@2x.png"
+            let retinaSaveTo = folderPath.appendingPathComponent(retinaFileName)
+
+            do {
+                try await content
+                    .frame(width: CGFloat(doubleSize), height: CGFloat(doubleSize))
+                    .snapshot(path: retinaSaveTo, scale: 1.0)
+            } catch {
+                alert_error("生成 \(retinaFileName) 失败: \(error)")
+            }
+        }
+    }
+
+    /// 生成 Contents.json 配置文件
+    @MainActor
+    func generateContentsJson(folderPath: URL, tag: String) async {
+        let images: [[String: Any]] = [
+            // iOS
+            ["filename": "\(tag)-ios-1024x1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"],
+            // macOS 1x
+            ["filename": "\(tag)-macos-16x16.png", "idiom": "mac", "scale": "1x", "size": "16x16"],
+            ["filename": "\(tag)-macos-32x32.png", "idiom": "mac", "scale": "1x", "size": "32x32"],
+            ["filename": "\(tag)-macos-128x128.png", "idiom": "mac", "scale": "1x", "size": "128x128"],
+            ["filename": "\(tag)-macos-256x256.png", "idiom": "mac", "scale": "1x", "size": "256x256"],
+            ["filename": "\(tag)-macos-512x512.png", "idiom": "mac", "scale": "1x", "size": "512x512"],
+            // macOS @2x
+            ["filename": "\(tag)-macos-16x16@2x.png", "idiom": "mac", "scale": "2x", "size": "16x16"],
+            ["filename": "\(tag)-macos-32x32@2x.png", "idiom": "mac", "scale": "2x", "size": "32x32"],
+            ["filename": "\(tag)-macos-128x128@2x.png", "idiom": "mac", "scale": "2x", "size": "128x128"],
+            ["filename": "\(tag)-macos-256x256@2x.png", "idiom": "mac", "scale": "2x", "size": "256x256"],
+            ["filename": "\(tag)-macos-512x512@2x.png", "idiom": "mac", "scale": "2x", "size": "512x512"],
+        ]
+
+        let contents: [String: Any] = [
+            "images": images,
+            "info": [
+                "author": "xcode",
+                "version": 1
+            ]
+        ]
+
+        do {
+            let data = try JSONSerialization.data(withJSONObject: contents, options: .prettyPrinted)
+            if let jsonString = String(data: data, encoding: .utf8) {
+                try jsonString.write(
+                    to: folderPath.appendingPathComponent("Contents.json"),
+                    atomically: true,
+                    encoding: .utf8
+                )
+            }
+        } catch {
+            alert_error("生成 Contents.json 失败: \(error)")
+        }
+    }
 }

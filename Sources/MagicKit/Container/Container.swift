@@ -19,7 +19,8 @@ private struct CaptureActionsKey: EnvironmentKey {
     static let defaultValue: CaptureActions = CaptureActions(
         capture: {},
         iOSAppStore: {},
-        macOSAppStore: {}
+        macOSAppStore: {},
+        xcodeIcons: {}
     )
 }
 
@@ -31,6 +32,7 @@ struct CaptureActions {
     let capture: () -> Void
     let iOSAppStore: () -> Void
     let macOSAppStore: () -> Void
+    let xcodeIcons: () -> Void
 }
 
 extension EnvironmentValues {
@@ -115,7 +117,8 @@ struct MagicContainer<Content: View>: View {
         .environment(\.captureActions, CaptureActions(
             capture: captureView,
             iOSAppStore: captureAppStoreView,
-            macOSAppStore: captureMacAppStoreView
+            macOSAppStore: captureMacAppStoreView,
+            xcodeIcons: captureXcodeIcons
         ))
         .frame(width: containerWidth * scale, height: toolBarHeight + bottomPadding + containerHeight * scale)
         .onAppear {
@@ -140,6 +143,11 @@ struct MagicContainer<Content: View>: View {
                     // Top row: 50%
                     HStack(spacing: 4) {
                         Spacer()
+
+                        XcodeIconButton(
+                            action: actions.xcodeIcons,
+                            containerSize: containerSize
+                        )
 
                         MacAppStoreButton(
                             action: actions.macOSAppStore,
