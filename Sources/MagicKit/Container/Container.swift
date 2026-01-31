@@ -14,7 +14,7 @@ struct MagicContainer<Content: View>: View {
     let containerWidth: CGFloat
     let scale: CGFloat
     let toolBarHeight: CGFloat = 100
-    let tipsBarHeight: CGFloat = 20
+    let tipsBarHeight: CGFloat = 60
 
     @Environment(\.colorScheme) private var systemColorScheme
     @State var isDarkMode: Bool = false

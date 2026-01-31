@@ -2,8 +2,27 @@ import SwiftUI
 
 extension MagicContainer {
     var tipsBar: some View {
-        Label("请按原始尺寸设计你的视图；截图不支持 ScrollView、TabView", systemImage: "info")
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+        VStack(alignment: .leading) {
+            Label("请按原始尺寸设计你的视图", systemImage: "info")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Label("截图不支持 ScrollView、TabView", systemImage: "info")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Label("生成 Xcode 图标要求：视图要适配各种尺寸", systemImage: "info")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
     }
 }
+
+#if DEBUG
+    import SwiftUI
+
+    #Preview("Xcode Icon Generator") {
+        Image.makeCoffeeReelIcon()
+            .inMagicContainer(CGSize(width: 1024, height: 1024), scale: 0.5)
+    }
+#endif
