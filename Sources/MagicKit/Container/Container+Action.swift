@@ -131,7 +131,7 @@ extension MagicContainer {
         let saveTo = folderPath.appendingPathComponent(fileName)
 
         do {
-            try await content
+            try content
                 .frame(width: CGFloat(size), height: CGFloat(size))
                 .snapshot(path: saveTo, scale: 1.0)
         } catch {
@@ -150,7 +150,7 @@ extension MagicContainer {
             let saveTo = folderPath.appendingPathComponent(fileName)
 
             do {
-                try await content
+                try content
                     .frame(width: CGFloat(size), height: CGFloat(size))
                     .snapshot(path: saveTo, scale: 1.0)
             } catch {
@@ -163,7 +163,7 @@ extension MagicContainer {
             let retinaSaveTo = folderPath.appendingPathComponent(retinaFileName)
 
             do {
-                try await content
+                try content
                     .frame(width: CGFloat(doubleSize), height: CGFloat(doubleSize))
                     .snapshot(path: retinaSaveTo, scale: 1.0)
             } catch {
