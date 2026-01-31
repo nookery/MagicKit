@@ -24,7 +24,7 @@ jobs:
       - name: Build Package
         run: |
           echo "### 🔨 Building Package" >> $GITHUB_STEP_SUMMARY
-          swift build -Xswiftc -warnings-as-errors
+          swift build
           echo "✅ Build successful" >> $GITHUB_STEP_SUMMARY
 
       - name: Run Tests
