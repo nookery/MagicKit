@@ -19,10 +19,14 @@ struct iOSAppStoreButton: View {
     }
 }
 
-// MARK: - Preview
-
 #if DEBUG
-#Preview("iPhone") {
-    MagicContainerPreview.iPhonePreview
-}
+    import SwiftUI
+
+    #Preview("iMac 27 - 缩放") {
+        Text("Hello, World!")
+            .font(.system(size: 400))
+            .magicCentered()
+            .background(.indigo.opacity(0.3))
+            .inMagicContainer(.iMac27, scale: 0.1)
+    }
 #endif

@@ -1,4 +1,3 @@
-import MagicKit
 import SwiftUI
 
 extension AvatarView {
@@ -15,7 +14,10 @@ extension AvatarView {
         @State private var isHovered = false
 
         var body: some View {
-            Image.warning
+            let iconSize = size.width * 0.4  // 图标大小为容器大小的 40%
+
+            return Image.warning
+                .font(.system(size: iconSize))
                 .foregroundStyle(.red.opacity(isHovered ? 0.7 : 1.0))
                 .frame(width: size.width, height: size.height)
                 .background(backgroundColor)
@@ -112,7 +114,27 @@ extension AvatarView {
                 error: URLError(.badURL),
                 url: URL(string: "https://example.com/test.jpg")!,
                 shape: .circle,
+                size: CGSize(width: 50, height: 50),
+                backgroundColor: .blue.opacity(0.1)
+            )
+            .magicCentered()
+        
+        AvatarView
+            .ErrorView(
+                error: URLError(.badURL),
+                url: URL(string: "https://example.com/test.jpg")!,
+                shape: .circle,
                 size: CGSize(width: 100, height: 100),
+                backgroundColor: .blue.opacity(0.1)
+            )
+            .magicCentered()
+        
+        AvatarView
+            .ErrorView(
+                error: URLError(.badURL),
+                url: URL(string: "https://example.com/test.jpg")!,
+                shape: .circle,
+                size: CGSize(width: 200, height: 200),
                 backgroundColor: .blue.opacity(0.1)
             )
             .magicCentered()
