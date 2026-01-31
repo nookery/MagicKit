@@ -20,6 +20,6 @@
             .font(.system(size: 200))
             .magicCentered()
             .background(.purple.opacity(0.3))
-            .inMagicContainer(.iPhone65, scale: 0.5)
+            .inMagicContainer(.iPhone65, scale: 0.2)
     }
 #endif
