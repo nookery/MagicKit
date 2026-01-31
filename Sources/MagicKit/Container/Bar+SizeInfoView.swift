@@ -4,7 +4,7 @@ import SwiftUI
 struct SizeInfoView: View {
     let containerSize: CGSize
     let scale: CGFloat
-    
+
     var body: some View {
         VStack(spacing: 4) {
             HStack {
@@ -24,7 +24,7 @@ struct SizeInfoView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                
+
                 Spacer()
             }
 
@@ -36,3 +36,15 @@ struct SizeInfoView: View {
         .background(Color.primary.opacity(0.03))
     }
 }
+
+#if DEBUG
+    import SwiftUI
+
+    #Preview("iMac 27 - 缩放") {
+        Text("Hello, World!")
+            .font(.system(size: 400))
+            .magicCentered()
+            .background(.indigo.opacity(0.3))
+            .inMagicContainer(.iMac27, scale: 0.1)
+    }
+#endif
