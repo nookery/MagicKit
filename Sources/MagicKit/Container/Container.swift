@@ -187,9 +187,9 @@ extension MagicContainer {
             let title = "MagicContainer_\(Date().compactDateTime)_\(widthInt)x\(heightInt)"
             do {
                 try content.frame(width: containerWidth, height: containerHeight).snapshot(title: title, scale: 1)
-                MagicMessageProvider.shared.success("截图已保存到下载文件夹")
+                alert_success("截图已保存到下载文件夹")
             } catch {
-                MagicMessageProvider.shared.error(error)
+                alert_error(error)
             } #endif
     }
 
@@ -221,12 +221,12 @@ extension MagicContainer {
                 do {
                     try scaledContent.snapshot(title: title, scale: 1.0)
                 } catch {
-                    MagicMessageProvider.shared.error(error)
+                    alert_error(error)
                     return
                 }
             }
 
-            MagicMessageProvider.shared.info("已生成App Store所需的各种尺寸截图")
+            alert_info("已生成App Store所需的各种尺寸截图")
         #endif
     }
 
@@ -250,12 +250,12 @@ extension MagicContainer {
                 do {
                     try scaledContent.snapshot(title: title, scale: 1.0)
                 } catch {
-                    MagicMessageProvider.shared.error("生成 \(name) 截图失败: \(error.localizedDescription)")
+                    alert_error("生成 \(name) 截图失败: \(error.localizedDescription)")
                     return
                 }
             }
 
-            MagicMessageProvider.shared.info("已生成macOS App Store所需的各种尺寸截图")
+            alert_info("已生成macOS App Store所需的各种尺寸截图")
         #endif
     }
 }
