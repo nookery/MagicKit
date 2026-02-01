@@ -65,6 +65,8 @@ public struct CameraIcon: View {
     }
 }
 
+#if DEBUG
 #Preview {
     CameraIconPreviews()
 }
+#endif

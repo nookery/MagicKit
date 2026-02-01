@@ -123,8 +123,10 @@ public struct CoffeeReelIcon: View {
     }
 }
 
+#if DEBUG
 #Preview("Coffee Reel Icon") {
     CoffeeReelIconPreviews()
         .frame(width: 500)
         .frame(height: 700)
 }
+#endif
