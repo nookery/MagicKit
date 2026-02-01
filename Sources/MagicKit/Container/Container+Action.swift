@@ -85,9 +85,9 @@ extension MagicContainer {
     /// Xcode 图标集生成功能实现
     func captureXcodeIcons() {
         #if os(macOS)
-        Task {
-            await generateXcodeIconSet()
-        }
+            Task {
+                await generateXcodeIconSet()
+            }
         #endif
     }
 
@@ -143,15 +143,19 @@ extension MagicContainer {
     @MainActor
     func generateMacOSIcons(folderPath: URL, tag: String) async {
         let sizes = [16, 32, 128, 256, 512]
+        // macOS Big Sur+ 图标圆角比例 (约 22.37%)
+        let cornerRadiusRatio: CGFloat = 0.2237
 
         for size in sizes {
             // 1x 版本
             let fileName = "\(tag)-macos-\(size)x\(size).png"
             let saveTo = folderPath.appendingPathComponent(fileName)
+            let cornerRadius = CGFloat(size) * cornerRadiusRatio
 
             do {
                 try content
                     .frame(width: CGFloat(size), height: CGFloat(size))
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
                     .snapshot(path: saveTo, scale: 1.0)
             } catch {
                 alert_error("生成 \(fileName) 失败: \(error)")
@@ -161,10 +165,12 @@ extension MagicContainer {
             let doubleSize = size * 2
             let retinaFileName = "\(tag)-macos-\(size)x\(size)@2x.png"
             let retinaSaveTo = folderPath.appendingPathComponent(retinaFileName)
+            let doubleCornerRadius = CGFloat(doubleSize) * cornerRadiusRatio
 
             do {
                 try content
                     .frame(width: CGFloat(doubleSize), height: CGFloat(doubleSize))
+                    .clipShape(RoundedRectangle(cornerRadius: doubleCornerRadius, style: .continuous))
                     .snapshot(path: retinaSaveTo, scale: 1.0)
             } catch {
                 alert_error("生成 \(retinaFileName) 失败: \(error)")
@@ -196,8 +202,8 @@ extension MagicContainer {
             "images": images,
             "info": [
                 "author": "xcode",
-                "version": 1
-            ]
+                "version": 1,
+            ],
         ]
 
         do {
@@ -214,3 +220,18 @@ extension MagicContainer {
         }
     }
 }
+
+#if DEBUG
+    #Preview("Xcode Icon Generator") {
+        Image.makeCoffeeReelIcon()
+            .inMagicContainer(CGSize(width: 1024, height: 1024), scale: 0.5)
+    }
+
+    #Preview("iMac 27 - 缩放") {
+        Text("Hello, World!")
+            .font(.system(size: 400))
+            .magicCentered()
+            .background(.indigo.opacity(0.3))
+            .inMagicContainer(.iMac27, scale: 0.1)
+    }
+#endif

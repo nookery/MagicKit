@@ -61,8 +61,6 @@ struct MagicContainer<Content: View>: View {
 }
 
 #if DEBUG
-    import SwiftUI
-
     #Preview("iMac 27 - 缩放") {
         Text("Hello, World!")
             .font(.system(size: 400))
