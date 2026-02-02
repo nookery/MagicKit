@@ -144,11 +144,14 @@ extension MagicContainer {
             return
         }
 
+        // iOS 图标（与默认套件一致，仅文件名前缀区分）
+        await generateIOSIcon(folderPath: folderPath, tag: tag, prefix: "legacy-")
+
         // macOS 图标（缩小可视区域，避免在旧系统中显得过大）
         await generateMacOSIcons(folderPath: folderPath, tag: tag, prefix: "legacy-", legacy: true)
 
         // Contents.json（引用 legacy 前缀文件名）
-        await generateContentsJson(folderPath: folderPath, tag: tag, prefix: "legacy-", includeIOS: false)
+        await generateContentsJson(folderPath: folderPath, tag: tag, prefix: "legacy-", includeIOS: true)
 
         alert_success("Xcode 图标集（legacy）已生成到下载目录")
     }
