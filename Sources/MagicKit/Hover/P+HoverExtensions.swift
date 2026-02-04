@@ -104,6 +104,67 @@ struct HoverExtensionPreview: View {
                     .inCardUltraThin()
                     .hoverScale(105)
             }
+
+            Divider()
+
+            Text("Hover Background Examples")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .withDivider(spacing: 10)
+
+            VStack(spacing: 20) {
+                Text("Hover over these items")
+                    .font(.headline)
+
+                HStack(spacing: 20) {
+                    Text("Blue BG")
+                        .padding()
+                        .hoverBackground(.blue.opacity(0.2))
+
+                    Text("Gray BG")
+                        .padding()
+                        .hoverBackground(.quaternary)
+
+                    Text("Green BG")
+                        .padding()
+                        .hoverBackground(.green.opacity(0.15))
+                }
+
+                HStack(spacing: 20) {
+                    Image(systemName: "star.fill")
+                        .font(.title2)
+                        .foregroundColor(.orange)
+                        .padding(12)
+                        .hoverBackground(.orange.opacity(0.15), cornerRadius: 10, duration: 0.2)
+
+                    Image(systemName: "heart.fill")
+                        .font(.title2)
+                        .foregroundColor(.red)
+                        .padding(12)
+                        .hoverBackground(.red.opacity(0.15), cornerRadius: 10, duration: 0.2)
+
+                    Image(systemName: "leaf.fill")
+                        .font(.title2)
+                        .foregroundColor(.green)
+                        .padding(12)
+                        .hoverBackground(.green.opacity(0.15), cornerRadius: 10, duration: 0.2)
+                }
+
+                HStack(spacing: 15) {
+                    Text("Combined")
+                        .padding()
+                        .hoverBackground(.purple.opacity(0.2))
+                        .hoverScale(108)
+
+                    Text("Fast BG")
+                        .padding()
+                        .hoverBackground(.cyan.opacity(0.2), cornerRadius: 8, duration: 0.1)
+
+                    Text("Slow BG")
+                        .padding()
+                        .hoverBackground(.indigo.opacity(0.2), cornerRadius: 12, duration: 0.4)
+                }
+            }
         }
         .padding()
         .infinite()
