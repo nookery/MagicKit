@@ -1,5 +1,4 @@
 import SwiftUI
-import MagicKit
 
 /// 应用程序打开类型
 public enum OpenAppType: String {
@@ -19,6 +18,12 @@ public enum OpenAppType: String {
     case chrome
     /// 在Safari中打开
     case safari
+    /// 在Arc中打开
+    case arc
+    /// 在Firefox中打开
+    case firefox
+    /// 在Edge中打开
+    case edge
     /// 在终端中打开
     case terminal
     /// 在预览中打开
@@ -34,114 +39,91 @@ public enum OpenAppType: String {
     /// 在Kiro中打开
     case kiro
 
-    /// 获取应用程序的Bundle ID
-    var bundleId: String? {
+    // MARK: - App Registry Mapping
+
+    /// 映射到 AppRegistry（如果适用）
+    var appRegistry: AppRegistry? {
         switch self {
-        case .auto:
+        case .auto, .browser:
             return nil
         case .xcode:
-            return "com.apple.dt.Xcode"
+            return .xcode
         case .vscode:
-            return "com.microsoft.VSCode"
+            return .vscode
         case .cursor:
-            return "com.todesktop.230313mzl4w4u92"
+            return .cursor
         case .trae:
-            return "com.trae.app"
+            return .trae
         case .antigravity:
-            return "com.google.antigravity"
+            return .antigravity
         case .chrome:
-            return "com.google.Chrome"
+            return .chrome
         case .safari:
-            return "com.apple.Safari"
+            return .safari
+        case .arc:
+            return .arc
+        case .firefox:
+            return .firefox
+        case .edge:
+            return .edge
         case .terminal:
-            return "com.apple.Terminal"
+            return .terminal
         case .preview:
-            return "com.apple.Preview"
+            return .preview
         case .textEdit:
-            return "com.apple.TextEdit"
+            return .textEdit
         case .finder:
-            return "com.apple.finder"
-        case .browser:
-            return nil
+            return .finder
         case .githubDesktop:
-            return "com.github.GitHubClient"
+            return .githubDesktop
         case .kiro:
-            return "dev.kiro.desktop"
+            return .kiro
         }
     }
-    
+
+    // MARK: - Properties
+
+    /// 获取应用程序的Bundle ID
+    var bundleId: String? {
+        // 特殊情况：auto 和 browser 没有固定的 bundleId
+        if self == .auto || self == .browser {
+            return nil
+        }
+        // 使用 AppRegistry 获取 bundleId
+        return appRegistry?.bundleId
+    }
+
     /// 获取应用程序的图标
     var icon: String {
         switch self {
         case .auto:
             return .iconGear // 使用齿轮图标表示自动选择
-        case .xcode:
-            return .iconXcode
-        case .vscode:
-            return .iconCode // 使用code图标代表VS Code
-        case .cursor:
-            return .iconCode // 使用code图标代表Cursor
-        case .trae:
-            return .iconCode // 使用code图标代表Trae
-        case .antigravity:
-            return .iconCode // 使用code图标代表Antigravity
-        case .chrome:
-            return .iconGlobe // 使用globe图标代替Chrome
-        case .safari:
-            return .iconSafari
-        case .terminal:
-            return .iconTerminal
-        case .preview:
-            return .iconPreview
-        case .textEdit:
-            return .iconTextEdit
-        case .finder:
-            return .iconShowInFinder
         case .browser:
             return .iconSafari
-        case .githubDesktop:
-            return .iconCode
-        case .kiro:
-            return .iconCode
+        case .finder:
+            return .iconShowInFinder // 使用"在访达中显示"图标
+        default:
+            // 使用 AppRegistry 的系统图标
+            return appRegistry?.systemIcon ?? "app"
         }
     }
-    
+
     /// 获取应用程序的显示名称
     var displayName: String {
         switch self {
         case .auto:
             return "智能打开"
-        case .xcode:
-            return "在Xcode中打开"
-        case .vscode:
-            return "在VS Code中打开"
-        case .antigravity:
-            return "在Antigravity中打开"
-        case .cursor:
-            return "在Cursor中打开"
-        case .trae:
-            return "在Trae中打开"
-        case .chrome:
-            return "在Chrome中打开"
-        case .safari:
-            return "在Safari中打开"
-        case .terminal:
-            return "在终端中打开"
-        case .preview:
-            return "在预览中打开"
-        case .textEdit:
-            return "在文本编辑器中打开"
-        case .finder:
-            return "在访达中显示"
         case .browser:
             return "在浏览器中打开"
-        case .githubDesktop:
-            return "在GitHub Desktop中打开"
-        case .kiro:
-            return "在Kiro中打开"
+        case .finder:
+            return "在访达中显示"
+        default:
+            // 使用 AppRegistry 的显示名称，加上"在...中打开"前缀
+            guard let appName = appRegistry?.displayName else { return "" }
+            return "在\(appName)中打开"
         }
     }
-    
+
     /// 根据URL获取图标（用于auto类型）
     func icon(for url: URL) -> String {
         if self == .auto {
@@ -149,7 +131,7 @@ public enum OpenAppType: String {
         }
         return icon
     }
-    
+
     /// 根据URL获取显示名称（用于auto类型）
     func displayName(for url: URL) -> String {
         if self == .auto {
@@ -157,64 +139,67 @@ public enum OpenAppType: String {
         }
         return displayName
     }
-    
-    #if os(macOS)
-    /// 检查应用是否已安装
-    var isInstalled: Bool {
-        guard let bundleId = bundleId else { return true } // auto, browser等特殊类型认为总是可用
-        return NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) != nil
-    }
-    
-    /// 获取应用的真实图标（如果已安装）
-    /// - Parameter useRealIcon: 是否使用真实应用图标，默认为false使用系统图标
-    /// - Returns: 图标名称或NSImage
-    func realIcon(useRealIcon: Bool = false) -> Any {
-        if useRealIcon && isInstalled, let bundleId = bundleId {
-            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
-                return NSWorkspace.shared.icon(forFile: appURL.path)
-            }
-        }
-        return icon
-    }
-    
-    /// 根据URL获取真实图标（用于auto类型）
-    /// - Parameters:
-    ///   - url: URL对象
-    ///   - useRealIcon: 是否使用真实应用图标
-    /// - Returns: 图标名称或NSImage
-    func realIcon(for url: URL, useRealIcon: Bool = false) -> Any {
-        if self == .auto {
-            return url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
-        }
-        return realIcon(useRealIcon: useRealIcon)
-    }
-    
-    #else
-    /// 获取 Image 类型的图标（iOS版本）
-    /// - Parameter useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
-    /// - Returns: SwiftUI Image
-    func magicButtonIcon(useRealIcon: Bool = false) -> Image {
-        return Image(systemName: icon)
-    }
 
-    /// 根据URL获取 Image 类型的图标（用于auto类型，iOS版本）
-    /// - Parameters:
-    ///   - url: URL对象
-    ///   - useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
-    /// - Returns: SwiftUI Image
-    func magicButtonIcon(for url: URL, useRealIcon: Bool = false) -> Image {
-        if self == .auto {
-            let iconName = url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
-            return Image(systemName: iconName)
+    #if os(macOS)
+        /// 检查应用是否已安装
+        var isInstalled: Bool {
+            // 特殊类型：auto 和 browser 认为总是可用
+            if self == .auto || self == .browser {
+                return true
+            }
+            // 使用 AppRegistry 的安装检查
+            return appRegistry?.isInstalled ?? false
         }
-        return Image(systemName: icon)
-    }
+
+        /// 获取应用的真实图标（如果已安装）
+        /// - Parameter useRealIcon: 是否使用真实应用图标，默认为false使用系统图标
+        /// - Returns: 图标名称或NSImage
+        func realIcon(useRealIcon: Bool = false) -> Any {
+            // 特殊情况：auto 和 browser 没有真实图标
+            if self == .auto || self == .browser {
+                return icon
+            }
+            // 使用 AppRegistry 的真实图标
+            return appRegistry?.icon(useRealIcon: useRealIcon) ?? icon
+        }
+
+        /// 根据URL获取真实图标（用于auto类型）
+        /// - Parameters:
+        ///   - url: URL对象
+        ///   - useRealIcon: 是否使用真实应用图标
+        /// - Returns: 图标名称或NSImage
+        func realIcon(for url: URL, useRealIcon: Bool = false) -> Any {
+            if self == .auto {
+                return url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
+            }
+            return realIcon(useRealIcon: useRealIcon)
+        }
+
+    #else
+        /// 获取 Image 类型的图标（iOS版本）
+        /// - Parameter useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
+        /// - Returns: SwiftUI Image
+        func magicButtonIcon(useRealIcon: Bool = false) -> Image {
+            return Image(systemName: icon)
+        }
+
+        /// 根据URL获取 Image 类型的图标（用于auto类型，iOS版本）
+        /// - Parameters:
+        ///   - url: URL对象
+        ///   - useRealIcon: 是否使用真实应用图标（iOS上忽略此参数）
+        /// - Returns: SwiftUI Image
+        func magicButtonIcon(for url: URL, useRealIcon: Bool = false) -> Image {
+            if self == .auto {
+                let iconName = url.isNetworkURL ? String.iconSafari : String.iconShowInFinder
+                return Image(systemName: iconName)
+            }
+            return Image(systemName: icon)
+        }
     #endif
 }
 
 #if DEBUG
-#Preview("Open Buttons") {
-    OpenPreivewView()
-        
-}
+    #Preview("Open Buttons") {
+        OpenPreivewView()
+    }
 #endif

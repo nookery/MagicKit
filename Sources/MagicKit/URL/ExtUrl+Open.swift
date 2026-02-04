@@ -14,22 +14,26 @@ public extension URL {
     ///   - useRealIcon: 是否使用真实应用图标（仅macOS），默认为false使用系统图标
     /// - Returns: 打开按钮视图
     func makeOpenButton(_ appType: OpenAppType = .auto, useRealIcon: Bool = false) -> some View {
-        Image(systemName: appType.icon(for: self))
-            .inButtonWithAction({
-                #if os(macOS)
-                    openIn(appType)
-                #else
-                    if appType == .auto {
-                        open()
-                    } else {
-                        open() // iOS上所有类型都使用默认打开方式
-                    }
-                #endif
-            })
-            .inCard(.regularMaterial)
-            .hoverScale(105)
-            .shadowSm()
-            .roundedFull()
+        Group {
+            if useRealIcon {
+                // 使用真实应用图标
+                RealIconButtonView(appType: appType, url: self)
+            } else {
+                // 使用系统图标（SF Symbol）
+                Image(systemName: appType.icon(for: self))
+            }
+        }
+        .inButtonWithAction({
+            #if os(macOS)
+                openIn(appType)
+            #else
+                if appType == .auto {
+                    open()
+                } else {
+                    open() // iOS上所有类型都使用默认打开方式
+                }
+            #endif
+        })
     }
 
     /// 打开URL：如果是网络链接则在浏览器打开，如果是本地文件则在访达中显示
@@ -100,6 +104,83 @@ public extension URL {
                 configuration: configuration
             )
         }
+
+        // MARK: - Convenience Methods
+
+        /// 在 Xcode 中打开
+        func openInXcode() {
+            openIn(.xcode)
+        }
+
+        /// 在 VS Code 中打开
+        func openInVSCode() {
+            openIn(.vscode)
+        }
+
+        /// 在 Cursor 中打开
+        func openInCursor() {
+            openIn(.cursor)
+        }
+
+        /// 在 Trae 中打开
+        func openInTrae() {
+            openIn(.trae)
+        }
+
+        /// 在 Antigravity 中打开
+        func openInAntigravity() {
+            openIn(.antigravity)
+        }
+
+        /// 在 Safari 中打开
+        func openInSafari() {
+            openIn(.safari)
+        }
+
+        /// 在 Chrome 中打开
+        func openInChrome() {
+            openIn(.chrome)
+        }
+
+        /// 在 Firefox 中打开
+        func openInFirefox() {
+            openIn(.firefox)
+        }
+
+        /// 在 Edge 中打开
+        func openInEdge() {
+            openIn(.edge)
+        }
+
+        /// 在 Arc 中打开
+        func openInArc() {
+            openIn(.arc)
+        }
+
+        /// 在终端中打开
+        func openInTerminal() {
+            openIn(.terminal)
+        }
+
+        /// 在预览中打开
+        func openInPreview() {
+            openIn(.preview)
+        }
+
+        /// 在文本编辑器中打开
+        func openInTextEdit() {
+            openIn(.textEdit)
+        }
+
+        /// 在 GitHub Desktop 中打开
+        func openInGitHubDesktop() {
+            openIn(.githubDesktop)
+        }
+
+        /// 在 Kiro 中打开
+        func openInKiro() {
+            openIn(.kiro)
+        }
     #endif
 
     /// 打开包含该文件的文件夹
@@ -116,5 +197,7 @@ public extension URL {
 #if DEBUG
     #Preview("Open Buttons") {
         OpenPreivewView()
+            .frame(height: 800)
+            .frame(width: 600)
     }
 #endif
