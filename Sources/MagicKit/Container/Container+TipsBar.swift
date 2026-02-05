@@ -11,7 +11,7 @@ extension MagicContainer {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 
-            Label("生成 Xcode 图标要求：视图要动态适配各种尺寸，不要硬编码尺寸", systemImage: "info")
+            Label("生成 Xcode 图标要求：视图要动态适配各种尺寸，不要硬编码尺寸；背景色不透明度为1", systemImage: "info")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

@@ -6,7 +6,6 @@ extension MagicContainer {
     func captureXcodeIcons() {
         #if os(macOS)
             Task {
-                await generateXcodeIconSet()
                 await generateXcodeIconSetLegacy()
             }
         #endif
@@ -14,47 +13,15 @@ extension MagicContainer {
 
     /// 生成 Xcode 图标集
     @MainActor
-    func generateXcodeIconSet() async {
-        let tag = Date().compactDateTime
-
-        guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
-            alert_error("无权访问下载文件夹")
-            return
-        }
-
-        let folderName = "AppIcon-\(tag).appiconset"
-        let folderPath = downloadsURL.appendingPathComponent(folderName, isDirectory: true)
-
-        do {
-            try FileManager.default.createDirectory(at: folderPath, withIntermediateDirectories: true)
-        } catch {
-            alert_error("创建目录失败：\(error)")
-            return
-        }
-
-        // iOS 图标
-        await generateIOSIcon(folderPath: folderPath, tag: tag, prefix: "")
-
-        // macOS 图标
-        await generateMacOSIcons(folderPath: folderPath, tag: tag, prefix: "", legacy: false)
-
-        // Contents.json
-        await generateContentsJson(folderPath: folderPath, tag: tag, prefix: "", includeIOS: true)
-
-        alert_success("Xcode 图标集已生成到下载目录")
-    }
-
-    /// 生成 Xcode 图标集（适配低于 macOS 26 的系统）
-    @MainActor
     func generateXcodeIconSetLegacy() async {
         let tag = Date().compactDateTime
 
         guard let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first else {
-            alert_error("无权访问下载文件夹")
+            alert_error("无权访问下载目录，确保你的应用有写入下载目录的权限")
             return
         }
 
-        let folderName = "AppIcons-\(tag)-legacy.appiconset"
+        let folderName = "AppIcon-\(tag).appiconset"
         let folderPath = downloadsURL.appendingPathComponent(folderName, isDirectory: true)
 
         do {
@@ -73,7 +40,7 @@ extension MagicContainer {
         // Contents.json（引用 legacy 前缀文件名）
         await generateContentsJson(folderPath: folderPath, tag: tag, prefix: "legacy-", includeIOS: true)
 
-        alert_success("Xcode 图标集（legacy）已生成到下载目录")
+        alert_success("Xcode 图标集已生成到下载目录")
     }
 
     /// 生成 iOS 图标 (1024x1024)
@@ -162,7 +129,7 @@ extension MagicContainer {
                 "filename": "\(tag)-\(prefix)ios-1024x1024.png",
                 "idiom": "universal",
                 "platform": "ios",
-                "size": "1024x1024"
+                "size": "1024x1024",
             ])
         }
         let macSizes = [16, 32, 128, 256, 512]
@@ -171,7 +138,7 @@ extension MagicContainer {
                 "filename": "\(tag)-\(prefix)macos-\(s)x\(s).png",
                 "idiom": "mac",
                 "scale": "1x",
-                "size": "\(s)x\(s)"
+                "size": "\(s)x\(s)",
             ])
         }
         for s in macSizes {
@@ -179,7 +146,7 @@ extension MagicContainer {
                 "filename": "\(tag)-\(prefix)macos-\(s)x\(s)@2x.png",
                 "idiom": "mac",
                 "scale": "2x",
-                "size": "\(s)x\(s)"
+                "size": "\(s)x\(s)",
             ])
         }
 
