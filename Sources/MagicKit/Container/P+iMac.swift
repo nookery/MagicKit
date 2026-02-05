@@ -1,31 +1,21 @@
-#if DEBUG
-    import SwiftUI
+import SwiftUI
 
-    #Preview("iMac 27 - 100%") {
+#Preview("iMac 27 - 20%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 400))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.iMac27)
+            .background(.orange.opacity(0.3))
     }
+    .inMagicContainer(.iMac27, scale: 0.2)
+}
 
-    #Preview("iMac 27 - 20%") {
+#Preview("iMac 27 - 10%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .padding()
-            .inMagicContainer(.iMac27_20Percent)
-    }
-
-    #Preview("iMac 27 - 10%") {
-        Text("Hello, World!")
-            .padding()
-            .inMagicContainer(.iMac27_10Percent)
-    }
-
-    #Preview("iMac 27 - 缩放") {
-        Text("Hello, World!")
-            .font(.system(size: 400))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.iMac27, scale: 0.2)
+            .background(.orange.opacity(0.3))
     }
-#endif
+    .inMagicContainer(.iMac27, scale: 0.1)
+}

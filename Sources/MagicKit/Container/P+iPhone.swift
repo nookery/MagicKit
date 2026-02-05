@@ -1,25 +1,31 @@
-#if DEBUG
-    import SwiftUI
+import SwiftUI
 
-    #Preview("iPhone") {
+#Preview("iPhone") {
+    GeometryReader { geo in
         Text("Hello, World!")
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
             .background(.orange.opacity(0.3))
-            .inMagicContainer(.iPhone)
     }
+    .inMagicContainer(.iPhone, scale: 0.4)
+}
 
-    #Preview("iPhoneSE") {
+#Preview("iPhoneSE") {
+    GeometryReader { geo in
         Text("Hello, World!")
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.red.opacity(0.3))
-            .inMagicContainer(.iPhoneSE)
+            .background(.orange.opacity(0.3))
     }
+    .inMagicContainer(.iPhoneSE, scale: 0.7)
+}
 
-    #Preview("iPhone 6.5\"") {
+#Preview("iPhone 6.5\"") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 200))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.purple.opacity(0.3))
-            .inMagicContainer(.iPhone65, scale: 0.2)
+            .background(.orange.opacity(0.3))
     }
-#endif
+    .inMagicContainer(.iPhone65, scale: 0.4)
+}

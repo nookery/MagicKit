@@ -10,14 +10,16 @@ struct MagicContainer<Content: View>: View {
     // MARK: - Properties
 
     let content: Content
-    let containerHeight: CGFloat
-    let containerWidth: CGFloat
-    let scale: CGFloat
+    @State var containerSize: CGSize
+    @State var scale: CGFloat
     let toolBarHeight: CGFloat = 100
     let tipsBarHeight: CGFloat = 60
 
     @Environment(\.colorScheme) private var systemColorScheme
     @State var isDarkMode: Bool = false
+
+    var containerWidth: CGFloat { containerSize.width }
+    var containerHeight: CGFloat { containerSize.height }
 
     // MARK: - Initialization
 
@@ -32,17 +34,16 @@ struct MagicContainer<Content: View>: View {
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
-        self.containerHeight = containerSize.height
-        self.containerWidth = containerSize.width
-        self.scale = scale
+        _containerSize = State(initialValue: containerSize)
+        _scale = State(initialValue: scale)
     }
 
     public var body: some View {
         VStack(spacing: 0) {
-            toolBar
+            self.topToolBar
 
             content.frame(width: containerWidth, height: containerHeight)
-                .dashedBorder()
+                .dashedBorder(color: .accentColor)
                 .scaleEffect(scale)
                 .frame(width: containerWidth * scale, height: containerHeight * scale)
 
@@ -57,15 +58,45 @@ struct MagicContainer<Content: View>: View {
             isDarkMode = systemColorScheme == .dark
         }
         .withMagicToast()
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                self.themeToggleButton
+            }
+            ToolbarItem(placement: .automatic) {
+                self.screenshotButton
+            }
+        }
+    }
+
+    /// 更新容器尺寸
+    /// - Parameter newSize: 新的容器尺寸
+    func updateContainerSize(_ newSize: CGSize) {
+        containerSize = newSize
+    }
+
+    /// 更新缩放比例
+    /// - Parameter newScale: 新的缩放比例
+    func updateScale(_ newScale: CGFloat) {
+        scale = newScale
     }
 }
 
-#if DEBUG
-    #Preview("iMac 27 - 缩放") {
+#Preview("iMac 27 - 20%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 400))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.iMac27, scale: 0.1)
+            .background(.orange.opacity(0.3))
     }
-#endif
+    .inMagicContainer(.iMac27, scale: 0.2)
+}
+
+#Preview("iMac 27 - 10%") {
+    GeometryReader { geo in
+        Text("Hello, World!")
+            .font(.system(size: geo.size.width * 0.1))
+            .magicCentered()
+            .background(.orange.opacity(0.3))
+    }
+    .inMagicContainer(.iMac27, scale: 0.1)
+}

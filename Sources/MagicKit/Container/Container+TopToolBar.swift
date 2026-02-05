@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension MagicContainer {
-    var toolBar: some View {
+    var topToolBar: some View {
         GeometryReader { proxy in
             let height = proxy.size.height
             VStack(spacing: 0) {
@@ -14,10 +14,6 @@ extension MagicContainer {
                     macAppStoreButton
 
                     iOSAppStoreButton
-
-                    screenshotButton
-
-                    themeToggleButton
 
                     Spacer()
                 }
@@ -38,15 +34,22 @@ extension MagicContainer {
     }
 }
 
-#if DEBUG
-    import SwiftUI
-
-    #Preview("iMac 27 - 缩放") {
+#Preview("iMac 27 - 20%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 400))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.iMac27, scale: 0.1)
+            .background(.orange.opacity(0.3))
     }
-#endif
+    .inMagicContainer(.iMac27, scale: 0.2)
+}
 
+#Preview("iMac 27 - 10%") {
+    GeometryReader { geo in
+        Text("Hello, World!")
+            .font(.system(size: geo.size.width * 0.1))
+            .magicCentered()
+            .background(.orange.opacity(0.3))
+    }
+    .inMagicContainer(.iMac27, scale: 0.1)
+}

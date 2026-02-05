@@ -1,35 +1,41 @@
-#if DEBUG
-    import SwiftUI
+import SwiftUI
 
-    #Preview("MacBook 13 - 100%") {
+#Preview("MacBook 13 - 100%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 400))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.macBook13, scale: 0.2)
+            .background(.orange.opacity(0.3))
     }
+    .inMagicContainer(.macBook13, scale: 0.2)
+}
 
-    #Preview("MacBook 13 - 20%") {
+#Preview("MacBook 13 - 20%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 40))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.macBook13_20Percent)
+            .background(.orange.opacity(0.3))
     }
+    .inMagicContainer(.macBook13_20Percent)
+}
 
-    #Preview("MacBook 13 - 10%") {
+#Preview("MacBook 13 - 10%") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 20))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.macBook13_10Percent)
+            .background(.orange.opacity(0.3))
     }
+    .inMagicContainer(.macBook13_10Percent)
+}
 
-    #Preview("MacBook 13 - 缩放示例") {
+#Preview("MacBook 13 - 缩放示例") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 200))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.green.opacity(0.3))
-            .inMagicContainer(.macBook13, scale: 0.3)
+            .background(.orange.opacity(0.3))
     }
-#endif
+    .inMagicContainer(.macBook13, scale: 0.3)
+}

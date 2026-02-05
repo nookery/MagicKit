@@ -16,3 +16,12 @@ extension MagicContainer {
         }
     }
 }
+
+#Preview("Xcode Icon Generator") {
+    Image.star
+        .resizable()
+        .scaledToFit()
+        .infinite()
+        .inBackgroundMint()
+        .inMagicContainer(CGSize(width: 1024, height: 1024), scale: 0.6)
+}

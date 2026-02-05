@@ -8,7 +8,7 @@ extension MagicContainer {
             Button(action: captureAppStoreView) {
                 HStack {
                     Image(systemName: "camera.aperture")
-                    Text("iOS App Store")
+                    Text("iOS App Store 截图")
                 }
                 .padding(.vertical, 4)
             }
@@ -17,14 +17,32 @@ extension MagicContainer {
     }
 }
 
-#if DEBUG
-    import SwiftUI
-
-    #Preview("iMac 27 - 缩放") {
+#Preview("iPhone") {
+    GeometryReader { geo in
         Text("Hello, World!")
-            .font(.system(size: 400))
+            .font(.system(size: geo.size.width * 0.1))
             .magicCentered()
-            .background(.indigo.opacity(0.3))
-            .inMagicContainer(.iMac27, scale: 0.1)
+            .background(.orange.opacity(0.3))
     }
-#endif
+    .inMagicContainer(.iPhone, scale: 0.4)
+}
+
+#Preview("iPhoneSE") {
+    GeometryReader { geo in
+        Text("Hello, World!")
+            .font(.system(size: geo.size.width * 0.1))
+            .magicCentered()
+            .background(.orange.opacity(0.3))
+    }
+    .inMagicContainer(.iPhoneSE, scale: 0.7)
+}
+
+#Preview("iPhone 6.5\"") {
+    GeometryReader { geo in
+        Text("Hello, World!")
+            .font(.system(size: geo.size.width * 0.1))
+            .magicCentered()
+            .background(.orange.opacity(0.3))
+    }
+    .inMagicContainer(.iPhone65, scale: 0.4)
+}
