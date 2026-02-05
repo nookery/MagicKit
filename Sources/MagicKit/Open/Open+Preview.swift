@@ -1,4 +1,4 @@
-#if DEBUG
+#if macOS
     import SwiftUI
 
     // MARK: - Preview Case Models

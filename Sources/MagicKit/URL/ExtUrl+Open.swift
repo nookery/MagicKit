@@ -194,7 +194,7 @@ public extension URL {
     }
 }
 
-#if DEBUG
+#if macOS
     #Preview("Open Buttons") {
         OpenPreivewView()
             .frame(height: 800)

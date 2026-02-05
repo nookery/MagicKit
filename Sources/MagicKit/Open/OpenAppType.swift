@@ -198,7 +198,7 @@ public enum OpenAppType: String {
     #endif
 }
 
-#if DEBUG
+#if macOS
     #Preview("Open Buttons") {
         OpenPreivewView()
     }

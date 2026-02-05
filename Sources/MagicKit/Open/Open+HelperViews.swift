@@ -39,7 +39,7 @@ struct RealIconButtonView: View {
 }
 #endif
 
-#if DEBUG
+#if macOS
 // MARK: - Previews
 
 #Preview("Real Icon Button View") {
