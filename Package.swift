@@ -18,7 +18,6 @@ let package = Package(
         .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0"),  // ID3 标签编辑器
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),  // ZIP 文件处理库
         .package(url: "https://github.com/nookery/MagicAlert.git", from: "1.0.0"),  // MagicAlert 通知库
-        .package(url: "https://github.com/nookery/MagicDevice.git", from: "0.0.1"),  // MagicDevice 设备模块
     ],
     // 编译目标（模块）
     targets: [

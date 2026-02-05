@@ -4,7 +4,7 @@ extension MagicContainer {
     @ViewBuilder
     var iOSAppStoreButton: some View {
         let containerSize = CGSize(width: containerWidth, height: containerHeight)
-        if containerSize.isWidthLessThanHeight {
+        if containerSize.isPortrait {
             Button(action: captureAppStoreView) {
                 HStack {
                     Image(systemName: "camera.aperture")
