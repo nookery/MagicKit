@@ -14,7 +14,6 @@ let package = Package(
         .library(name: "MagicKit", targets: ["MagicKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-async-algorithms", from: "1.0.0"),  // Apple 的异步算法库
         .package(url: "https://github.com/chicio/ID3TagEditor", from: "4.5.0"),  // ID3 标签编辑器
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),  // ZIP 文件处理库
         .package(url: "https://github.com/nookery/MagicAlert.git", from: "1.0.0"),  // MagicAlert 通知库
@@ -24,7 +23,6 @@ let package = Package(
        .target(
            name: "MagicKit",
            dependencies: [
-               .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
                .product(name: "MagicAlert", package: "MagicAlert"),
                "ID3TagEditor",
                "ZIPFoundation",
