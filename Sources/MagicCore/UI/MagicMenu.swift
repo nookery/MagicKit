@@ -40,8 +40,8 @@ public struct MagicMenu: View {
         self.level = level
         self.loading = loading
         self.clicked = clicked
-        self.indicatorHovered = indicatorHovered
-        self.hovered = hovered
+        self._indicatorHovered = State(initialValue: indicatorHovered)
+        self._hovered = State(initialValue: hovered)
         self._deleting = deleting
         self._selected = selected
         self._collapsed = collapsed
